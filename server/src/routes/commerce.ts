@@ -15,7 +15,81 @@ import {
 import { turnstileGuard } from "../lib/turnstile.js";
 
 export const commerceRouter = Router();
+/**
+ * Valid order-status transitions.
+ *
+ * The backend is the source of truth for the order lifecycle.
+ * A request cannot arbitrarily jump between statuses.
+ *
+ * Logistics-related transitions are included because the
+ * OrderStatus enum already supports them, but the actual
+ * logistics workflow will be hardened further in the
+ * logistics milestone.
+ */
+const ORDER_STATUS_TRANSITIONS: Record<
+  OrderStatus,
+  OrderStatus[]
+> = {
+  [OrderStatus.DRAFT]: [
+    OrderStatus.PENDING_PAYMENT,
+    OrderStatus.COD_PENDING,
+    OrderStatus.CANCELLED,
+  ],
 
+  [OrderStatus.PENDING_PAYMENT]: [
+    OrderStatus.PAID,
+    OrderStatus.CANCELLED,
+    OrderStatus.FAILED,
+  ],
+
+  [OrderStatus.COD_PENDING]: [
+    OrderStatus.PAID,
+    OrderStatus.CANCELLED,
+    OrderStatus.FAILED,
+  ],
+
+  [OrderStatus.PAID]: [
+    OrderStatus.ACCEPTED,
+    OrderStatus.CANCELLED,
+    OrderStatus.FAILED,
+  ],
+
+  [OrderStatus.ACCEPTED]: [
+    OrderStatus.PREPARING,
+    OrderStatus.CANCELLED,
+  ],
+
+  [OrderStatus.PREPARING]: [
+    OrderStatus.READY_FOR_PICKUP,
+    OrderStatus.CANCELLED,
+  ],
+
+  [OrderStatus.READY_FOR_PICKUP]: [
+    OrderStatus.PICKED_UP,
+    OrderStatus.CANCELLED,
+  ],
+
+  [OrderStatus.PICKED_UP]: [
+    OrderStatus.IN_TRANSIT,
+    OrderStatus.CANCELLED,
+  ],
+
+  [OrderStatus.IN_TRANSIT]: [
+    OrderStatus.OUT_FOR_DELIVERY,
+    OrderStatus.CANCELLED,
+  ],
+
+  [OrderStatus.OUT_FOR_DELIVERY]: [
+    OrderStatus.DELIVERED,
+    OrderStatus.CANCELLED,
+  ],
+
+  [OrderStatus.DELIVERED]: [],
+
+  [OrderStatus.CANCELLED]: [],
+
+  [OrderStatus.FAILED]: [],
+};
 /**
  * ---------------------------------------------------------
  * CART
@@ -827,7 +901,15 @@ commerceRouter.post(
         code: 409,
       });
     }
+const allowedTransitions:OrderStatus[] =
+  ORDER_STATUS_TRANSITIONS[order.status] ?? [];
 
+if (!allowedTransitions.includes(status)) {
+  return res.status(409).json({
+    error: `Invalid order status transition: ${order.status} → ${status}`,
+    code: 409,
+  });
+}
     /**
      * Farmer ownership check.
      *
