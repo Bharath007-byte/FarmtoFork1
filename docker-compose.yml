@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: farm2fork
+      POSTGRES_DB: farm2fork
+    ports:
+      - "5432:5432"
+    volumes:
+      - farm2fork_pg:/var/lib/postgresql/data
+
+volumes:
+  farm2fork_pg:

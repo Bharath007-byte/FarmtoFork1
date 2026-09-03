@@ -1,0 +1,373 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  FARMER
+  CONSUMER
+  LOGISTICS
+  ADMIN
+}
+
+enum OrderStatus {
+  DRAFT
+  PENDING_PAYMENT
+  COD_PENDING
+  PAID
+  ACCEPTED
+  PREPARING
+  READY_FOR_PICKUP
+  PICKED_UP
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  FAILED
+}
+
+enum PaymentStatus {
+  CREATED
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+}
+
+enum LogisticsStatus {
+  CONFIRMED
+  PICKUP_SCHEDULED
+  FARMER_READY
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+enum CollabStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  ACTIVE
+  CLOSED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  role         Role
+  name         String
+  email        String   @unique
+  phone        String?
+  passwordHash String
+  photoUrl     String?
+  language     String   @default("en")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  farmer         FarmerProfile?
+  addresses      Address[]
+  orders         Order[]         @relation("ConsumerOrders")
+  cartItems      CartItem[]
+  reviews        Review[]
+  notifications  Notification[]
+  otps           OtpVerification[]
+  resets         PasswordReset[]
+  collabSent     FarmerCollaboration[] @relation("CollabFrom")
+  collabRecv     FarmerCollaboration[] @relation("CollabTo")
+  logisticsBookings LogisticsBooking[]
+  priceAlerts    PriceAlert[]
+}
+
+model FarmerProfile {
+  id          String  @id @default(cuid())
+  userId      String  @unique
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  farmName    String
+  district    String
+  state       String
+  pinCode     String
+  location    String
+  lat         Float?
+  lng         Float?
+  categories  String[]
+  details     String?
+  verified    Boolean @default(false)
+
+  products    Product[]
+  inventory   Inventory[]
+  bookings    LogisticsBooking[]
+}
+
+model ProductCategory {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  products Product[]
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  farmerId    String
+  farmer      FarmerProfile   @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  categoryId  String
+  category    ProductCategory @relation(fields: [categoryId], references: [id])
+  name        String
+  variety     String?
+  description String?
+  unit        String
+  pricePaise  Int
+  organic     Boolean         @default(false)
+  harvestDate DateTime?
+  availableFrom DateTime?
+  minQty      Float           @default(1)
+  maxQty      Float?
+  imageUrl    String?
+  active      Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  inventory   Inventory?
+  orderItems  OrderItem[]
+  cartItems   CartItem[]
+  reviews     Review[]
+  priceLogs   ProductPriceLog[]
+}
+
+model Inventory {
+  id        String        @id @default(cuid())
+  productId String        @unique
+  product   Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  farmerId  String
+  farmer    FarmerProfile @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  available Float
+  reserved  Float         @default(0)
+  sold      Float         @default(0)
+  updatedAt DateTime      @updatedAt
+}
+
+model ProductPriceLog {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  pricePaise Int
+  createdAt  DateTime @default(now())
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  qty       Float
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  line1     String
+  city      String
+  district  String
+  state     String
+  pinCode   String
+  phone     String?
+  orders    Order[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  consumerId      String
+  consumer        User        @relation("ConsumerOrders", fields: [consumerId], references: [id])
+  addressId       String?
+  address         Address?    @relation(fields: [addressId], references: [id])
+  status          OrderStatus @default(PENDING_PAYMENT)
+  paymentMethod   String
+  totalPaise      Int
+  platformFeePaise Int        @default(0)
+  logisticsPaise  Int         @default(0)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  items     OrderItem[]
+  payments  Payment[]
+  bookings  LogisticsBooking[]
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+  qty         Float
+  unitPaise   Int
+  linePaise   Int
+  farmerId    String
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  orderId       String
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider      String
+  providerOrder String?
+  providerPayId String?
+  signature     String?
+  amountPaise   Int
+  currency      String        @default("INR")
+  method        String?
+  status        PaymentStatus @default(CREATED)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model DeliverySlot {
+  id        String   @id @default(cuid())
+  date      DateTime
+  startMin  Int
+  endMin    Int
+  capacity  Int
+  booked    Int      @default(0)
+  bookings  LogisticsBooking[]
+
+  @@unique([date, startMin, endMin])
+}
+
+model LogisticsBooking {
+  id          String          @id @default(cuid())
+  farmerId    String
+  farmer      FarmerProfile   @relation(fields: [farmerId], references: [id])
+  userId      String
+  user        User            @relation(fields: [userId], references: [id])
+  orderId     String?
+  order       Order?          @relation(fields: [orderId], references: [id])
+  slotId      String
+  slot        DeliverySlot    @relation(fields: [slotId], references: [id])
+  pickup      String
+  quantity    Float
+  vehicle     String
+  status      LogisticsStatus @default(CONFIRMED)
+  createdAt   DateTime        @default(now())
+}
+
+model FarmerCollaboration {
+  id         String       @id @default(cuid())
+  fromUserId String
+  fromUser   User         @relation("CollabFrom", fields: [fromUserId], references: [id])
+  toUserId   String
+  toUser     User         @relation("CollabTo", fields: [toUserId], references: [id])
+  crop       String
+  qtyA       Float
+  qtyB       Float        @default(0)
+  status     CollabStatus @default(PENDING)
+  note       String?
+  createdAt  DateTime     @default(now())
+}
+
+model OtpVerification {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  channel    String
+  purpose    String
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int      @default(0)
+  maxAttempts Int     @default(5)
+  verified   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model MarketPrice {
+  id         String   @id @default(cuid())
+  commodity  String
+  variety    String?
+  market     String
+  state      String
+  district   String
+  minPaise   Int
+  maxPaise   Int
+  modalPaise Int
+  unit       String
+  source     String
+  dataDate   DateTime
+  observedAt DateTime @default(now())
+  liveFeed   Boolean  @default(false)
+}
+
+model PriceHistory {
+  id         String   @id @default(cuid())
+  commodity  String
+  market     String
+  district   String
+  state      String
+  minPaise   Int
+  maxPaise   Int
+  modalPaise Int
+  dataDate   DateTime
+  source     String
+  createdAt  DateTime @default(now())
+}
+
+model AIPricePrediction {
+  id           String   @id @default(cuid())
+  commodity    String
+  market       String
+  lowPaise     Int
+  highPaise    Int
+  trend        String
+  confidence   Float
+  method       String
+  sampleSize   Int
+  recommendation String
+  createdAt    DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  rating    Int
+  text      String?
+  createdAt DateTime @default(now())
+}
+
+model PriceAlert {
+  id         String  @id @default(cuid())
+  userId     String
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commodity  String
+  abovePaise Int
+  active     Boolean @default(true)
+}

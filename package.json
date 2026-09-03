@@ -1,0 +1,11 @@
+{
+  "name": "farmtofork",
+  "private": true,
+  "scripts": {
+    "dev:server": "npm run dev --prefix server",
+    "dev:web": "npm run dev --prefix frontend",
+    "db:seed": "npm run db:seed --prefix server",
+    "test:server": "npm test --prefix server",
+    "build:web": "npm run build --prefix frontend"
+  }
+}

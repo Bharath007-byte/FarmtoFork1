@@ -1,0 +1,1528 @@
+[
+  {
+    "id": "VEG-01",
+    "name": "Arvi",
+    "category": "Vegetables",
+    "price": 56,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-02",
+    "name": "Banana Kaccha (Unripe) Kela",
+    "category": "Vegetables",
+    "price": 40,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600"
+  },
+  {
+    "id": "VEG-03",
+    "name": "Beets (Chukandar)",
+    "category": "Vegetables",
+    "price": 40,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1528825871115-3581a5387919?w=600"
+  },
+  {
+    "id": "VEG-04",
+    "name": "Bell Pepper Green (Shimla / Capsicum)",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=600"
+  },
+  {
+    "id": "VEG-05",
+    "name": "Bitter Melon (Karela)",
+    "category": "Vegetables",
+    "price": 56,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "VEG-06",
+    "name": "Bottle Gourd Long (Doodhi)",
+    "category": "Vegetables",
+    "price": 44,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-07",
+    "name": "Brinjal Black Large",
+    "category": "Vegetables",
+    "price": 52,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "VEG-08",
+    "name": "Brinjal Purple Small",
+    "category": "Vegetables",
+    "price": 40,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "VEG-09",
+    "name": "Cabbage Green",
+    "category": "Vegetables",
+    "price": 30,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-10",
+    "name": "Carrot Orange",
+    "category": "Vegetables",
+    "price": 45,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1598170845058-128a2b00369f?w=600"
+  },
+  {
+    "id": "VEG-11",
+    "name": "Carrot Red",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1598170845058-128a2b00369f?w=600"
+  },
+  {
+    "id": "VEG-12",
+    "name": "Cauliflower",
+    "category": "Vegetables",
+    "price": 56,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1568584711075-3d021a7c3ca3?w=600"
+  },
+  {
+    "id": "VEG-13",
+    "name": "Chawli Beans",
+    "category": "Vegetables",
+    "price": 68,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-14",
+    "name": "Chawali Leaves",
+    "category": "Vegetables",
+    "price": 70,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-15",
+    "name": "Chili Green Fresh (Harimirch)",
+    "category": "Vegetables",
+    "price": 70,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "VEG-16",
+    "name": "Chili Salan Fresh",
+    "category": "Vegetables",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "VEG-17",
+    "name": "Chili Green Lavangi",
+    "category": "Vegetables",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "VEG-18",
+    "name": "Chuka leaves",
+    "category": "Vegetables",
+    "price": 70,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-19",
+    "name": "Cilantro (Dhaniya), Green Fresh",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-20",
+    "name": "Corn / Makka",
+    "category": "Vegetables",
+    "price": 40,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=600"
+  },
+  {
+    "id": "VEG-21",
+    "name": "Cucumber (Kakdi) Green",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-22",
+    "name": "Cucumber (Kakdi) White",
+    "category": "Vegetables",
+    "price": 45,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-23",
+    "name": "Curry Leaves (Kaddi Patta / Meeta Neem)",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-24",
+    "name": "Dill Leaves (Shepu)",
+    "category": "Vegetables",
+    "price": 70,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-25",
+    "name": "Drumstick (Sahjan ki phali)",
+    "category": "Vegetables",
+    "price": 120,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-26",
+    "name": "Garlic (Lahsun), Indian",
+    "category": "Vegetables",
+    "price": 160,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "VEG-27",
+    "name": "Garlic Green Fresh",
+    "category": "Vegetables",
+    "price": 250,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "VEG-28",
+    "name": "Gawar",
+    "category": "Vegetables",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-29",
+    "name": "Gilaka",
+    "category": "Vegetables",
+    "price": 55,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-30",
+    "name": "Ginger Fresh",
+    "category": "Vegetables",
+    "price": 120,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "VEG-31",
+    "name": "Green Beans (French Beans)",
+    "category": "Vegetables",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-32",
+    "name": "Kantola Green",
+    "category": "Vegetables",
+    "price": 120,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-33",
+    "name": "Khatta Chuka Leaves (Green sorrel)",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-34",
+    "name": "Knol Knol Vegetable",
+    "category": "Vegetables",
+    "price": null,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-35",
+    "name": "Kund/Ratalu (Red/Purple)",
+    "category": "Vegetables",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-36",
+    "name": "Lemon Grass",
+    "category": "Vegetables",
+    "price": 90,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-37",
+    "name": "Lemon Fresh",
+    "category": "Vegetables",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1590502593163-e84377523835?w=600"
+  },
+  {
+    "id": "VEG-38",
+    "name": "Math Green",
+    "category": "Vegetables",
+    "price": 70,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-39",
+    "name": "Math Red",
+    "category": "Vegetables",
+    "price": 50,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-40",
+    "name": "Methi Fresh Green",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-41",
+    "name": "Mint Leaves / Fresh",
+    "category": "Vegetables",
+    "price": 50,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-42",
+    "name": "Okra / Lady Finger (Bhindi)",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-43",
+    "name": "Onion Red",
+    "category": "Vegetables",
+    "price": 40,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cf?w=600"
+  },
+  {
+    "id": "VEG-44",
+    "name": "Onion White",
+    "category": "Vegetables",
+    "price": 70,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cf?w=600"
+  },
+  {
+    "id": "VEG-45",
+    "name": "Papdi Beans",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-46",
+    "name": "Parwal Green",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-47",
+    "name": "Peas Green Fresh",
+    "category": "Vegetables",
+    "price": 100,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-48",
+    "name": "Potato Regular",
+    "category": "Vegetables",
+    "price": 35,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=600"
+  },
+  {
+    "id": "VEG-49",
+    "name": "Potato, Small (Damaloo)",
+    "category": "Vegetables",
+    "price": 40,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=600"
+  },
+  {
+    "id": "VEG-50",
+    "name": "Pumpkin Red",
+    "category": "Vegetables",
+    "price": 30,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1506917728037-b6af01a7d403?w=600"
+  },
+  {
+    "id": "VEG-51",
+    "name": "Pumpkin White",
+    "category": "Vegetables",
+    "price": 40,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1506917728037-b6af01a7d403?w=600"
+  },
+  {
+    "id": "VEG-52",
+    "name": "Sarso kaa saag / Rai Leaves",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-53",
+    "name": "Scallion (Spring Onion)",
+    "category": "Vegetables",
+    "price": 50,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cf?w=600"
+  },
+  {
+    "id": "VEG-54",
+    "name": "Shalgam",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-55",
+    "name": "Snake gourd (Padval)",
+    "category": "Vegetables",
+    "price": 50,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-56",
+    "name": "Spinach (Palak)",
+    "category": "Vegetables",
+    "price": 50,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "VEG-57",
+    "name": "Surti Papdi",
+    "category": "Vegetables",
+    "price": 150,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-58",
+    "name": "Sweet Corn",
+    "category": "Vegetables",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=600"
+  },
+  {
+    "id": "VEG-59",
+    "name": "Sweet Potato White (Shakarkand)",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-60",
+    "name": "Tinda vegetable (Dhemsa)",
+    "category": "Vegetables",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-61",
+    "name": "Tomato Large",
+    "category": "Vegetables",
+    "price": 45,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-62",
+    "name": "Tomato Medium",
+    "category": "Vegetables",
+    "price": 30,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-63",
+    "name": "Tundli (Tindori/Coccinia)",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-64",
+    "name": "Turiya (Ridge Gourd)",
+    "category": "Vegetables",
+    "price": 55,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "VEG-65",
+    "name": "Yam (Suran)",
+    "category": "Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "ENG-01",
+    "name": "Baby Corn",
+    "category": "English Vegetables",
+    "price": 120,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=600"
+  },
+  {
+    "id": "ENG-02",
+    "name": "Basil leaves (Subja leaves)",
+    "category": "English Vegetables",
+    "price": 120,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "ENG-03",
+    "name": "Bell Pepper Red",
+    "category": "English Vegetables",
+    "price": 150,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=600"
+  },
+  {
+    "id": "ENG-04",
+    "name": "Bell Pepper Yellow",
+    "category": "English Vegetables",
+    "price": 150,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=600"
+  },
+  {
+    "id": "ENG-05",
+    "name": "Broccoli",
+    "category": "English Vegetables",
+    "price": 150,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=600"
+  },
+  {
+    "id": "ENG-06",
+    "name": "Cabbage Red",
+    "category": "English Vegetables",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "ENG-07",
+    "name": "Celery",
+    "category": "English Vegetables",
+    "price": 70,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "ENG-08",
+    "name": "Leeks",
+    "category": "English Vegetables",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "ENG-09",
+    "name": "Parsley",
+    "category": "English Vegetables",
+    "price": 120,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600"
+  },
+  {
+    "id": "ENG-10",
+    "name": "Zucchini Green",
+    "category": "English Vegetables",
+    "price": 90,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "ENG-11",
+    "name": "Zucchini Yellow",
+    "category": "English Vegetables",
+    "price": 90,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600"
+  },
+  {
+    "id": "FRU-01",
+    "name": "Apple Indian",
+    "category": "Fruits",
+    "price": 180,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600"
+  },
+  {
+    "id": "FRU-02",
+    "name": "Apple Imported",
+    "category": "Fruits",
+    "price": 250,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600"
+  },
+  {
+    "id": "FRU-03",
+    "name": "Anar",
+    "category": "Fruits",
+    "price": 180,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "FRU-04",
+    "name": "Banana Ripe",
+    "category": "Fruits",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600"
+  },
+  {
+    "id": "FRU-05",
+    "name": "Cherry Fruit",
+    "category": "Fruits",
+    "price": 400,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1528825871115-3581a5387919?w=600"
+  },
+  {
+    "id": "FRU-06",
+    "name": "Grapes Green",
+    "category": "Fruits",
+    "price": "Seasonal",
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=600"
+  },
+  {
+    "id": "FRU-07",
+    "name": "Grapes Black",
+    "category": "Fruits",
+    "price": "Seasonal",
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=600"
+  },
+  {
+    "id": "FRU-08",
+    "name": "Guava",
+    "category": "Fruits",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1536510233921-8e5043fce771?w=600"
+  },
+  {
+    "id": "FRU-09",
+    "name": "Custard Apple",
+    "category": "Fruits",
+    "price": 150,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1527325678964-54921661f888?w=600"
+  },
+  {
+    "id": "FRU-10",
+    "name": "Musk Melon",
+    "category": "Fruits",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1590502593163-e84377523835?w=600"
+  },
+  {
+    "id": "FRU-11",
+    "name": "Orange",
+    "category": "Fruits",
+    "price": 100,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=600"
+  },
+  {
+    "id": "FRU-12",
+    "name": "Papaya",
+    "category": "Fruits",
+    "price": 70,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1517282009859-f000ec3b26fe?w=600"
+  },
+  {
+    "id": "FRU-13",
+    "name": "Pears",
+    "category": "Fruits",
+    "price": 200,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "FRU-14",
+    "name": "Pineapple (Rani)",
+    "category": "Fruits",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=600"
+  },
+  {
+    "id": "FRU-15",
+    "name": "Plum",
+    "category": "Fruits",
+    "price": 360,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1528825871115-3581a5387919?w=600"
+  },
+  {
+    "id": "FRU-16",
+    "name": "Sweet Lime (Mausambi)",
+    "category": "Fruits",
+    "price": 80,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1590502593163-e84377523835?w=600"
+  },
+  {
+    "id": "FRU-17",
+    "name": "Water Melon",
+    "category": "Fruits",
+    "price": 60,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600"
+  },
+  {
+    "id": "DAI-01",
+    "name": "Shrikhand & Mango Srikhand (500 gm Poly)",
+    "category": "Dairy",
+    "packing": "500 gm. Poly",
+    "ratePerUnit": 230,
+    "price": 115,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-02",
+    "name": "Shrikhand & Mango Srikhand (250 gm Poly)",
+    "category": "Dairy",
+    "packing": "250 gm. Poly",
+    "ratePerUnit": 240,
+    "price": 60,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-03",
+    "name": "Shrikhand & Mango Srikhand (500 gm Cup)",
+    "category": "Dairy",
+    "packing": "500 gm. Cup",
+    "ratePerUnit": 250,
+    "price": 125,
+    "unit": "Cup",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-04",
+    "name": "Shrikhand & Mango Srikhand (250 gm Cup)",
+    "category": "Dairy",
+    "packing": "250 gm. Cup",
+    "ratePerUnit": 260,
+    "price": 65,
+    "unit": "Cup",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-05",
+    "name": "Shrikhand & Mango Srikhand (100 gm Cup)",
+    "category": "Dairy",
+    "packing": "100 gm. Cup",
+    "ratePerUnit": 300,
+    "price": 30,
+    "unit": "Cup",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-06",
+    "name": "Shrikhand & Mango Srikhand (5 Kg Box)",
+    "category": "Dairy",
+    "packing": "5 Kg Box",
+    "ratePerUnit": 210,
+    "price": 1050,
+    "unit": "Box",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-07",
+    "name": "Fruit Shrikhand (500 gm Cup)",
+    "category": "Dairy",
+    "packing": "500 gm. Cup",
+    "ratePerUnit": 300,
+    "price": 150,
+    "unit": "Cup",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-08",
+    "name": "Fruit Shrikhand (100 gm Cup)",
+    "category": "Dairy",
+    "packing": "100 gm. Cup",
+    "ratePerUnit": 350,
+    "price": 35,
+    "unit": "Cup",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-09",
+    "name": "Fruit Shrikhand (250 gm Poly)",
+    "category": "Dairy",
+    "packing": "250 gm. Poly",
+    "ratePerUnit": 280,
+    "price": 70,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-10",
+    "name": "Fruit Shrikhand (5 Kg Box)",
+    "category": "Dairy",
+    "packing": "5 Kg Box",
+    "ratePerUnit": 240,
+    "price": 1200,
+    "unit": "Box",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "GHEE-01",
+    "name": "Ghee - Buffalo (1 Lit Poly)",
+    "category": "Ghee & Oils",
+    "packing": "1 Lit. Poly",
+    "ratePerUnit": 700,
+    "price": 700,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-02",
+    "name": "Ghee - Buffalo (500 ml Poly)",
+    "category": "Ghee & Oils",
+    "packing": "500 ml. Poly",
+    "ratePerUnit": 706,
+    "price": 353,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-03",
+    "name": "Ghee - Buffalo (1 Lit Pet Jar)",
+    "category": "Ghee & Oils",
+    "packing": "1 Lit. Pet Jar",
+    "ratePerUnit": 715,
+    "price": 715,
+    "unit": "Jar",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-04",
+    "name": "Ghee - Buffalo (500 ml Jar)",
+    "category": "Ghee & Oils",
+    "packing": "500 ml. Jar",
+    "ratePerUnit": 726,
+    "price": 363,
+    "unit": "Jar",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-05",
+    "name": "Ghee - Buffalo (200 ml Jar)",
+    "category": "Ghee & Oils",
+    "packing": "200 ml. Jar Buffalo",
+    "ratePerUnit": 785,
+    "price": 157,
+    "unit": "Jar",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-06",
+    "name": "Ghee - Buffalo (5 Lit Jar)",
+    "category": "Ghee & Oils",
+    "packing": "5 Lit. Jar",
+    "ratePerUnit": 700,
+    "price": 3500,
+    "unit": "Jar",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-07",
+    "name": "Ghee - Buffalo (15 Lit Tin)",
+    "category": "Ghee & Oils",
+    "packing": "15 Lit Tin",
+    "ratePerUnit": 700,
+    "price": 10500,
+    "unit": "Tin",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-08",
+    "name": "Ghee - Cow (1 Lit Poly)",
+    "category": "Ghee & Oils",
+    "packing": "1 Lit. Poly",
+    "ratePerUnit": 690,
+    "price": 690,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-09",
+    "name": "Ghee - Cow (500 ml Poly)",
+    "category": "Ghee & Oils",
+    "packing": "500 ml. Poly",
+    "ratePerUnit": 696,
+    "price": 348,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-10",
+    "name": "Ghee - Cow (1 Lit Pet Jar)",
+    "category": "Ghee & Oils",
+    "packing": "1 Lit. Pet Jar",
+    "ratePerUnit": 705,
+    "price": 705,
+    "unit": "Jar",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-11",
+    "name": "Ghee - Cow (500 ml Jar)",
+    "category": "Ghee & Oils",
+    "packing": "500 ml. Jar",
+    "ratePerUnit": 716,
+    "price": 358,
+    "unit": "Jar",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-12",
+    "name": "Ghee - Cow (200 ml Jar)",
+    "category": "Ghee & Oils",
+    "packing": "200 ml. Jar Buffalo",
+    "ratePerUnit": 775,
+    "price": 155,
+    "unit": "Jar",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-13",
+    "name": "Ghee - Cow (5 Lit Jar)",
+    "category": "Ghee & Oils",
+    "packing": "5 Lit. Jar",
+    "ratePerUnit": 690,
+    "price": 3450,
+    "unit": "Jar",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "GHEE-14",
+    "name": "Ghee - Cow (15 Lit Tin)",
+    "category": "Ghee & Oils",
+    "packing": "15 Lit. Tin",
+    "ratePerUnit": 690,
+    "price": 10350,
+    "unit": "Tin",
+    "image": "https://images.unsplash.com/photo-1627485937980-221c88ab04f9?w=600"
+  },
+  {
+    "id": "DAI-11",
+    "name": "Skimmed Milk Powder (1 Kg Poly)",
+    "category": "Dairy",
+    "packing": "1 Kg. Poly.",
+    "ratePerUnit": 420,
+    "price": 420,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-12",
+    "name": "Skimmed Milk Powder (1/2 Kg Poly)",
+    "category": "Dairy",
+    "packing": "\u00bd Kg. Poly.",
+    "ratePerUnit": 430,
+    "price": 215,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-13",
+    "name": "Skimmed Milk Powder (100 gm Poly)",
+    "category": "Dairy",
+    "packing": "100 gm. Poly.",
+    "ratePerUnit": 440,
+    "price": 44,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-14",
+    "name": "Paneer (500 gm)",
+    "category": "Dairy",
+    "packing": "500 gm",
+    "ratePerUnit": 450,
+    "price": 225,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-15",
+    "name": "Paneer (200 gm)",
+    "category": "Dairy",
+    "packing": "200 gm",
+    "ratePerUnit": 465,
+    "price": 93,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-16",
+    "name": "Paneer (100 gm)",
+    "category": "Dairy",
+    "packing": "100 gm",
+    "ratePerUnit": 480,
+    "price": 48,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-17",
+    "name": "Table Butter (500 gm Carton)",
+    "category": "Dairy",
+    "packing": "500 gm. Carton",
+    "ratePerUnit": 530,
+    "price": 265,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600"
+  },
+  {
+    "id": "DAI-18",
+    "name": "Table Butter (250 gm Carton)",
+    "category": "Dairy",
+    "packing": "250 gm. Carton",
+    "ratePerUnit": 552,
+    "price": 138,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600"
+  },
+  {
+    "id": "DAI-19",
+    "name": "Table Butter (100 gm Carton)",
+    "category": "Dairy",
+    "packing": "100 gm Carton",
+    "ratePerUnit": 560,
+    "price": 56,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600"
+  },
+  {
+    "id": "DAI-20",
+    "name": "Table Butter (10 gm Chiplet / 500 gm Box)",
+    "category": "Dairy",
+    "packing": "10 gm Chiplet (500 gm Box)",
+    "ratePerUnit": 640,
+    "price": 64,
+    "unit": "Box",
+    "image": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600"
+  },
+  {
+    "id": "DAI-21",
+    "name": "Table Butter (500 gm IP Pack / 10 Kg Box)",
+    "category": "Dairy",
+    "packing": "500 gm. IP Pack (10 Kg Box)",
+    "ratePerUnit": 510,
+    "price": 5100,
+    "unit": "Box",
+    "image": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600"
+  },
+  {
+    "id": "DAI-22",
+    "name": "Cooking Butter (500 gm Carton)",
+    "category": "Dairy",
+    "packing": "500 gm. Carton",
+    "ratePerUnit": 512,
+    "price": 256,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600"
+  },
+  {
+    "id": "DAI-23",
+    "name": "Lassi (200 ml Poly)",
+    "category": "Dairy",
+    "packing": "200 Ml. poly",
+    "ratePerUnit": 85,
+    "price": 17,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-24",
+    "name": "Lassi - Mango & Vanilla (200 ml Tetra Pack)",
+    "category": "Dairy",
+    "packing": "200 Ml Tetra Pack",
+    "ratePerUnit": 125,
+    "price": 25,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-25",
+    "name": "Dahi Curd (400 gm Cup)",
+    "category": "Dairy",
+    "packing": "400 gm. Cup",
+    "ratePerUnit": 137.5,
+    "price": 55,
+    "unit": "Cup",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-26",
+    "name": "Dahi Curd (200 gm Cup)",
+    "category": "Dairy",
+    "packing": "200 gm. Cup",
+    "ratePerUnit": 140,
+    "price": 28,
+    "unit": "Cup",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-27",
+    "name": "Dahi Curd (80 gm Cup)",
+    "category": "Dairy",
+    "packing": "80 gm Cup",
+    "ratePerUnit": 150,
+    "price": 12,
+    "unit": "Cup",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-28",
+    "name": "Dahi Curd (1 Kg Poly)",
+    "category": "Dairy",
+    "packing": "1 Kg poly",
+    "ratePerUnit": 85,
+    "price": 85,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-29",
+    "name": "Dahi Curd (500 gm Poly)",
+    "category": "Dairy",
+    "packing": "500 gm poly",
+    "ratePerUnit": 90,
+    "price": 45,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-30",
+    "name": "Dahi Curd (200 gm Poly)",
+    "category": "Dairy",
+    "packing": "200 gm poly",
+    "ratePerUnit": 100,
+    "price": 20,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-31",
+    "name": "Tak (450 ml Poly Pack)",
+    "category": "Dairy",
+    "packing": "450 Ml Poly Pack",
+    "ratePerUnit": 44.44,
+    "price": 20,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-32",
+    "name": "Tak (200 ml Poly Pack)",
+    "category": "Dairy",
+    "packing": "200 Ml Poly Pack",
+    "ratePerUnit": 50,
+    "price": 10,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-33",
+    "name": "Masala Tak (200 ml Tetra Pack)",
+    "category": "Dairy",
+    "packing": "200 Ml Tetra Pack",
+    "ratePerUnit": 100,
+    "price": 20,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-34",
+    "name": "UHT Milk (1 Lit Tetra Pack)",
+    "category": "Dairy",
+    "packing": "1 Lit. Tetra Pack",
+    "ratePerUnit": 80,
+    "price": 80,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=600"
+  },
+  {
+    "id": "DAI-35",
+    "name": "Basundi (500 gm Poly)",
+    "category": "Dairy",
+    "packing": "500 gm poly",
+    "ratePerUnit": 210,
+    "price": 105,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-36",
+    "name": "Basundi (250 gm Poly)",
+    "category": "Dairy",
+    "packing": "250 gm poly",
+    "ratePerUnit": 240,
+    "price": 60,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "DAI-37",
+    "name": "Flavoured Milk (200 ml Pet Bottle)",
+    "category": "Dairy",
+    "packing": "200 Ml Pet bottel",
+    "ratePerUnit": 150,
+    "price": 30,
+    "unit": "Bottle",
+    "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=600"
+  },
+  {
+    "id": "DAI-38",
+    "name": "Pedha (200 gm)",
+    "category": "Dairy",
+    "packing": "200 gm",
+    "ratePerUnit": 600,
+    "price": 120,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1528751014936-863e6e7a319c?w=600"
+  },
+  {
+    "id": "SPC-01",
+    "name": "Cardamom (Small)",
+    "category": "Spices",
+    "priceUsd": 35.4,
+    "priceEuro": 28.8,
+    "priceGbp": 22.9,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-02",
+    "name": "Cardamom (Large)",
+    "category": "Spices",
+    "priceUsd": 32.3,
+    "priceEuro": 26.3,
+    "priceGbp": 20.9,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-03",
+    "name": "Chilli (Whole)",
+    "category": "Spices",
+    "priceUsd": 5.15,
+    "priceEuro": 4.2,
+    "priceGbp": 3.35,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-04",
+    "name": "Dry Ginger",
+    "category": "Spices",
+    "priceUsd": 7.6,
+    "priceEuro": 6.2,
+    "priceGbp": 4.9,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "SPC-05",
+    "name": "Turmeric (Whole)",
+    "category": "Spices",
+    "priceUsd": 5.5,
+    "priceEuro": 4.5,
+    "priceGbp": 3.55,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "SPC-06",
+    "name": "Coriander (Whole)",
+    "category": "Spices",
+    "priceUsd": 4.8,
+    "priceEuro": 3.9,
+    "priceGbp": 3.1,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-07",
+    "name": "Cumin Seeds",
+    "category": "Spices",
+    "priceUsd": 6.7,
+    "priceEuro": 5.5,
+    "priceGbp": 4.35,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-08",
+    "name": "Fennel Seeds",
+    "category": "Spices",
+    "priceUsd": 4.15,
+    "priceEuro": 3.4,
+    "priceGbp": 2.7,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-09",
+    "name": "Fenugreek Seeds",
+    "category": "Spices",
+    "priceUsd": 3.2,
+    "priceEuro": 2.6,
+    "priceGbp": 2.1,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-10",
+    "name": "Ajwanseed (Bishop Weed)",
+    "category": "Spices",
+    "priceUsd": 6.2,
+    "priceEuro": 5.1,
+    "priceGbp": 4.05,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-11",
+    "name": "Mustard Seed",
+    "category": "Spices",
+    "priceUsd": 3.3,
+    "priceEuro": 2.7,
+    "priceGbp": 2.15,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-12",
+    "name": "Poppy Seed",
+    "category": "Spices",
+    "priceUsd": 13.4,
+    "priceEuro": 10.9,
+    "priceGbp": 7.1,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-13",
+    "name": "Garlic",
+    "category": "Spices",
+    "priceUsd": 4.5,
+    "priceEuro": 3.7,
+    "priceGbp": 2.95,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "SPC-14",
+    "name": "Tamarind",
+    "category": "Spices",
+    "priceUsd": 5.5,
+    "priceEuro": 4.5,
+    "priceGbp": 3.6,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600"
+  },
+  {
+    "id": "SPC-15",
+    "name": "Cloves",
+    "category": "Spices",
+    "priceUsd": 30.2,
+    "priceEuro": 24.6,
+    "priceGbp": 19.5,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-16",
+    "name": "Nutmeg",
+    "category": "Spices",
+    "priceUsd": 22.5,
+    "priceEuro": 18.3,
+    "priceGbp": 14.55,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-17",
+    "name": "Mace",
+    "category": "Spices",
+    "priceUsd": 32.65,
+    "priceEuro": 26.6,
+    "priceGbp": 21.1,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-18",
+    "name": "Cassia",
+    "category": "Spices",
+    "priceUsd": 5.0,
+    "priceEuro": 4.1,
+    "priceGbp": 3.25,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "SPC-19",
+    "name": "Cinnamon (Dalchini)",
+    "category": "Spices",
+    "priceUsd": 4.1,
+    "priceEuro": 3.35,
+    "priceGbp": 2.65,
+    "weight": "1kg (2.20 lbs)",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600"
+  },
+  {
+    "id": "PLT-01",
+    "name": "Farm Fresh White Eggs",
+    "category": "Eggs & Poultry",
+    "packing": "Pack of 6",
+    "price": 42,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=600"
+  },
+  {
+    "id": "PLT-02",
+    "name": "Farm Fresh White Eggs",
+    "category": "Eggs & Poultry",
+    "packing": "Pack of 12",
+    "price": 80,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=600"
+  },
+  {
+    "id": "PLT-03",
+    "name": "Organic Brown Eggs",
+    "category": "Eggs & Poultry",
+    "packing": "Pack of 6",
+    "price": 60,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1506976785307-8732e854ad03?w=600"
+  },
+  {
+    "id": "PLT-04",
+    "name": "Fresh Whole Chicken (Skinless)",
+    "category": "Eggs & Poultry",
+    "packing": "1 Kg",
+    "price": 220,
+    "unit": "Kg",
+    "image": "https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=600"
+  },
+  {
+    "id": "PLT-05",
+    "name": "Fresh Chicken Breast (Boneless)",
+    "category": "Eggs & Poultry",
+    "packing": "500 gm",
+    "price": 180,
+    "unit": "Pack",
+    "image": "https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=600"
+  },
+  {
+    "id": "HON-01",
+    "name": "Pure Wildflower Honey",
+    "category": "Honey & Sweeteners",
+    "packing": "250 gm Glass Jar",
+    "price": 160,
+    "unit": "Jar",
+    "image": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600"
+  },
+  {
+    "id": "HON-02",
+    "name": "Pure Wildflower Honey",
+    "category": "Honey & Sweeteners",
+    "packing": "500 gm Glass Jar",
+    "price": 300,
+    "unit": "Jar",
+    "image": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600"
+  },
+  {
+    "id": "HON-03",
+    "name": "Organic Raw Forest Honey",
+    "category": "Honey & Sweeteners",
+    "packing": "1 Kg Glass Jar",
+    "price": 550,
+    "unit": "Jar",
+    "image": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600"
+  }
+]
