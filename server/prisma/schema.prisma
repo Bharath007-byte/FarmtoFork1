@@ -68,38 +68,38 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  farmer         FarmerProfile?
-  addresses      Address[]
-  orders         Order[]         @relation("ConsumerOrders")
-  cartItems      CartItem[]
-  reviews        Review[]
-  notifications  Notification[]
-  otps           OtpVerification[]
-  resets         PasswordReset[]
-  collabSent     FarmerCollaboration[] @relation("CollabFrom")
-  collabRecv     FarmerCollaboration[] @relation("CollabTo")
+  farmer            FarmerProfile?
+  addresses         Address[]
+  orders            Order[]               @relation("ConsumerOrders")
+  cartItems         CartItem[]
+  reviews           Review[]
+  notifications     Notification[]
+  otps              OtpVerification[]
+  resets            PasswordReset[]
+  collabSent        FarmerCollaboration[] @relation("CollabFrom")
+  collabRecv        FarmerCollaboration[] @relation("CollabTo")
   logisticsBookings LogisticsBooking[]
-  priceAlerts    PriceAlert[]
+  priceAlerts       PriceAlert[]
 }
 
 model FarmerProfile {
-  id          String  @id @default(cuid())
-  userId      String  @unique
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  farmName    String
-  district    String
-  state       String
-  pinCode     String
-  location    String
-  lat         Float?
-  lng         Float?
-  categories  String[]
-  details     String?
-  verified    Boolean @default(false)
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  farmName   String
+  district   String
+  state      String
+  pinCode    String
+  location   String
+  lat        Float?
+  lng        Float?
+  categories String[]
+  details    String?
+  verified   Boolean  @default(false)
 
-  products    Product[]
-  inventory   Inventory[]
-  bookings    LogisticsBooking[]
+  products  Product[]
+  inventory Inventory[]
+  bookings  LogisticsBooking[]
 }
 
 model ProductCategory {
@@ -110,31 +110,31 @@ model ProductCategory {
 }
 
 model Product {
-  id          String          @id @default(cuid())
-  farmerId    String
-  farmer      FarmerProfile   @relation(fields: [farmerId], references: [id], onDelete: Cascade)
-  categoryId  String
-  category    ProductCategory @relation(fields: [categoryId], references: [id])
-  name        String
-  variety     String?
-  description String?
-  unit        String
-  pricePaise  Int
-  organic     Boolean         @default(false)
-  harvestDate DateTime?
+  id            String          @id @default(cuid())
+  farmerId      String
+  farmer        FarmerProfile   @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  categoryId    String
+  category      ProductCategory @relation(fields: [categoryId], references: [id])
+  name          String
+  variety       String?
+  description   String?
+  unit          String
+  pricePaise    Int
+  organic       Boolean         @default(false)
+  harvestDate   DateTime?
   availableFrom DateTime?
-  minQty      Float           @default(1)
-  maxQty      Float?
-  imageUrl    String?
-  active      Boolean         @default(true)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  minQty        Float           @default(1)
+  maxQty        Float?
+  imageUrl      String?
+  active        Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
-  inventory   Inventory?
-  orderItems  OrderItem[]
-  cartItems   CartItem[]
-  reviews     Review[]
-  priceLogs   ProductPriceLog[]
+  inventory  Inventory?
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+  reviews    Review[]
+  priceLogs  ProductPriceLog[]
 }
 
 model Inventory {
@@ -158,11 +158,11 @@ model ProductPriceLog {
 }
 
 model CartItem {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   qty       Float
   createdAt DateTime @default(now())
 
@@ -170,47 +170,47 @@ model CartItem {
 }
 
 model Address {
-  id        String  @id @default(cuid())
-  userId    String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  line1     String
-  city      String
-  district  String
-  state     String
-  pinCode   String
-  phone     String?
-  orders    Order[]
+  id       String  @id @default(cuid())
+  userId   String
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  line1    String
+  city     String
+  district String
+  state    String
+  pinCode  String
+  phone    String?
+  orders   Order[]
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  consumerId      String
-  consumer        User        @relation("ConsumerOrders", fields: [consumerId], references: [id])
-  addressId       String?
-  address         Address?    @relation(fields: [addressId], references: [id])
-  status          OrderStatus @default(PENDING_PAYMENT)
-  paymentMethod   String
-  totalPaise      Int
-  platformFeePaise Int        @default(0)
-  logisticsPaise  Int         @default(0)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id               String      @id @default(cuid())
+  consumerId       String
+  consumer         User        @relation("ConsumerOrders", fields: [consumerId], references: [id])
+  addressId        String?
+  address          Address?    @relation(fields: [addressId], references: [id])
+  status           OrderStatus @default(PENDING_PAYMENT)
+  paymentMethod    String
+  totalPaise       Int
+  platformFeePaise Int         @default(0)
+  logisticsPaise   Int         @default(0)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 
-  items     OrderItem[]
-  payments  Payment[]
-  bookings  LogisticsBooking[]
+  items    OrderItem[]
+  payments Payment[]
+  bookings LogisticsBooking[]
 }
 
 model OrderItem {
-  id          String  @id @default(cuid())
-  orderId     String
-  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId   String
-  product     Product @relation(fields: [productId], references: [id])
-  qty         Float
-  unitPaise   Int
-  linePaise   Int
-  farmerId    String
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  qty       Float
+  unitPaise Int
+  linePaise Int
+  farmerId  String
 }
 
 model Payment {
@@ -230,32 +230,32 @@ model Payment {
 }
 
 model DeliverySlot {
-  id        String   @id @default(cuid())
-  date      DateTime
-  startMin  Int
-  endMin    Int
-  capacity  Int
-  booked    Int      @default(0)
-  bookings  LogisticsBooking[]
+  id       String             @id @default(cuid())
+  date     DateTime
+  startMin Int
+  endMin   Int
+  capacity Int
+  booked   Int                @default(0)
+  bookings LogisticsBooking[]
 
   @@unique([date, startMin, endMin])
 }
 
 model LogisticsBooking {
-  id          String          @id @default(cuid())
-  farmerId    String
-  farmer      FarmerProfile   @relation(fields: [farmerId], references: [id])
-  userId      String
-  user        User            @relation(fields: [userId], references: [id])
-  orderId     String?
-  order       Order?          @relation(fields: [orderId], references: [id])
-  slotId      String
-  slot        DeliverySlot    @relation(fields: [slotId], references: [id])
-  pickup      String
-  quantity    Float
-  vehicle     String
-  status      LogisticsStatus @default(CONFIRMED)
-  createdAt   DateTime        @default(now())
+  id        String          @id @default(cuid())
+  farmerId  String
+  farmer    FarmerProfile   @relation(fields: [farmerId], references: [id])
+  userId    String
+  user      User            @relation(fields: [userId], references: [id])
+  orderId   String?
+  order     Order?          @relation(fields: [orderId], references: [id])
+  slotId    String
+  slot      DeliverySlot    @relation(fields: [slotId], references: [id])
+  pickup    String
+  quantity  Float
+  vehicle   String
+  status    LogisticsStatus @default(CONFIRMED)
+  createdAt DateTime        @default(now())
 }
 
 model FarmerCollaboration {
@@ -273,17 +273,17 @@ model FarmerCollaboration {
 }
 
 model OtpVerification {
-  id         String   @id @default(cuid())
-  userId     String?
-  user       User?    @relation(fields: [userId], references: [id])
-  channel    String
-  purpose    String
-  codeHash   String
-  expiresAt  DateTime
-  attempts   Int      @default(0)
-  maxAttempts Int     @default(5)
-  verified   Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  channel     String
+  purpose     String
+  codeHash    String
+  expiresAt   DateTime
+  attempts    Int      @default(0)
+  maxAttempts Int      @default(5)
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
 }
 
 model PasswordReset {
@@ -339,28 +339,34 @@ model PriceHistory {
 }
 
 model AIPricePrediction {
-  id           String   @id @default(cuid())
-  commodity    String
-  market       String
-  lowPaise     Int
-  highPaise    Int
-  trend        String
-  confidence   Float
-  method       String
-  sampleSize   Int
+  id             String   @id @default(cuid())
+  commodity      String
+  market         String
+  lowPaise       Int
+  highPaise      Int
+  trend          String
+  confidence     Float
+  method         String
+  sampleSize     Int
   recommendation String
-  createdAt    DateTime @default(now())
+  createdAt      DateTime @default(now())
 }
 
 model Review {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
   rating    Int
   text      String?
   createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([productId])
 }
 
 model PriceAlert {
