@@ -18,6 +18,22 @@ import { auth, requireRole } from "./middleware/auth.js";
 const app = express();
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cors({ origin: env.corsOrigins, credentials: true }));
+
+/**
+ * Razorpay webhook must receive the exact raw request body
+ * because its HMAC signature is calculated from the raw bytes.
+ *
+ * This middleware is intentionally scoped only to the webhook.
+ * All other API routes continue using normal JSON parsing below.
+ */
+app.use(
+  "/api/payments/webhook",
+  express.raw({
+    type: "application/json",
+    limit: "2mb",
+  })
+);
+
 app.use(express.json({ limit: "2mb" }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use(rateLimit({ windowMs: 60_000, max: 120 }));

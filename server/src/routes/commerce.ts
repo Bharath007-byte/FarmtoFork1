@@ -15,6 +15,16 @@ import {
 import { turnstileGuard } from "../lib/turnstile.js";
 
 export const commerceRouter = Router();
+function isPrismaUniqueViolation(
+  error: unknown
+): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "P2002"
+  );
+}
 /**
  * Valid order-status transitions.
  *
@@ -1590,66 +1600,508 @@ commerceRouter.post(
  * RAZORPAY WEBHOOK
  * ---------------------------------------------------------
  *
- * Current implementation verifies the webhook
- * signature and acknowledges it.
+ * Razorpay signs the exact raw request body.
  *
- * Full event processing will be hardened in the
- * payment/webhook milestone because webhook signature
- * verification should use the exact raw request body.
+ * index.ts installs express.raw() specifically for this
+ * endpoint, so req.body must be a Buffer here.
+ *
+ * Webhook event IDs are stored separately from Payment
+ * because one payment can produce multiple provider events.
  */
 commerceRouter.post(
   "/payments/webhook",
   async (req, res) => {
     if (!env.razorpayKeySecret) {
-      return res.status(503).end();
-    }
-
-    const signature =
-      req.headers[
-        "x-razorpay-signature"
-      ];
-
-    if (
-      typeof signature !== "string"
-    ) {
-      return res.status(400).json({
-        error:
-          "Missing webhook signature",
+      return res.status(503).json({
+        error: "Razorpay webhook is not configured",
+        code: 503,
       });
     }
 
-    const body =
-      JSON.stringify(req.body);
+    const signatureHeader =
+      req.headers["x-razorpay-signature"];
 
-    const expected =
+    const eventIdHeader =
+      req.headers["x-razorpay-event-id"];
+
+    if (
+      typeof signatureHeader !== "string" ||
+      !signatureHeader.trim()
+    ) {
+      return res.status(400).json({
+        error: "Missing webhook signature",
+        code: 400,
+      });
+    }
+
+    if (
+      typeof eventIdHeader !== "string" ||
+      !eventIdHeader.trim()
+    ) {
+      return res.status(400).json({
+        error: "Missing webhook event ID",
+        code: 400,
+      });
+    }
+
+    if (!Buffer.isBuffer(req.body)) {
+      return res.status(400).json({
+        error: "Webhook raw body unavailable",
+        code: 400,
+      });
+    }
+
+    const rawBody = req.body;
+    const signature = signatureHeader.trim();
+    const eventId = eventIdHeader.trim();
+
+    /**
+     * Verify the exact raw bytes supplied by Razorpay.
+     */
+    const expectedSignature =
       crypto
         .createHmac(
           "sha256",
           env.razorpayKeySecret
         )
-        .update(body)
+        .update(rawBody)
         .digest("hex");
 
+    const expectedBuffer =
+      Buffer.from(expectedSignature, "utf8");
+
+    const providedBuffer =
+      Buffer.from(signature, "utf8");
+
     if (
-      expected !== signature
+      expectedBuffer.length !==
+        providedBuffer.length ||
+      !crypto.timingSafeEqual(
+        expectedBuffer,
+        providedBuffer
+      )
     ) {
       return res.status(400).json({
-        error:
-          "Bad webhook signature",
+        error: "Bad webhook signature",
+        code: 400,
       });
     }
 
-    return res.json({
-      ok: true,
-    });
+    /**
+     * Only parse JSON after signature verification.
+     */
+    let payload: {
+      event?: string;
+      payload?: {
+        payment?: {
+          entity?: {
+            id?: string;
+            order_id?: string;
+            amount?: number;
+            currency?: string;
+            method?: string;
+          };
+        };
+      };
+    };
+
+    try {
+      payload =
+        JSON.parse(
+          rawBody.toString("utf8")
+        );
+    } catch {
+      return res.status(400).json({
+        error: "Invalid webhook JSON",
+        code: 400,
+      });
+    }
+
+    const event =
+      typeof payload.event === "string"
+        ? payload.event.trim()
+        : "";
+
+    if (!event) {
+      return res.status(400).json({
+        error: "Webhook event missing",
+        code: 400,
+      });
+    }
+
+    const payloadHash =
+      crypto
+        .createHash("sha256")
+        .update(rawBody)
+        .digest("hex");
+
+    /**
+     * We currently process payment.captured and
+     * payment.failed. Other events are recorded and
+     * acknowledged without changing payment state.
+     */
+    const isPaymentEvent =
+      event === "payment.captured" ||
+      event === "payment.failed";
+
+    if (!isPaymentEvent) {
+      try {
+        await prisma.paymentWebhookEvent.create({
+          data: {
+            provider: "razorpay",
+            eventId,
+            event,
+            payloadHash,
+            processedAt: new Date(),
+          },
+        });
+      } catch (error) {
+        if (
+          !isPrismaUniqueViolation(error)
+        ) {
+          throw error;
+        }
+      }
+
+      return res.json({
+        ok: true,
+        ignored: true,
+        event,
+      });
+    }
+
+    const paymentEntity =
+      payload.payload?.payment?.entity;
+
+    const providerPaymentId =
+      typeof paymentEntity?.id === "string"
+        ? paymentEntity.id.trim()
+        : "";
+
+    const providerOrderId =
+      typeof paymentEntity?.order_id === "string"
+        ? paymentEntity.order_id.trim()
+        : "";
+
+    const amountPaise =
+      Number(paymentEntity?.amount);
+
+    const currency =
+      typeof paymentEntity?.currency === "string"
+        ? paymentEntity.currency.trim()
+        : "";
+
+    if (
+      !providerPaymentId ||
+      !providerOrderId ||
+      !Number.isSafeInteger(amountPaise) ||
+      amountPaise <= 0 ||
+      currency !== "INR"
+    ) {
+      return res.status(422).json({
+        error:
+          "Incomplete or invalid payment webhook",
+        code: 422,
+      });
+    }
+
+    try {
+      const result =
+        await prisma.$transaction(
+          async (tx) => {
+            /**
+             * Insert the event first.
+             *
+             * @@unique([provider, eventId]) makes
+             * duplicate delivery idempotent.
+             */
+            try {
+              await tx.paymentWebhookEvent.create({
+                data: {
+                  provider: "razorpay",
+                  eventId,
+                  event,
+                  payloadHash,
+                },
+              });
+            } catch (error) {
+              if (
+                isPrismaUniqueViolation(error)
+              ) {
+                return {
+                  alreadyProcessed: true,
+                };
+              }
+
+              throw error;
+            }
+
+            const payment =
+              await tx.payment.findFirst({
+                where: {
+                  provider: "razorpay",
+                  providerOrder:
+                    providerOrderId,
+                },
+                include: {
+                  order: true,
+                },
+              });
+
+            if (!payment) {
+              throw Object.assign(
+                new Error(
+                  "Payment record missing"
+                ),
+                { code: 404 }
+              );
+            }
+
+            /**
+             * Verify the webhook amount against
+             * our own payment and order records.
+             */
+            if (
+              payment.amountPaise !==
+                amountPaise ||
+              payment.order.totalPaise !==
+                amountPaise
+            ) {
+              throw Object.assign(
+                new Error(
+                  "Payment amount does not match order"
+                ),
+                { code: 409 }
+              );
+            }
+
+            if (
+              payment.order.paymentMethod !==
+              "ONLINE"
+            ) {
+              throw Object.assign(
+                new Error(
+                  "Webhook payment does not belong to an online order"
+                ),
+                { code: 409 }
+              );
+            }
+
+            if (
+              event === "payment.captured"
+            ) {
+              /**
+               * Already captured/paid is safe.
+               */
+              if (
+                payment.status ===
+                  PaymentStatus.CAPTURED &&
+                payment.order.status ===
+                  OrderStatus.PAID
+              ) {
+                await tx.paymentWebhookEvent.update({
+                  where: {
+                    provider_eventId: {
+                      provider: "razorpay",
+                      eventId,
+                    },
+                  },
+                  data: {
+                    processedAt: new Date(),
+                  },
+                });
+
+                return {
+                  alreadyProcessed: false,
+                  captured: true,
+                };
+              }
+
+              /**
+               * A captured webhook can only pay an
+               * order that is still awaiting payment.
+               */
+              if (
+                payment.order.status !==
+                OrderStatus.PENDING_PAYMENT
+              ) {
+                throw Object.assign(
+                  new Error(
+                    `Order is not awaiting payment: ${payment.order.status}`
+                  ),
+                  { code: 409 }
+                );
+              }
+
+              await tx.payment.update({
+                where: {
+                  id: payment.id,
+                },
+                data: {
+                  providerPayId:
+                    providerPaymentId,
+                  method:
+                    typeof paymentEntity?.method ===
+                    "string"
+                      ? paymentEntity.method
+                      : payment.method,
+                  status:
+                    PaymentStatus.CAPTURED,
+                },
+              });
+
+              await tx.order.update({
+                where: {
+                  id: payment.orderId,
+                },
+                data: {
+                  status:
+                    OrderStatus.PAID,
+                },
+              });
+
+              await tx.paymentWebhookEvent.update({
+                where: {
+                  provider_eventId: {
+                    provider: "razorpay",
+                    eventId,
+                  },
+                },
+                data: {
+                  processedAt: new Date(),
+                },
+              });
+
+              return {
+                alreadyProcessed: false,
+                captured: true,
+              };
+            }
+
+            /**
+             * payment.failed
+             */
+            if (
+              payment.status ===
+                PaymentStatus.CAPTURED
+            ) {
+              throw Object.assign(
+                new Error(
+                  "Captured payment cannot become failed"
+                ),
+                { code: 409 }
+              );
+            }
+
+            if (
+              payment.order.status ===
+                OrderStatus.PENDING_PAYMENT
+            ) {
+              await tx.payment.update({
+                where: {
+                  id: payment.id,
+                },
+                data: {
+                  providerPayId:
+                    providerPaymentId,
+                  method:
+                    typeof paymentEntity?.method ===
+                    "string"
+                      ? paymentEntity.method
+                      : payment.method,
+                  status:
+                    PaymentStatus.FAILED,
+                },
+              });
+
+              await tx.order.update({
+                where: {
+                  id: payment.orderId,
+                },
+                data: {
+                  status:
+                    OrderStatus.FAILED,
+                },
+              });
+            } else {
+              await tx.payment.update({
+                where: {
+                  id: payment.id,
+                },
+                data: {
+                  providerPayId:
+                    providerPaymentId,
+                  status:
+                    PaymentStatus.FAILED,
+                },
+              });
+            }
+
+            await tx.paymentWebhookEvent.update({
+              where: {
+                provider_eventId: {
+                  provider: "razorpay",
+                  eventId,
+                },
+              },
+              data: {
+                processedAt: new Date(),
+              },
+            });
+
+            return {
+              alreadyProcessed: false,
+              failed: true,
+            };
+          },
+          {
+            isolationLevel:
+              "Serializable",
+          }
+        );
+
+      if (result.alreadyProcessed) {
+        return res.json({
+          ok: true,
+          alreadyProcessed: true,
+          eventId,
+        });
+      }
+
+      return res.json({
+        ok: true,
+        processed: true,
+        event,
+      });
+    } catch (error) {
+      const code =
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error
+          ? Number(
+              (error as { code?: unknown }).code
+            )
+          : 500;
+
+      if (
+        code === 404 ||
+        code === 409
+      ) {
+        return res.status(code).json({
+          error:
+            error instanceof Error
+              ? error.message
+              : "Webhook processing failed",
+          code,
+        });
+      }
+
+      throw error;
+    }
   }
 );
 
-/**
- * ---------------------------------------------------------
- * ADDRESSES
- * ---------------------------------------------------------
- */
+
 
 /**
  * Create address.

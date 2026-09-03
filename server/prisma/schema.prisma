@@ -227,6 +227,23 @@ model Payment {
   status        PaymentStatus @default(CREATED)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+
+  webhookEvents PaymentWebhookEvent[]
+}
+
+model PaymentWebhookEvent {
+  id          String    @id @default(cuid())
+  provider    String
+  eventId     String
+  event       String
+  payloadHash String
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+  payment     Payment?  @relation(fields: [paymentId], references: [id])
+  paymentId   String?
+
+  @@unique([provider, eventId])
+  @@index([provider, receivedAt])
 }
 
 model DeliverySlot {
