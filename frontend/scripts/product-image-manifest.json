@@ -1,0 +1,1433 @@
+[
+  {
+    "index": 1,
+    "name": "Alphonso Mango",
+    "category": "Fruits",
+    "imageKey": "Alphonso Mango",
+    "filename": "alphonso-mango.webp",
+    "localPath": "/products/alphonso-mango.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Alphonso Mango. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 2,
+    "name": "Kesar Mango",
+    "category": "Fruits",
+    "imageKey": "Kesar Mango",
+    "filename": "kesar-mango.webp",
+    "localPath": "/products/kesar-mango.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Kesar Mango. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 3,
+    "name": "Banganapalli Mango",
+    "category": "Fruits",
+    "imageKey": "Banganapalli Mango",
+    "filename": "banganapalli-mango.webp",
+    "localPath": "/products/banganapalli-mango.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Banganapalli Mango. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 4,
+    "name": "Dasheri Mango",
+    "category": "Fruits",
+    "imageKey": "Dasheri Mango",
+    "filename": "dasheri-mango.webp",
+    "localPath": "/products/dasheri-mango.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Dasheri Mango. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 5,
+    "name": "Totapuri Mango",
+    "category": "Fruits",
+    "imageKey": "Totapuri Mango",
+    "filename": "totapuri-mango.webp",
+    "localPath": "/products/totapuri-mango.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Totapuri Mango. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 6,
+    "name": "Red Apple",
+    "category": "Fruits",
+    "imageKey": "Red Apple",
+    "filename": "red-apple.webp",
+    "localPath": "/products/red-apple.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Red Apple. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 7,
+    "name": "Green Apple",
+    "category": "Fruits",
+    "imageKey": "Green Apple",
+    "filename": "green-apple.webp",
+    "localPath": "/products/green-apple.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Green Apple. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 8,
+    "name": "Banana",
+    "category": "Fruits",
+    "imageKey": "Banana",
+    "filename": "banana.webp",
+    "localPath": "/products/banana.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Banana. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 9,
+    "name": "Robusta Banana",
+    "category": "Fruits",
+    "imageKey": "Robusta Banana",
+    "filename": "robusta-banana.webp",
+    "localPath": "/products/robusta-banana.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Robusta Banana. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 10,
+    "name": "Orange",
+    "category": "Fruits",
+    "imageKey": "Orange",
+    "filename": "orange.webp",
+    "localPath": "/products/orange.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Orange. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 11,
+    "name": "Mosambi",
+    "category": "Fruits",
+    "imageKey": "Mosambi",
+    "filename": "mosambi.webp",
+    "localPath": "/products/mosambi.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Mosambi. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 12,
+    "name": "Papaya",
+    "category": "Fruits",
+    "imageKey": "Papaya",
+    "filename": "papaya.webp",
+    "localPath": "/products/papaya.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Papaya. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 13,
+    "name": "Guava",
+    "category": "Fruits",
+    "imageKey": "Guava",
+    "filename": "guava.webp",
+    "localPath": "/products/guava.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Guava. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 14,
+    "name": "Pomegranate",
+    "category": "Fruits",
+    "imageKey": "Pomegranate",
+    "filename": "pomegranate.webp",
+    "localPath": "/products/pomegranate.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Pomegranate. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 15,
+    "name": "Watermelon",
+    "category": "Fruits",
+    "imageKey": "Watermelon",
+    "filename": "watermelon.webp",
+    "localPath": "/products/watermelon.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Watermelon. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 16,
+    "name": "Muskmelon",
+    "category": "Fruits",
+    "imageKey": "Muskmelon",
+    "filename": "muskmelon.webp",
+    "localPath": "/products/muskmelon.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Muskmelon. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 17,
+    "name": "Pineapple",
+    "category": "Fruits",
+    "imageKey": "Pineapple",
+    "filename": "pineapple.webp",
+    "localPath": "/products/pineapple.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Pineapple. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 18,
+    "name": "Green Grapes",
+    "category": "Fruits",
+    "imageKey": "Green Grapes",
+    "filename": "green-grapes.webp",
+    "localPath": "/products/green-grapes.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Green Grapes. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 19,
+    "name": "Black Grapes",
+    "category": "Fruits",
+    "imageKey": "Black Grapes",
+    "filename": "black-grapes.webp",
+    "localPath": "/products/black-grapes.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Black Grapes. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 20,
+    "name": "Custard Apple",
+    "category": "Fruits",
+    "imageKey": "Custard Apple",
+    "filename": "custard-apple.webp",
+    "localPath": "/products/custard-apple.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Custard Apple. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 21,
+    "name": "Dragon Fruit",
+    "category": "Fruits",
+    "imageKey": "Dragon Fruit",
+    "filename": "dragon-fruit.webp",
+    "localPath": "/products/dragon-fruit.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Dragon Fruit. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 22,
+    "name": "Kiwi",
+    "category": "Fruits",
+    "imageKey": "Kiwi",
+    "filename": "kiwi.webp",
+    "localPath": "/products/kiwi.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Kiwi. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 23,
+    "name": "Strawberry",
+    "category": "Fruits",
+    "imageKey": "Strawberry",
+    "filename": "strawberry.webp",
+    "localPath": "/products/strawberry.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Strawberry. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 24,
+    "name": "Jackfruit",
+    "category": "Fruits",
+    "imageKey": "Jackfruit",
+    "filename": "jackfruit.webp",
+    "localPath": "/products/jackfruit.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Jackfruit. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 25,
+    "name": "Sapota",
+    "category": "Fruits",
+    "imageKey": "Sapota",
+    "filename": "sapota.webp",
+    "localPath": "/products/sapota.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Sapota. Category: Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 26,
+    "name": "Tomato",
+    "category": "Vegetables",
+    "imageKey": "Tomato",
+    "filename": "tomato.webp",
+    "localPath": "/products/tomato.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Tomato. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 27,
+    "name": "Cherry Tomato",
+    "category": "Vegetables",
+    "imageKey": "Cherry Tomato",
+    "filename": "cherry-tomato.webp",
+    "localPath": "/products/cherry-tomato.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cherry Tomato. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 28,
+    "name": "Onion",
+    "category": "Vegetables",
+    "imageKey": "Onion",
+    "filename": "onion.webp",
+    "localPath": "/products/onion.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Onion. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 29,
+    "name": "Potato",
+    "category": "Vegetables",
+    "imageKey": "Potato",
+    "filename": "potato.webp",
+    "localPath": "/products/potato.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Potato. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 30,
+    "name": "Sweet Potato",
+    "category": "Vegetables",
+    "imageKey": "Sweet Potato",
+    "filename": "sweet-potato.webp",
+    "localPath": "/products/sweet-potato.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Sweet Potato. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 31,
+    "name": "Carrot",
+    "category": "Vegetables",
+    "imageKey": "Carrot",
+    "filename": "carrot.webp",
+    "localPath": "/products/carrot.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Carrot. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 32,
+    "name": "Beetroot",
+    "category": "Vegetables",
+    "imageKey": "Beetroot",
+    "filename": "beetroot.webp",
+    "localPath": "/products/beetroot.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Beetroot. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 33,
+    "name": "Radish",
+    "category": "Vegetables",
+    "imageKey": "Radish",
+    "filename": "radish.webp",
+    "localPath": "/products/radish.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Radish. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 34,
+    "name": "Cucumber",
+    "category": "Vegetables",
+    "imageKey": "Cucumber",
+    "filename": "cucumber.webp",
+    "localPath": "/products/cucumber.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cucumber. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 35,
+    "name": "Bottle Gourd",
+    "category": "Vegetables",
+    "imageKey": "Bottle Gourd",
+    "filename": "bottle-gourd.webp",
+    "localPath": "/products/bottle-gourd.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Bottle Gourd. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 36,
+    "name": "Bitter Gourd",
+    "category": "Vegetables",
+    "imageKey": "Bitter Gourd",
+    "filename": "bitter-gourd.webp",
+    "localPath": "/products/bitter-gourd.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Bitter Gourd. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 37,
+    "name": "Ridge Gourd",
+    "category": "Vegetables",
+    "imageKey": "Ridge Gourd",
+    "filename": "ridge-gourd.webp",
+    "localPath": "/products/ridge-gourd.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Ridge Gourd. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 38,
+    "name": "Snake Gourd",
+    "category": "Vegetables",
+    "imageKey": "Snake Gourd",
+    "filename": "snake-gourd.webp",
+    "localPath": "/products/snake-gourd.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Snake Gourd. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 39,
+    "name": "Brinjal",
+    "category": "Vegetables",
+    "imageKey": "Brinjal",
+    "filename": "brinjal.webp",
+    "localPath": "/products/brinjal.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Brinjal. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 40,
+    "name": "Green Capsicum",
+    "category": "Vegetables",
+    "imageKey": "Green Capsicum",
+    "filename": "green-capsicum.webp",
+    "localPath": "/products/green-capsicum.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Green Capsicum. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 41,
+    "name": "Red Capsicum",
+    "category": "Vegetables",
+    "imageKey": "Red Capsicum",
+    "filename": "red-capsicum.webp",
+    "localPath": "/products/red-capsicum.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Red Capsicum. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 42,
+    "name": "Yellow Capsicum",
+    "category": "Vegetables",
+    "imageKey": "Yellow Capsicum",
+    "filename": "yellow-capsicum.webp",
+    "localPath": "/products/yellow-capsicum.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Yellow Capsicum. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 43,
+    "name": "Cauliflower",
+    "category": "Vegetables",
+    "imageKey": "Cauliflower",
+    "filename": "cauliflower.webp",
+    "localPath": "/products/cauliflower.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cauliflower. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 44,
+    "name": "Cabbage",
+    "category": "Vegetables",
+    "imageKey": "Cabbage",
+    "filename": "cabbage.webp",
+    "localPath": "/products/cabbage.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cabbage. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 45,
+    "name": "Broccoli",
+    "category": "Vegetables",
+    "imageKey": "Broccoli",
+    "filename": "broccoli.webp",
+    "localPath": "/products/broccoli.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Broccoli. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 46,
+    "name": "Green Beans",
+    "category": "Vegetables",
+    "imageKey": "Green Beans",
+    "filename": "green-beans.webp",
+    "localPath": "/products/green-beans.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Green Beans. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 47,
+    "name": "Green Peas",
+    "category": "Vegetables",
+    "imageKey": "Green Peas",
+    "filename": "green-peas.webp",
+    "localPath": "/products/green-peas.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Green Peas. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 48,
+    "name": "Okra",
+    "category": "Vegetables",
+    "imageKey": "Okra",
+    "filename": "okra.webp",
+    "localPath": "/products/okra.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Okra. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 49,
+    "name": "Drumstick",
+    "category": "Vegetables",
+    "imageKey": "Drumstick",
+    "filename": "drumstick.webp",
+    "localPath": "/products/drumstick.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Drumstick. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 50,
+    "name": "Spinach",
+    "category": "Vegetables",
+    "imageKey": "Spinach",
+    "filename": "spinach.webp",
+    "localPath": "/products/spinach.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Spinach. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 51,
+    "name": "Methi Leaves",
+    "category": "Vegetables",
+    "imageKey": "Methi Leaves",
+    "filename": "methi-leaves.webp",
+    "localPath": "/products/methi-leaves.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Methi Leaves. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 52,
+    "name": "Amaranth Leaves",
+    "category": "Vegetables",
+    "imageKey": "Amaranth Leaves",
+    "filename": "amaranth-leaves.webp",
+    "localPath": "/products/amaranth-leaves.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Amaranth Leaves. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 53,
+    "name": "Coriander Leaves",
+    "category": "Vegetables",
+    "imageKey": "Coriander Leaves",
+    "filename": "coriander-leaves.webp",
+    "localPath": "/products/coriander-leaves.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Coriander Leaves. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 54,
+    "name": "Mint Leaves",
+    "category": "Vegetables",
+    "imageKey": "Mint Leaves",
+    "filename": "mint-leaves.webp",
+    "localPath": "/products/mint-leaves.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Mint Leaves. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 55,
+    "name": "Button Mushroom",
+    "category": "Vegetables",
+    "imageKey": "Button Mushroom",
+    "filename": "button-mushroom.webp",
+    "localPath": "/products/button-mushroom.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Button Mushroom. Category: Vegetables. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 56,
+    "name": "A2 Cow Milk",
+    "category": "Dairy & Cheese",
+    "imageKey": "A2 Cow Milk",
+    "filename": "a2-cow-milk.webp",
+    "localPath": "/products/a2-cow-milk.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: A2 Cow Milk. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 57,
+    "name": "Fresh Cow Milk",
+    "category": "Dairy & Cheese",
+    "imageKey": "Fresh Cow Milk",
+    "filename": "fresh-cow-milk.webp",
+    "localPath": "/products/fresh-cow-milk.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Fresh Cow Milk. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 58,
+    "name": "Buffalo Milk",
+    "category": "Dairy & Cheese",
+    "imageKey": "Buffalo Milk",
+    "filename": "buffalo-milk.webp",
+    "localPath": "/products/buffalo-milk.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Buffalo Milk. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 59,
+    "name": "Fresh Curd",
+    "category": "Dairy & Cheese",
+    "imageKey": "Fresh Curd",
+    "filename": "fresh-curd.webp",
+    "localPath": "/products/fresh-curd.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Fresh Curd. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 60,
+    "name": "Greek Yogurt",
+    "category": "Dairy & Cheese",
+    "imageKey": "Greek Yogurt",
+    "filename": "greek-yogurt.webp",
+    "localPath": "/products/greek-yogurt.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Greek Yogurt. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 61,
+    "name": "Fresh Paneer",
+    "category": "Dairy & Cheese",
+    "imageKey": "Fresh Paneer",
+    "filename": "fresh-paneer.webp",
+    "localPath": "/products/fresh-paneer.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Fresh Paneer. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 62,
+    "name": "Malai Paneer",
+    "category": "Dairy & Cheese",
+    "imageKey": "Malai Paneer",
+    "filename": "malai-paneer.webp",
+    "localPath": "/products/malai-paneer.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Malai Paneer. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 63,
+    "name": "Cheddar Cheese",
+    "category": "Dairy & Cheese",
+    "imageKey": "Cheddar Cheese",
+    "filename": "cheddar-cheese.webp",
+    "localPath": "/products/cheddar-cheese.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cheddar Cheese. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 64,
+    "name": "Gouda Cheese",
+    "category": "Dairy & Cheese",
+    "imageKey": "Gouda Cheese",
+    "filename": "gouda-cheese.webp",
+    "localPath": "/products/gouda-cheese.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Gouda Cheese. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 65,
+    "name": "Mozzarella Cheese",
+    "category": "Dairy & Cheese",
+    "imageKey": "Mozzarella Cheese",
+    "filename": "mozzarella-cheese.webp",
+    "localPath": "/products/mozzarella-cheese.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Mozzarella Cheese. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 66,
+    "name": "Cottage Cheese",
+    "category": "Dairy & Cheese",
+    "imageKey": "Cottage Cheese",
+    "filename": "cottage-cheese.webp",
+    "localPath": "/products/cottage-cheese.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cottage Cheese. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 67,
+    "name": "Goat Cheese",
+    "category": "Dairy & Cheese",
+    "imageKey": "Goat Cheese",
+    "filename": "goat-cheese.webp",
+    "localPath": "/products/goat-cheese.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Goat Cheese. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 68,
+    "name": "Buttermilk",
+    "category": "Dairy & Cheese",
+    "imageKey": "Buttermilk",
+    "filename": "buttermilk.webp",
+    "localPath": "/products/buttermilk.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Buttermilk. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 69,
+    "name": "Fresh Lassi",
+    "category": "Dairy & Cheese",
+    "imageKey": "Fresh Lassi",
+    "filename": "fresh-lassi.webp",
+    "localPath": "/products/fresh-lassi.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Fresh Lassi. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 70,
+    "name": "Salted Butter",
+    "category": "Dairy & Cheese",
+    "imageKey": "Salted Butter",
+    "filename": "salted-butter.webp",
+    "localPath": "/products/salted-butter.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Salted Butter. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 71,
+    "name": "White Butter",
+    "category": "Dairy & Cheese",
+    "imageKey": "White Butter",
+    "filename": "white-butter.webp",
+    "localPath": "/products/white-butter.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: White Butter. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 72,
+    "name": "Traditional Ghee",
+    "category": "Dairy & Cheese",
+    "imageKey": "Traditional Ghee",
+    "filename": "traditional-ghee.webp",
+    "localPath": "/products/traditional-ghee.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Traditional Ghee. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 73,
+    "name": "Khoya",
+    "category": "Dairy & Cheese",
+    "imageKey": "Khoya",
+    "filename": "khoya.webp",
+    "localPath": "/products/khoya.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Khoya. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 74,
+    "name": "Milk Cream",
+    "category": "Dairy & Cheese",
+    "imageKey": "Milk Cream",
+    "filename": "milk-cream.webp",
+    "localPath": "/products/milk-cream.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Milk Cream. Category: Dairy & Cheese. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 75,
+    "name": "Basmati Rice",
+    "category": "Grains & Pulses",
+    "imageKey": "Basmati Rice",
+    "filename": "basmati-rice.webp",
+    "localPath": "/products/basmati-rice.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Basmati Rice. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 76,
+    "name": "Sona Masuri Rice",
+    "category": "Grains & Pulses",
+    "imageKey": "Sona Masuri Rice",
+    "filename": "sona-masuri-rice.webp",
+    "localPath": "/products/sona-masuri-rice.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Sona Masuri Rice. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 77,
+    "name": "Brown Rice",
+    "category": "Grains & Pulses",
+    "imageKey": "Brown Rice",
+    "filename": "brown-rice.webp",
+    "localPath": "/products/brown-rice.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Brown Rice. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 78,
+    "name": "Red Rice",
+    "category": "Grains & Pulses",
+    "imageKey": "Red Rice",
+    "filename": "red-rice.webp",
+    "localPath": "/products/red-rice.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Red Rice. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 79,
+    "name": "Hand Pound Rice",
+    "category": "Grains & Pulses",
+    "imageKey": "Hand Pound Rice",
+    "filename": "hand-pound-rice.webp",
+    "localPath": "/products/hand-pound-rice.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Hand Pound Rice. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 80,
+    "name": "Wheat",
+    "category": "Grains & Pulses",
+    "imageKey": "Wheat",
+    "filename": "wheat.webp",
+    "localPath": "/products/wheat.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Wheat. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 81,
+    "name": "Whole Wheat Flour",
+    "category": "Grains & Pulses",
+    "imageKey": "Whole Wheat Flour",
+    "filename": "whole-wheat-flour.webp",
+    "localPath": "/products/whole-wheat-flour.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Whole Wheat Flour. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 82,
+    "name": "Ragi",
+    "category": "Grains & Pulses",
+    "imageKey": "Ragi",
+    "filename": "ragi.webp",
+    "localPath": "/products/ragi.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Ragi. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 83,
+    "name": "Jowar",
+    "category": "Grains & Pulses",
+    "imageKey": "Jowar",
+    "filename": "jowar.webp",
+    "localPath": "/products/jowar.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Jowar. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 84,
+    "name": "Bajra",
+    "category": "Grains & Pulses",
+    "imageKey": "Bajra",
+    "filename": "bajra.webp",
+    "localPath": "/products/bajra.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Bajra. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 85,
+    "name": "Toor Dal",
+    "category": "Grains & Pulses",
+    "imageKey": "Toor Dal",
+    "filename": "toor-dal.webp",
+    "localPath": "/products/toor-dal.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Toor Dal. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 86,
+    "name": "Moong Dal",
+    "category": "Grains & Pulses",
+    "imageKey": "Moong Dal",
+    "filename": "moong-dal.webp",
+    "localPath": "/products/moong-dal.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Moong Dal. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 87,
+    "name": "Masoor Dal",
+    "category": "Grains & Pulses",
+    "imageKey": "Masoor Dal",
+    "filename": "masoor-dal.webp",
+    "localPath": "/products/masoor-dal.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Masoor Dal. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 88,
+    "name": "Chana Dal",
+    "category": "Grains & Pulses",
+    "imageKey": "Chana Dal",
+    "filename": "chana-dal.webp",
+    "localPath": "/products/chana-dal.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Chana Dal. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 89,
+    "name": "Urad Dal",
+    "category": "Grains & Pulses",
+    "imageKey": "Urad Dal",
+    "filename": "urad-dal.webp",
+    "localPath": "/products/urad-dal.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Urad Dal. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 90,
+    "name": "Kabuli Chana",
+    "category": "Grains & Pulses",
+    "imageKey": "Kabuli Chana",
+    "filename": "kabuli-chana.webp",
+    "localPath": "/products/kabuli-chana.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Kabuli Chana. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 91,
+    "name": "Black Chickpeas",
+    "category": "Grains & Pulses",
+    "imageKey": "Black Chickpeas",
+    "filename": "black-chickpeas.webp",
+    "localPath": "/products/black-chickpeas.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Black Chickpeas. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 92,
+    "name": "Green Gram",
+    "category": "Grains & Pulses",
+    "imageKey": "Green Gram",
+    "filename": "green-gram.webp",
+    "localPath": "/products/green-gram.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Green Gram. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 93,
+    "name": "Rajma",
+    "category": "Grains & Pulses",
+    "imageKey": "Rajma",
+    "filename": "rajma.webp",
+    "localPath": "/products/rajma.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Rajma. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 94,
+    "name": "Horse Gram",
+    "category": "Grains & Pulses",
+    "imageKey": "Horse Gram",
+    "filename": "horse-gram.webp",
+    "localPath": "/products/horse-gram.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Horse Gram. Category: Grains & Pulses. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 95,
+    "name": "Turmeric Powder",
+    "category": "Spices",
+    "imageKey": "Turmeric Powder",
+    "filename": "turmeric-powder.webp",
+    "localPath": "/products/turmeric-powder.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Turmeric Powder. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 96,
+    "name": "Cumin Seeds",
+    "category": "Spices",
+    "imageKey": "Cumin Seeds",
+    "filename": "cumin-seeds.webp",
+    "localPath": "/products/cumin-seeds.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cumin Seeds. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 97,
+    "name": "Black Pepper",
+    "category": "Spices",
+    "imageKey": "Black Pepper",
+    "filename": "black-pepper.webp",
+    "localPath": "/products/black-pepper.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Black Pepper. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 98,
+    "name": "Green Cardamom",
+    "category": "Spices",
+    "imageKey": "Green Cardamom",
+    "filename": "green-cardamom.webp",
+    "localPath": "/products/green-cardamom.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Green Cardamom. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 99,
+    "name": "Cloves",
+    "category": "Spices",
+    "imageKey": "Cloves",
+    "filename": "cloves.webp",
+    "localPath": "/products/cloves.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cloves. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 100,
+    "name": "Cinnamon",
+    "category": "Spices",
+    "imageKey": "Cinnamon",
+    "filename": "cinnamon.webp",
+    "localPath": "/products/cinnamon.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cinnamon. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 101,
+    "name": "Coriander Seeds",
+    "category": "Spices",
+    "imageKey": "Coriander Seeds",
+    "filename": "coriander-seeds.webp",
+    "localPath": "/products/coriander-seeds.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Coriander Seeds. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 102,
+    "name": "Coriander Powder",
+    "category": "Spices",
+    "imageKey": "Coriander Powder",
+    "filename": "coriander-powder.webp",
+    "localPath": "/products/coriander-powder.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Coriander Powder. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 103,
+    "name": "Red Chilli Powder",
+    "category": "Spices",
+    "imageKey": "Red Chilli Powder",
+    "filename": "red-chilli-powder.webp",
+    "localPath": "/products/red-chilli-powder.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Red Chilli Powder. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 104,
+    "name": "Whole Red Chillies",
+    "category": "Spices",
+    "imageKey": "Whole Red Chillies",
+    "filename": "whole-red-chillies.webp",
+    "localPath": "/products/whole-red-chillies.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Whole Red Chillies. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 105,
+    "name": "Garam Masala",
+    "category": "Spices",
+    "imageKey": "Garam Masala",
+    "filename": "garam-masala.webp",
+    "localPath": "/products/garam-masala.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Garam Masala. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 106,
+    "name": "Mustard Seeds",
+    "category": "Spices",
+    "imageKey": "Mustard Seeds",
+    "filename": "mustard-seeds.webp",
+    "localPath": "/products/mustard-seeds.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Mustard Seeds. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 107,
+    "name": "Fenugreek Seeds",
+    "category": "Spices",
+    "imageKey": "Fenugreek Seeds",
+    "filename": "fenugreek-seeds.webp",
+    "localPath": "/products/fenugreek-seeds.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Fenugreek Seeds. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 108,
+    "name": "Fennel Seeds",
+    "category": "Spices",
+    "imageKey": "Fennel Seeds",
+    "filename": "fennel-seeds.webp",
+    "localPath": "/products/fennel-seeds.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Fennel Seeds. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 109,
+    "name": "Ajwain",
+    "category": "Spices",
+    "imageKey": "Ajwain",
+    "filename": "ajwain.webp",
+    "localPath": "/products/ajwain.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Ajwain. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 110,
+    "name": "Star Anise",
+    "category": "Spices",
+    "imageKey": "Star Anise",
+    "filename": "star-anise.webp",
+    "localPath": "/products/star-anise.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Star Anise. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 111,
+    "name": "Bay Leaf",
+    "category": "Spices",
+    "imageKey": "Bay Leaf",
+    "filename": "bay-leaf.webp",
+    "localPath": "/products/bay-leaf.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Bay Leaf. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 112,
+    "name": "Dry Ginger Powder",
+    "category": "Spices",
+    "imageKey": "Dry Ginger Powder",
+    "filename": "dry-ginger-powder.webp",
+    "localPath": "/products/dry-ginger-powder.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Dry Ginger Powder. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 113,
+    "name": "Asafoetida",
+    "category": "Spices",
+    "imageKey": "Asafoetida",
+    "filename": "asafoetida.webp",
+    "localPath": "/products/asafoetida.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Asafoetida. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 114,
+    "name": "Saffron",
+    "category": "Spices",
+    "imageKey": "Saffron",
+    "filename": "saffron.webp",
+    "localPath": "/products/saffron.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Saffron. Category: Spices. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 115,
+    "name": "Cold Pressed Groundnut Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Cold Pressed Groundnut Oil",
+    "filename": "cold-pressed-groundnut-oil.webp",
+    "localPath": "/products/cold-pressed-groundnut-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cold Pressed Groundnut Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 116,
+    "name": "Cold Pressed Sesame Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Cold Pressed Sesame Oil",
+    "filename": "cold-pressed-sesame-oil.webp",
+    "localPath": "/products/cold-pressed-sesame-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cold Pressed Sesame Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 117,
+    "name": "Cold Pressed Coconut Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Cold Pressed Coconut Oil",
+    "filename": "cold-pressed-coconut-oil.webp",
+    "localPath": "/products/cold-pressed-coconut-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cold Pressed Coconut Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 118,
+    "name": "Mustard Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Mustard Oil",
+    "filename": "mustard-oil.webp",
+    "localPath": "/products/mustard-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Mustard Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 119,
+    "name": "Sunflower Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Sunflower Oil",
+    "filename": "sunflower-oil.webp",
+    "localPath": "/products/sunflower-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Sunflower Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 120,
+    "name": "Rice Bran Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Rice Bran Oil",
+    "filename": "rice-bran-oil.webp",
+    "localPath": "/products/rice-bran-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Rice Bran Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 121,
+    "name": "Wood Pressed Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Wood Pressed Oil",
+    "filename": "wood-pressed-oil.webp",
+    "localPath": "/products/wood-pressed-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Wood Pressed Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 122,
+    "name": "Virgin Coconut Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Virgin Coconut Oil",
+    "filename": "virgin-coconut-oil.webp",
+    "localPath": "/products/virgin-coconut-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Virgin Coconut Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 123,
+    "name": "Flaxseed Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Flaxseed Oil",
+    "filename": "flaxseed-oil.webp",
+    "localPath": "/products/flaxseed-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Flaxseed Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 124,
+    "name": "Almond Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Almond Oil",
+    "filename": "almond-oil.webp",
+    "localPath": "/products/almond-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Almond Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 125,
+    "name": "Cow Ghee",
+    "category": "Oils & Ghee",
+    "imageKey": "Cow Ghee",
+    "filename": "cow-ghee.webp",
+    "localPath": "/products/cow-ghee.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cow Ghee. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 126,
+    "name": "Buffalo Ghee",
+    "category": "Oils & Ghee",
+    "imageKey": "Buffalo Ghee",
+    "filename": "buffalo-ghee.webp",
+    "localPath": "/products/buffalo-ghee.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Buffalo Ghee. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 127,
+    "name": "A2 Cow Ghee",
+    "category": "Oils & Ghee",
+    "imageKey": "A2 Cow Ghee",
+    "filename": "a2-cow-ghee.webp",
+    "localPath": "/products/a2-cow-ghee.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: A2 Cow Ghee. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 128,
+    "name": "Organic Sesame Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Organic Sesame Oil",
+    "filename": "organic-sesame-oil.webp",
+    "localPath": "/products/organic-sesame-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Organic Sesame Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 129,
+    "name": "Extra Virgin Olive Oil",
+    "category": "Oils & Ghee",
+    "imageKey": "Extra Virgin Olive Oil",
+    "filename": "extra-virgin-olive-oil.webp",
+    "localPath": "/products/extra-virgin-olive-oil.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Extra Virgin Olive Oil. Category: Oils & Ghee. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 130,
+    "name": "Almonds",
+    "category": "Dry Fruits",
+    "imageKey": "Almonds",
+    "filename": "almonds.webp",
+    "localPath": "/products/almonds.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Almonds. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 131,
+    "name": "Cashews",
+    "category": "Dry Fruits",
+    "imageKey": "Cashews",
+    "filename": "cashews.webp",
+    "localPath": "/products/cashews.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Cashews. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 132,
+    "name": "Pistachios",
+    "category": "Dry Fruits",
+    "imageKey": "Pistachios",
+    "filename": "pistachios.webp",
+    "localPath": "/products/pistachios.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Pistachios. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 133,
+    "name": "Walnuts",
+    "category": "Dry Fruits",
+    "imageKey": "Walnuts",
+    "filename": "walnuts.webp",
+    "localPath": "/products/walnuts.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Walnuts. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 134,
+    "name": "Raisins",
+    "category": "Dry Fruits",
+    "imageKey": "Raisins",
+    "filename": "raisins.webp",
+    "localPath": "/products/raisins.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Raisins. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 135,
+    "name": "Dates",
+    "category": "Dry Fruits",
+    "imageKey": "Dates",
+    "filename": "dates.webp",
+    "localPath": "/products/dates.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Dates. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 136,
+    "name": "Dried Figs",
+    "category": "Dry Fruits",
+    "imageKey": "Dried Figs",
+    "filename": "dried-figs.webp",
+    "localPath": "/products/dried-figs.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Dried Figs. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 137,
+    "name": "Dried Apricots",
+    "category": "Dry Fruits",
+    "imageKey": "Dried Apricots",
+    "filename": "dried-apricots.webp",
+    "localPath": "/products/dried-apricots.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Dried Apricots. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 138,
+    "name": "Dried Cranberries",
+    "category": "Dry Fruits",
+    "imageKey": "Dried Cranberries",
+    "filename": "dried-cranberries.webp",
+    "localPath": "/products/dried-cranberries.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Dried Cranberries. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 139,
+    "name": "Pumpkin Seeds",
+    "category": "Dry Fruits",
+    "imageKey": "Pumpkin Seeds",
+    "filename": "pumpkin-seeds.webp",
+    "localPath": "/products/pumpkin-seeds.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Pumpkin Seeds. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 140,
+    "name": "Sunflower Seeds",
+    "category": "Dry Fruits",
+    "imageKey": "Sunflower Seeds",
+    "filename": "sunflower-seeds.webp",
+    "localPath": "/products/sunflower-seeds.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Sunflower Seeds. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 141,
+    "name": "Chia Seeds",
+    "category": "Dry Fruits",
+    "imageKey": "Chia Seeds",
+    "filename": "chia-seeds.webp",
+    "localPath": "/products/chia-seeds.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Chia Seeds. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 142,
+    "name": "Flax Seeds",
+    "category": "Dry Fruits",
+    "imageKey": "Flax Seeds",
+    "filename": "flax-seeds.webp",
+    "localPath": "/products/flax-seeds.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Flax Seeds. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 143,
+    "name": "Makhana",
+    "category": "Dry Fruits",
+    "imageKey": "Makhana",
+    "filename": "makhana.webp",
+    "localPath": "/products/makhana.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Makhana. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 144,
+    "name": "Mixed Dry Fruits",
+    "category": "Dry Fruits",
+    "imageKey": "Mixed Dry Fruits",
+    "filename": "mixed-dry-fruits.webp",
+    "localPath": "/products/mixed-dry-fruits.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Mixed Dry Fruits. Category: Dry Fruits. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 145,
+    "name": "Raw Forest Honey",
+    "category": "Honey & Natural",
+    "imageKey": "Raw Forest Honey",
+    "filename": "raw-forest-honey.webp",
+    "localPath": "/products/raw-forest-honey.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Raw Forest Honey. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 146,
+    "name": "Wildflower Honey",
+    "category": "Honey & Natural",
+    "imageKey": "Wildflower Honey",
+    "filename": "wildflower-honey.webp",
+    "localPath": "/products/wildflower-honey.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Wildflower Honey. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 147,
+    "name": "Mustard Flower Honey",
+    "category": "Honey & Natural",
+    "imageKey": "Mustard Flower Honey",
+    "filename": "mustard-flower-honey.webp",
+    "localPath": "/products/mustard-flower-honey.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Mustard Flower Honey. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 148,
+    "name": "Eucalyptus Honey",
+    "category": "Honey & Natural",
+    "imageKey": "Eucalyptus Honey",
+    "filename": "eucalyptus-honey.webp",
+    "localPath": "/products/eucalyptus-honey.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Eucalyptus Honey. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 149,
+    "name": "Jamun Honey",
+    "category": "Honey & Natural",
+    "imageKey": "Jamun Honey",
+    "filename": "jamun-honey.webp",
+    "localPath": "/products/jamun-honey.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Jamun Honey. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 150,
+    "name": "Neem Honey",
+    "category": "Honey & Natural",
+    "imageKey": "Neem Honey",
+    "filename": "neem-honey.webp",
+    "localPath": "/products/neem-honey.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Neem Honey. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 151,
+    "name": "Acacia Honey",
+    "category": "Honey & Natural",
+    "imageKey": "Acacia Honey",
+    "filename": "acacia-honey.webp",
+    "localPath": "/products/acacia-honey.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Acacia Honey. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 152,
+    "name": "Tulsi Honey",
+    "category": "Honey & Natural",
+    "imageKey": "Tulsi Honey",
+    "filename": "tulsi-honey.webp",
+    "localPath": "/products/tulsi-honey.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Tulsi Honey. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 153,
+    "name": "Amla Honey",
+    "category": "Honey & Natural",
+    "imageKey": "Amla Honey",
+    "filename": "amla-honey.webp",
+    "localPath": "/products/amla-honey.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Amla Honey. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 154,
+    "name": "Ginger Honey",
+    "category": "Honey & Natural",
+    "imageKey": "Ginger Honey",
+    "filename": "ginger-honey.webp",
+    "localPath": "/products/ginger-honey.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Ginger Honey. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 155,
+    "name": "Jaggery",
+    "category": "Honey & Natural",
+    "imageKey": "Jaggery",
+    "filename": "jaggery.webp",
+    "localPath": "/products/jaggery.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Jaggery. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 156,
+    "name": "Organic Jaggery Powder",
+    "category": "Honey & Natural",
+    "imageKey": "Organic Jaggery Powder",
+    "filename": "organic-jaggery-powder.webp",
+    "localPath": "/products/organic-jaggery-powder.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Organic Jaggery Powder. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 157,
+    "name": "Coconut Sugar",
+    "category": "Honey & Natural",
+    "imageKey": "Coconut Sugar",
+    "filename": "coconut-sugar.webp",
+    "localPath": "/products/coconut-sugar.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Coconut Sugar. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 158,
+    "name": "Palm Jaggery",
+    "category": "Honey & Natural",
+    "imageKey": "Palm Jaggery",
+    "filename": "palm-jaggery.webp",
+    "localPath": "/products/palm-jaggery.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Palm Jaggery. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  },
+  {
+    "index": 159,
+    "name": "Organic Date Syrup",
+    "category": "Honey & Natural",
+    "imageKey": "Organic Date Syrup",
+    "filename": "organic-date-syrup.webp",
+    "localPath": "/products/organic-date-syrup.webp",
+    "imagePrompt": "Professional Farm2Fork agricultural marketplace product photograph. Product: Organic Date Syrup. Category: Honey & Natural. Show the actual raw food or agricultural product clearly. Photorealistic. Fresh, clean, natural and commercially presentable. Centered product composition. Simple clean light background. Soft natural studio lighting. High detail. No people. No hands. No restaurant scene. No cooked food. No recipe. No plate of prepared food. No text. No logos. No brand packaging unless the product itself specifically requires a container. The image must visually represent the exact product named above."
+  }
+]
