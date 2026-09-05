@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { api, ApiError } from "./services/api";
 import {
   Search,
   MapPin,
@@ -64,6 +66,21 @@ type ApiProduct = {
   };
   rating?: number;
   reviews?: number;
+};
+type CartApiItem = {
+
+  id: string;
+
+  productId: string;
+
+  qty: number;
+
+  product?: {
+
+    id: string;
+
+  };
+
 };
 
 type Product = {
@@ -293,6 +310,7 @@ function formatHarvestDate(date: string | null) {
 }
 
 export function Marketplace() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] =
     useState<Category[]>(DEFAULT_CATEGORIES);
@@ -313,8 +331,11 @@ export function Marketplace() {
   const [activeProduct, setActiveProduct] =
     useState<Product | null>(null);
 
-  const [cart, setCart] =
+    const [cart, setCart] =
     useState<Record<string, number>>({});
+  
+  const [cartMessage, setCartMessage] =
+    useState("");
 
   const [liked, setLiked] =
     useState<Record<string, boolean>>({});
@@ -325,10 +346,43 @@ export function Marketplace() {
   const [visibleCount, setVisibleCount] =
     useState(24);
 
-  useEffect(() => {
-    loadProducts();
-    loadCategories();
-  }, []);
+    useEffect(() => {
+      loadProducts();
+      loadCategories();
+      loadCart();
+    }, []);
+    async function loadCart() {
+      const storedToken = localStorage.getItem("f2f-token");
+    
+      if (!storedToken) {
+        setCart({});
+        return;
+      }
+    
+      try {
+        setCartMessage("");
+    
+        const data = await api<{
+          items: CartApiItem[];
+        }>("/api/cart");
+    
+        const nextCart: Record<string, number> = {};
+    
+        for (const item of data.items || []) {
+          nextCart[item.productId] = Number(item.qty);
+        }
+    
+        setCart(nextCart);
+      } catch (error) {
+        console.error("Failed to load cart:", error);
+    
+        if (error instanceof ApiError && error.status === 401) {
+          setCart({});
+          setCartMessage("Please log in to use your cart.");
+        }
+      } finally {
+      }
+    }
 
   async function loadProducts() {
     try {
@@ -555,36 +609,126 @@ export function Marketplace() {
     }, 50);
   }
 
-  function addToCart(
+  async function addToCart(
     productId: string,
+    selectedQuantity?: number,
   ) {
-    setCart((current) => ({
-      ...current,
-      [productId]:
-        (current[productId] || 0) + 1,
-    }));
+    const storedToken = localStorage.getItem("f2f-token");
+
+    if (!storedToken) {
+      setCartMessage(
+        "Please log in before adding products to your cart.",
+      );
+      return;
+    }
+
+    const currentQuantity = cart[productId] || 0;
+
+    // Product-card + button increases by 250 g.
+    // Product-modal selection can explicitly set 250 g, 500 g or 1 kg.
+    const nextQuantity =
+      selectedQuantity !== undefined
+        ? selectedQuantity
+        : currentQuantity + 0.25;
+
+    try {
+      setCartMessage("");
+
+      const data = await api<{
+        item: CartApiItem;
+      }>("/api/cart", {
+        method: "POST",
+        body: JSON.stringify({
+          productId,
+          qty: nextQuantity,
+        }),
+      });
+
+      setCart((current) => ({
+        ...current,
+        [productId]: Number(data.item.qty),
+      }));
+    } catch (error) {
+      console.error(
+        "Failed to add product to cart:",
+        error,
+      );
+
+      if (error instanceof ApiError) {
+        if (error.status === 401) {
+          setCartMessage(
+            "Please log in before adding products to your cart.",
+          );
+        } else {
+          setCartMessage(error.message);
+        }
+      } else {
+        setCartMessage(
+          "Unable to update your cart.",
+        );
+      }
+    }
   }
 
-  function removeFromCart(
-    productId: string,
-  ) {
-    setCart((current) => {
-      const next = {
-        ...current,
-      };
-
-      if (!next[productId]) {
+  async function removeFromCart(productId: string) {
+    const storedToken = localStorage.getItem("f2f-token");
+  
+    if (!storedToken) {
+      setCartMessage("Please log in to manage your cart.");
+      return;
+    }
+  
+    const currentQuantity = cart[productId] || 0;
+  
+    if (currentQuantity <= 0) {
+      return;
+    }
+  
+    const nextQuantity = Math.max(
+      0,
+      currentQuantity - 0.25,
+    );
+  
+    try {
+      setCartMessage("");
+  
+      await api<{
+        item: CartApiItem | null;
+      }>("/api/cart", {
+        method: "POST",
+        body: JSON.stringify({
+          productId,
+          qty: nextQuantity,
+        }),
+      });
+  
+      setCart((current) => {
+        const next = {
+          ...current,
+        };
+  
+        if (nextQuantity <= 0) {
+          delete next[productId];
+        } else {
+          next[productId] = nextQuantity;
+        }
+  
         return next;
-      }
-
-      if (next[productId] === 1) {
-        delete next[productId];
+      });
+    } catch (error) {
+      console.error(
+        "Failed to update cart:",
+        error,
+      );
+  
+      if (error instanceof ApiError) {
+        setCartMessage(error.message);
       } else {
-        next[productId] -= 1;
+        setCartMessage(
+          "Unable to update your cart.",
+        );
       }
-
-      return next;
-    });
+    }
   }
 
   function toggleLike(
@@ -599,6 +743,11 @@ export function Marketplace() {
 
   return (
     <div className="min-h-screen bg-[#fafaf8] text-[#17211b]">
+          {cartMessage && (
+        <div className="fixed left-1/2 top-20 z-[70] w-[min(92vw,520px)] -translate-x-1/2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm font-medium text-amber-800 shadow-lg">
+          {cartMessage}
+        </div>
+      )}
       {/* ------------------------------------------------ */}
       {/* TOP HEADER                                      */}
       {/* ------------------------------------------------ */}
@@ -705,7 +854,9 @@ export function Marketplace() {
             <ChevronDown className="h-4 w-4 text-slate-400" />
           </button>
 
-          <button className="hidden items-center gap-2 rounded-xl px-2 py-2 md:flex">
+          <button
+            onClick={() => navigate("/orders")}
+             className="hidden items-center gap-2 rounded-xl px-2 py-2 md:flex">
             <UserRound className="h-5 w-5" />
 
             <span className="text-xs font-bold">
@@ -714,13 +865,7 @@ export function Marketplace() {
           </button>
 
           <button
-            onClick={() =>
-              document
-                .getElementById("products")
-                ?.scrollIntoView({
-                  behavior: "smooth",
-                })
-            }
+            onClick={() => navigate("/cart")}
             className="relative rounded-xl p-2.5 transition hover:bg-[#eef8f1]"
           >
             <ShoppingCart className="h-6 w-6 text-[#075b42]" />
@@ -1152,11 +1297,9 @@ export function Marketplace() {
           onClose={() =>
             setActiveProduct(null)
           }
-          onAdd={() =>
-            addToCart(
-              activeProduct.id,
-            )
-          }
+          onAdd={(selectedQuantity?: number) => {
+            void addToCart(activeProduct.id, selectedQuantity);
+          }}
           onRemove={() =>
             removeFromCart(
               activeProduct.id,
@@ -1201,13 +1344,7 @@ export function Marketplace() {
           </div>
 
           <button
-            onClick={() =>
-              document
-                .getElementById("products")
-                ?.scrollIntoView({
-                  behavior: "smooth",
-                })
-            }
+            onClick={() => navigate("/cart")}
             className="rounded-xl bg-white px-5 py-2.5 text-xs font-black text-[#075b42] transition hover:bg-[#f0f7f2]"
           >
             View Cart
@@ -1360,7 +1497,7 @@ function ProductCard({
   quantity: number;
   liked: boolean;
   onOpen: () => void;
-  onAdd: () => void;
+  onAdd: (selectedQuantity?: number) => void;
   onRemove: () => void;
   onLike: () => void;
 }) {
@@ -1533,7 +1670,7 @@ function ProductCard({
                 </span>
 
                 <button
-                  onClick={onAdd}
+                  onClick={() => onAdd()}
                   className="p-2 transition hover:bg-white/10"
                 >
                   <Plus className="h-4 w-4" />
@@ -1564,7 +1701,7 @@ function ProductModal({
   quantity: number;
   liked: boolean;
   onClose: () => void;
-  onAdd: () => void;
+  onAdd: (selectedQuantity?: number) => void;
   onRemove: () => void;
   onLike: () => void;
 }) {
@@ -1572,6 +1709,44 @@ function ProductModal({
     formatHarvestDate(
       product.harvestDate,
     );
+
+  const [selectedWeight, setSelectedWeight] =
+    useState(
+      quantity === 0.25 ||
+      quantity === 0.5 ||
+      quantity === 1
+        ? quantity
+        : 0.25,
+    );
+
+  useEffect(() => {
+    if (
+      quantity === 0.25 ||
+      quantity === 0.5 ||
+      quantity === 1
+    ) {
+      setSelectedWeight(quantity);
+    }
+  }, [quantity, product.id]);
+
+  const selectedPrice = Math.round(
+    product.price * selectedWeight,
+  );
+
+  const weightOptions = [
+    {
+      label: "250 g",
+      value: 0.25,
+    },
+    {
+      label: "500 g",
+      value: 0.5,
+    },
+    {
+      label: "1 kg",
+      value: 1,
+    },
+  ];
 
   return (
     <div
@@ -1747,15 +1922,95 @@ function ProductModal({
               )}
             </div>
 
+            <div className="mt-7">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
+                  Choose quantity
+                </h3>
+
+                <span className="text-xs font-bold text-slate-400">
+                  {money(selectedPrice)}
+                </span>
+              </div>
+
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                {weightOptions.map((option) => {
+                  const optionAvailable =
+                    product.available >= option.value;
+
+                  const selected =
+                    selectedWeight === option.value;
+
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      disabled={!optionAvailable}
+                      onClick={() =>
+                        setSelectedWeight(
+                          option.value,
+                        )
+                      }
+                      className={[
+                        "rounded-xl border px-3 py-3 text-xs font-black transition",
+                        selected
+                          ? "border-[#16823f] bg-[#16823f] text-white shadow-md shadow-[#16823f]/15"
+                          : "border-slate-200 bg-white text-slate-700 hover:border-[#16823f]",
+                        !optionAvailable
+                          ? "cursor-not-allowed opacity-40"
+                          : "",
+                      ].join(" ")}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-3 flex items-center justify-between rounded-xl bg-[#f3f8f4] px-4 py-3">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-wide text-slate-400">
+                    Selected
+                  </p>
+
+                  <p className="mt-0.5 text-sm font-black text-slate-900">
+                    {selectedWeight === 0.25
+                      ? "250 g"
+                      : selectedWeight === 0.5
+                        ? "500 g"
+                        : "1 kg"}
+                  </p>
+                </div>
+
+                <div className="text-right">
+                  <p className="text-[10px] font-black uppercase tracking-wide text-slate-400">
+                    Total
+                  </p>
+
+                  <p className="mt-0.5 text-lg font-black text-[#16823f]">
+                    {money(selectedPrice)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="mt-auto flex gap-3 pt-7">
               {quantity === 0 ? (
                 <button
-                  onClick={onAdd}
+                  onClick={() =>
+                    onAdd(selectedWeight)
+                  }
                   className="flex-1 rounded-xl bg-[#16823f] py-3.5 text-xs font-black text-white shadow-lg shadow-[#16823f]/20 transition hover:bg-[#126e36]"
                 >
-                  ADD TO CART
+                  ADD{" "}
+                  {selectedWeight === 0.25
+                    ? "250 g"
+                    : selectedWeight === 0.5
+                      ? "500 g"
+                      : "1 kg"}{" "}
+                  TO CART
                   <span className="ml-2 text-white/70">
-                    • {money(product.price)}
+                    • {money(selectedPrice)}
                   </span>
                 </button>
               ) : (
@@ -1772,7 +2027,7 @@ function ProductModal({
                   </span>
 
                   <button
-                    onClick={onAdd}
+                    onClick={() => onAdd()}
                     className="rounded-lg p-3 hover:bg-white/10"
                   >
                     <Plus className="h-5 w-5" />
