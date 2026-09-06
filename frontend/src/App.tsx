@@ -11,11 +11,14 @@ import { ForgotPassword } from "./pages/ForgotPassword";
 import { Shop, CartPage } from "./pages/Shop";
 import { ProductPage } from "./pages/ProductPage";
 import { Checkout } from "./pages/Checkout";
+import { AddressSelection } from "./pages/AddressSelection";
 import { FarmerDashboard, FarmerFeature } from "./pages/FarmerDashboard";
 import { FarmerProduce } from "./pages/FarmerProduce";
 import { SellProduce } from "./pages/SellProduce";
 import { AiAdvisory } from "./pages/AiAdvisory";
-import { LogisticsDashboard, LogisticsJobs } from "./pages/LogisticsDashboard";
+import { LogisticsDashboard } from "./pages/LogisticsDashboard";
+import { LogisticsJobs } from "./pages/LogisticsJobs";
+import { LogisticsTracker } from "./pages/LogisticsTracker";
 import { Orders } from "./pages/Orders";
 import { FarmerShell } from "./features/farmer/FarmerShell";
 import {
@@ -67,24 +70,46 @@ export default function App() {
               <Route path="/register/:role" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/shop/:id" element={<ProductPage />} />
+              <Route
+  path="/shop"
+  element={
+    <ProtectedRoute role="consumer">
+      <Shop />
+    </ProtectedRoute>
+  }
+/>
+              <Route
+  path="/shop/:id"
+  element={
+    <ProtectedRoute role="consumer">
+      <ProductPage />
+    </ProtectedRoute>
+  }
+/>
               <Route path="/cart" element={<CartPage />} />
               <Route
                 path="/checkout"
                 element={
-                  <ProtectedRoute>
-                    <Checkout />
-                  </ProtectedRoute>
+                  <ProtectedRoute role="consumer">
+  <AddressSelection />
+</ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkout/payment"
+                element={
+                  <ProtectedRoute role="consumer">
+  <Checkout />
+</ProtectedRoute>
                 }
               />
               <Route path="/map" element={<AgriMapPage />} />
               <Route
                 path="/orders"
                 element={
-                  <ProtectedRoute>
-                    <Orders />
-                  </ProtectedRoute>
+                  <ProtectedRoute role="consumer">
+  <Orders />
+</ProtectedRoute>
                 }
               />
               <Route
@@ -157,7 +182,14 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/logistics" element={<LogisticsDashboard />} />
+              <Route
+  path="/logistics"
+  element={
+    <ProtectedRoute role="logistics">
+      <LogisticsDashboard />
+    </ProtectedRoute>
+  }
+/>
               <Route
                 path="/logistics/jobs"
                 element={
@@ -166,6 +198,14 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+  path="/logistics/tracker/:jobId"
+  element={
+    <ProtectedRoute role="logistics">
+      <LogisticsTracker />
+    </ProtectedRoute>
+  }
+/>
               <Route
                 path="/admin"
                 element={

@@ -3,24 +3,30 @@ import {
   useEffect,
   useMemo,
   useState,
-  type FormEvent,
 } from "react";
-import { Link } from "react-router-dom";
 import {
+  Bell,
   Bike,
   CheckCircle2,
+  ChevronRight,
   CircleUserRound,
+  Edit3,
+  FileText,
+  Headphones,
+  LogOut,
   MapPin,
-  Save,
+  Package,
+  Settings,
   Truck,
   UserRound,
   Wallet,
-  PackageCheck,
-  Pencil,
+  XCircle,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 import { SiteNav } from "../components/SiteNav";
 import { useApp } from "../context/AppState";
-import { api, ApiError } from "../services/api";
+import { api, ApiError, mediaUrl } from "../services/api";
 import { useRealtime } from "../hooks/useRealtime";
 
 type DeliveryType = "BIKE" | "LARGE_TRUCK";
@@ -43,16 +49,20 @@ type Job = {
   pickup: string;
   vehicle: string;
   assignedUserId: string | null;
+
   currentLat: number | null;
   currentLng: number | null;
   locationUpdatedAt: string | null;
+
   orderId: string | null;
+
   farmer: {
     farmName: string;
     user: {
       name: string;
     };
   };
+
   order?: {
     address?: {
       city: string;
@@ -61,1160 +71,957 @@ type Job = {
   } | null;
 };
 
-const NEXT: Record<string, string | null> = {
-  CONFIRMED: "PICKUP_SCHEDULED",
-  PICKUP_SCHEDULED: "FARMER_READY",
-  FARMER_READY: "PICKED_UP",
-  PICKED_UP: "IN_TRANSIT",
-  IN_TRANSIT: "OUT_FOR_DELIVERY",
-  OUT_FOR_DELIVERY: "DELIVERED",
-  DELIVERED: null,
-  CANCELLED: null,
-};
-
 const DELIVERY_LABELS: Record<DeliveryType, string> = {
   BIKE: "Bike / Scooter",
   LARGE_TRUCK: "Large Truck / Cold Chain",
 };
 
-function deliveryTypeMatchesJob(type: DeliveryType | null, job: Job) {
-  if (!type) return true;
+const STATUS_LABELS: Record<string, string> = {
+  CONFIRMED: "Job Accepted",
+  PICKUP_SCHEDULED: "Pickup Scheduled",
+  FARMER_READY: "Farmer Ready",
+  PICKED_UP: "Picked Up",
+  IN_TRANSIT: "In Transit",
+  OUT_FOR_DELIVERY: "Out for Delivery",
+  DELIVERED: "Delivered",
+  CANCELLED: "Cancelled",
+};
+
+
+function statusLabel(status: string) {
+  return (
+    STATUS_LABELS[status] ||
+    status.replaceAll("_", " ").toLowerCase()
+  );
+}
+
+function jobMatchesType(
+  job: Job,
+  deliveryType: DeliveryType | null
+) {
+  if (!deliveryType) return true;
 
   const vehicle = String(job.vehicle || "").toLowerCase();
 
-  if (type === "BIKE") {
+  if (deliveryType === "BIKE") {
     return (
       vehicle.includes("bike") ||
       vehicle.includes("scooter") ||
-      vehicle.includes("two") ||
-      vehicle.includes("2")
+      vehicle.includes("two")
     );
   }
 
   return (
     vehicle.includes("truck") ||
     vehicle.includes("van") ||
-    vehicle.includes("cold") ||
     vehicle.includes("large") ||
-    vehicle.includes("mini")
+    vehicle.includes("cold")
   );
 }
 
-function formatQuantity(quantity: number) {
-  if (Number.isInteger(quantity)) return String(quantity);
-  return quantity.toFixed(2).replace(/\.?0+$/, "");
+function formatDistance(job: Job) {
+  if (
+    job.currentLat == null ||
+    job.currentLng == null
+  ) {
+    return "Route distance unavailable";
+  }
+
+  return "GPS location available";
 }
 
 export function LogisticsDashboard() {
-  const { user, loginWithPassword } = useApp();
+  const navigate = useNavigate();
+  const { user } = useApp();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
+  const [profile, setProfile] =
+    useState<LogisticsProfile | null>(null);
 
-  const [profile, setProfile] = useState<LogisticsProfile | null>(null);
-  const [loadingProfile, setLoadingProfile] = useState(false);
-  const [profileError, setProfileError] = useState("");
+  const [jobs, setJobs] = useState<Job[]>([]);
 
-  const [deliveryType, setDeliveryType] = useState<DeliveryType | null>(null);
-  const [vehicleNumber, setVehicleNumber] = useState("");
-  const [savingProfile, setSavingProfile] = useState(false);
-  const [saveError, setSaveError] = useState("");
-  const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [jobsLoading, setJobsLoading] = useState(true);
+
+  const [error, setError] = useState("");
+  const [jobsError, setJobsError] = useState("");
+
+  const [claimingId, setClaimingId] =
+    useState<string | null>(null);
+
+  const [activeNav, setActiveNav] =
+    useState("dashboard");
 
   const loadProfile = useCallback(async () => {
-    if (!user || user.role !== "logistics") return;
-
-    setLoadingProfile(true);
-    setProfileError("");
-
     try {
-      const data = await api<{ profile: LogisticsProfile }>(
-        "/api/logistics/profile"
-      );
+      const data = await api<{
+        profile: LogisticsProfile;
+      }>("/api/logistics/profile");
 
       setProfile(data.profile);
-      setDeliveryType(data.profile.deliveryType);
-      setVehicleNumber(data.profile.vehicleNumber || "");
-    } catch (error) {
-      setProfileError(
-        error instanceof ApiError
-          ? error.message
-          : "Unable to load logistics profile."
-      );
-    } finally {
-      setLoadingProfile(false);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
-
-  const onLogin = async (event: FormEvent) => {
-    event.preventDefault();
-    setLoginError("");
-
-    const error = await loginWithPassword(email, password);
-
-    if (error) {
-      setLoginError(error);
-    }
-  };
-
-  const saveProfile = async () => {
-    setSaveError("");
-
-    if (!deliveryType) {
-      setSaveError("Select a delivery type.");
-      return;
-    }
-
-    if (vehicleNumber.trim().length < 3) {
-      setSaveError("Enter a valid vehicle number.");
-      return;
-    }
-
-    setSavingProfile(true);
-
-    try {
-      const data = await api<{ profile: LogisticsProfile }>(
-        "/api/logistics/profile",
-        {
-          method: "PATCH",
-          body: JSON.stringify({
-            deliveryType,
-            vehicleNumber: vehicleNumber.trim().toUpperCase(),
-          }),
-        }
-      );
-
-      setProfile(data.profile);
-      setDeliveryType(data.profile.deliveryType);
-      setVehicleNumber(data.profile.vehicleNumber || "");
-      setEditing(false);
-    } catch (error) {
-      setSaveError(
-        error instanceof ApiError
-          ? error.message
-          : "Unable to save your delivery profile."
-      );
-    } finally {
-      setSavingProfile(false);
-    }
-  };
-
-  if (!user || user.role !== "logistics") {
-    return (
-      <div className="min-h-screen bg-[#f7f4ec] text-[#1c2b22]">
-        <SiteNav />
-
-        <div className="mx-auto max-w-md px-5 pb-16 pt-28">
-          <div className="rounded-[2rem] bg-white p-7 shadow-sm">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e8f3e8]">
-              <Truck className="h-6 w-6 text-[#2f7a4a]" />
-            </div>
-
-            <p className="mt-6 text-xs font-bold uppercase tracking-[0.25em] text-[#2f7a4a]">
-              Farm2Fork Logistics
-            </p>
-
-            <h1 className="mt-2 font-serif text-4xl">
-              Fleet desk login
-            </h1>
-
-            <p className="mt-3 text-sm leading-6 text-zinc-500">
-              Sign in with your logistics worker account to manage delivery
-              jobs and your fleet profile.
-            </p>
-
-            <form onSubmit={onLogin} className="mt-8 space-y-3">
-              <input
-                required
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="Email"
-                className="w-full rounded-2xl border border-zinc-200 bg-[#fafaf7] px-4 py-3.5 text-sm outline-none transition focus:border-[#2f7a4a]"
-              />
-
-              <input
-                required
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Password"
-                className="w-full rounded-2xl border border-zinc-200 bg-[#fafaf7] px-4 py-3.5 text-sm outline-none transition focus:border-[#2f7a4a]"
-              />
-
-              {loginError && (
-                <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                  {loginError}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="w-full rounded-2xl bg-[#2f7a4a] py-3.5 text-sm font-bold text-white transition hover:bg-[#25643c]"
-              >
-                Sign in to logistics
-              </button>
-            </form>
-
-            <p className="mt-5 text-sm text-zinc-500">
-              Need a fleet account?{" "}
-              <Link
-                to="/register/logistics"
-                className="font-semibold text-[#2f7a4a]"
-              >
-                Create one
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (loadingProfile) {
-    return (
-      <div className="min-h-screen bg-[#f7f4ec]">
-        <SiteNav />
-        <div className="mx-auto max-w-5xl px-5 pb-16 pt-32">
-          <div className="animate-pulse">
-            <div className="h-4 w-28 rounded bg-zinc-200" />
-            <div className="mt-4 h-12 w-80 rounded bg-zinc-200" />
-            <div className="mt-8 h-48 rounded-[2rem] bg-white" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const needsSetup = !profile?.deliveryType || !profile?.vehicleNumber;
-
-  return (
-    <div className="min-h-screen bg-[#f7f4ec] text-[#1c2b22]">
-      <SiteNav />
-
-      <main className="mx-auto max-w-6xl px-5 pb-20 pt-28">
-        {needsSetup || editing ? (
-          <WorkerSetup
-            user={user}
-            deliveryType={deliveryType}
-            setDeliveryType={setDeliveryType}
-            vehicleNumber={vehicleNumber}
-            setVehicleNumber={setVehicleNumber}
-            saving={savingProfile}
-            error={saveError || profileError}
-            onSave={saveProfile}
-            editing={editing}
-            onCancel={() => {
-              setEditing(false);
-              setDeliveryType(profile?.deliveryType || null);
-              setVehicleNumber(profile?.vehicleNumber || "");
-              setSaveError("");
-            }}
-          />
-        ) : (
-          <WorkerHome
-            profile={profile}
-            onEdit={() => setEditing(true)}
-          />
-        )}
-      </main>
-    </div>
-  );
-}
-
-function WorkerSetup({
-  user,
-  deliveryType,
-  setDeliveryType,
-  vehicleNumber,
-  setVehicleNumber,
-  saving,
-  error,
-  onSave,
-  editing,
-  onCancel,
-}: {
-  user: { name: string };
-  deliveryType: DeliveryType | null;
-  setDeliveryType: (value: DeliveryType) => void;
-  vehicleNumber: string;
-  setVehicleNumber: (value: string) => void;
-  saving: boolean;
-  error: string;
-  onSave: () => void;
-  editing: boolean;
-  onCancel: () => void;
-}) {
-  return (
-    <div className="mx-auto max-w-4xl">
-      <Link
-        to="/"
-        className="text-sm font-semibold text-[#2f7a4a]"
-      >
-        ← Farm2Fork
-      </Link>
-
-      <div className="mt-8">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#dfeee0]">
-          <CircleUserRound className="h-7 w-7 text-[#2f7a4a]" />
-        </div>
-
-        <p className="mt-6 text-xs font-bold uppercase tracking-[0.25em] text-[#2f7a4a]">
-          Worker profile
-        </p>
-
-        <h1 className="mt-2 font-serif text-4xl md:text-5xl">
-          {editing ? "Update your delivery setup" : `Welcome, ${user.name}`}
-        </h1>
-
-        <p className="mt-3 max-w-2xl text-zinc-600">
-          Choose the type of vehicle operation you use so Farm2Fork can show
-          you the right delivery work.
-        </p>
-      </div>
-
-      <div className="mt-10 grid gap-5 md:grid-cols-2">
-        <DeliveryChoice
-          selected={deliveryType === "BIKE"}
-          icon={<Bike className="h-8 w-8" />}
-          title="Bike / Scooter"
-          description="For smaller orders, short-radius and same-day deliveries."
-          points={["Small produce orders", "Short delivery radius", "Fast local deliveries"]}
-          onClick={() => setDeliveryType("BIKE")}
-        />
-
-        <DeliveryChoice
-          selected={deliveryType === "LARGE_TRUCK"}
-          icon={<Truck className="h-8 w-8" />}
-          title="Large Truck / Cold Chain"
-          description="For bulk produce, larger loads and temperature-sensitive transport."
-          points={["Bulk orders", "Long-distance transport", "Cold-chain capable loads"]}
-          onClick={() => setDeliveryType("LARGE_TRUCK")}
-        />
-      </div>
-
-      <div className="mt-7 rounded-[2rem] bg-white p-6 shadow-sm md:p-8">
-        <label className="text-sm font-bold">
-          Vehicle registration number
-        </label>
-
-        <p className="mt-1 text-sm text-zinc-500">
-          Enter the vehicle you will use for Farm2Fork deliveries.
-        </p>
-
-        <input
-          value={vehicleNumber}
-          onChange={(event) =>
-            setVehicleNumber(event.target.value.toUpperCase())
-          }
-          placeholder="AP XX XX XXXX"
-          className="mt-5 w-full rounded-2xl border border-zinc-200 bg-[#fafaf7] px-4 py-4 text-sm font-semibold uppercase outline-none transition focus:border-[#2f7a4a]"
-        />
-
-        {error && (
-          <div className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            {error}
-          </div>
-        )}
-
-        <div className="mt-6 flex flex-wrap gap-3">
-          <button
-            type="button"
-            disabled={saving}
-            onClick={onSave}
-            className="inline-flex items-center gap-2 rounded-full bg-[#2f7a4a] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#25643c] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <Save className="h-4 w-4" />
-            {saving ? "Saving..." : "Save & Continue"}
-          </button>
-
-          {editing && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="rounded-full border border-zinc-200 px-6 py-3 text-sm font-bold"
-            >
-              Cancel
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DeliveryChoice({
-  selected,
-  icon,
-  title,
-  description,
-  points,
-  onClick,
-}: {
-  selected: boolean;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  points: string[];
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`group relative rounded-[2rem] border p-7 text-left transition ${
-        selected
-          ? "border-[#2f7a4a] bg-[#eef7ee] shadow-[0_12px_35px_rgba(47,122,74,0.12)]"
-          : "border-white bg-white shadow-sm hover:-translate-y-1 hover:shadow-md"
-      }`}
-    >
-      <div className="flex items-start justify-between">
-        <div
-          className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
-            selected
-              ? "bg-[#2f7a4a] text-white"
-              : "bg-[#e8f3e8] text-[#2f7a4a]"
-          }`}
-        >
-          {icon}
-        </div>
-
-        {selected && (
-          <CheckCircle2 className="h-6 w-6 text-[#2f7a4a]" />
-        )}
-      </div>
-
-      <h2 className="mt-6 text-xl font-bold">{title}</h2>
-
-      <p className="mt-2 text-sm leading-6 text-zinc-500">
-        {description}
-      </p>
-
-      <div className="mt-5 space-y-2">
-        {points.map((point) => (
-          <div key={point} className="flex items-center gap-2 text-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#2f7a4a]" />
-            {point}
-          </div>
-        ))}
-      </div>
-
-      <div
-        className={`mt-6 text-xs font-bold uppercase tracking-[0.16em] ${
-          selected ? "text-[#2f7a4a]" : "text-zinc-400"
-        }`}
-      >
-        {selected ? "Selected" : "Select operation"}
-      </div>
-    </button>
-  );
-}
-
-function WorkerHome({
-  profile,
-  onEdit,
-}: {
-  profile: LogisticsProfile;
-  onEdit: () => void;
-}) {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [jobError, setJobError] = useState("");
-
-  const loadJobs = useCallback(() => {
-    return api<{ jobs: Job[] }>("/api/logistics/jobs")
-      .then((data) => {
-        setJobs(data.jobs);
-        setJobError("");
-      })
-      .catch((error) => {
-        setJobError(
-          error instanceof ApiError
-            ? error.message
-            : "Unable to load delivery jobs."
-        );
-      });
-  }, []);
-
-  useEffect(() => {
-    loadJobs();
-  }, [loadJobs]);
-
-  useRealtime(
-    [
-      "LOGISTICS_BOOKED",
-      "LOGISTICS_STATUS_CHANGED",
-      "LOGISTICS_LOCATION_UPDATED",
-    ],
-    loadJobs
-  );
-
-  const mine = useMemo(
-    () => jobs.filter((job) => job.assignedUserId === profile.id),
-    [jobs, profile.id]
-  );
-
-  const completed = useMemo(
-    () => mine.filter((job) => job.status === "DELIVERED"),
-    [mine]
-  );
-
-  const active = useMemo(
-    () =>
-      mine.filter(
-        (job) =>
-          job.status !== "DELIVERED" && job.status !== "CANCELLED"
-      ),
-    [mine]
-  );
-
-  const available = useMemo(
-    () =>
-      jobs.filter(
-        (job) =>
-          !job.assignedUserId &&
-          job.status !== "CANCELLED" &&
-          deliveryTypeMatchesJob(profile.deliveryType, job)
-      ),
-    [jobs, profile.deliveryType]
-  );
-
-  return (
-    <div>
-      <div className="flex flex-wrap items-end justify-between gap-5">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#2f7a4a]">
-            Logistics control centre
-          </p>
-
-          <h1 className="mt-2 font-serif text-4xl md:text-5xl">
-            Good day, {profile.name} 👋
-          </h1>
-
-          <p className="mt-3 max-w-2xl text-zinc-600">
-            Keep fresh produce moving from farm gate to customer.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={onEdit}
-          className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-bold"
-        >
-          <Pencil className="h-4 w-4" />
-          Edit vehicle
-        </button>
-      </div>
-
-      <section className="mt-8 overflow-hidden rounded-[2rem] bg-[#20382a] p-6 text-white md:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-7">
-          <div className="flex items-center gap-5">
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-white/10">
-              {profile.photoUrl ? (
-                <img
-                  src={profile.photoUrl}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <UserRound className="h-9 w-9 text-white/80" />
-              )}
-            </div>
-
-            <div>
-              <p className="text-sm text-white/60">Delivery worker</p>
-              <h2 className="mt-1 text-2xl font-bold">
-                {profile.name}
-              </h2>
-
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-white/70">
-                <span>
-                  {profile.deliveryType
-                    ? DELIVERY_LABELS[profile.deliveryType]
-                    : "Delivery worker"}
-                </span>
-                <span>•</span>
-                <span>{profile.vehicleNumber}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-white/10 px-5 py-3">
-            <div className="flex items-center gap-2 text-sm font-semibold">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#8fd49a]" />
-              Available for jobs
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-5 grid gap-4 sm:grid-cols-3">
-        <StatCard
-          icon={<PackageCheck className="h-5 w-5" />}
-          label="Completed"
-          value={completed.length}
-          description="Successful deliveries"
-        />
-
-        <StatCard
-          icon={<MapPin className="h-5 w-5" />}
-          label="Active jobs"
-          value={active.length}
-          description="Currently assigned"
-        />
-
-        <StatCard
-          icon={<Wallet className="h-5 w-5" />}
-          label="Earnings"
-          value="₹0"
-          description="Earnings module coming next"
-        />
-      </section>
-
-      {jobError && (
-        <div className="mt-6 rounded-2xl bg-rose-50 px-5 py-4 text-sm text-rose-700">
-          {jobError}
-        </div>
-      )}
-
-      <section className="mt-10">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">
-              Available now
-            </p>
-            <h2 className="mt-1 font-serif text-3xl">
-              Delivery jobs
-            </h2>
-          </div>
-
-          <Link
-            to="/logistics/jobs"
-            className="text-sm font-bold text-[#2f7a4a]"
-          >
-            Open fleet desk →
-          </Link>
-        </div>
-
-        {available.length === 0 ? (
-          <div className="mt-5 rounded-[2rem] border border-dashed border-zinc-300 bg-white/50 p-8 text-center">
-            <PackageCheck className="mx-auto h-8 w-8 text-zinc-300" />
-            <p className="mt-3 font-semibold text-zinc-600">
-              No matching unassigned jobs right now.
-            </p>
-            <p className="mt-1 text-sm text-zinc-400">
-              New logistics bookings will appear here automatically.
-            </p>
-          </div>
-        ) : (
-          <div className="mt-5 grid gap-4">
-            {available.slice(0, 3).map((job) => (
-              <JobPreview
-                key={job.id}
-                job={job}
-                onClaim={async () => {
-                  await api(`/api/logistics/jobs/${job.id}/claim`, {
-                    method: "POST",
-                  });
-                  await loadJobs();
-                }}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="mt-10">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">
-            My work
-          </p>
-          <h2 className="mt-1 font-serif text-3xl">
-            Active deliveries
-          </h2>
-        </div>
-
-        {active.length === 0 ? (
-          <div className="mt-5 rounded-[2rem] bg-white p-7 text-sm text-zinc-500 shadow-sm">
-            You have no active delivery jobs.
-          </div>
-        ) : (
-          <div className="mt-5 space-y-4">
-            {active.slice(0, 3).map((job) => (
-              <ActiveJob key={job.id} job={job} onReload={loadJobs} />
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
-  );
-}
-
-function StatCard({
-  icon,
-  label,
-  value,
-  description,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string | number;
-  description: string;
-}) {
-  return (
-    <div className="rounded-[1.7rem] bg-white p-5 shadow-sm">
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e8f3e8] text-[#2f7a4a]">
-        {icon}
-      </div>
-
-      <p className="mt-5 text-xs font-bold uppercase tracking-[0.15em] text-zinc-400">
-        {label}
-      </p>
-
-      <p className="mt-1 text-3xl font-bold">{value}</p>
-
-      <p className="mt-1 text-xs text-zinc-400">{description}</p>
-    </div>
-  );
-}
-
-function JobPreview({
-  job,
-  onClaim,
-}: {
-  job: Job;
-  onClaim: () => Promise<void>;
-}) {
-  const [claiming, setClaiming] = useState(false);
-  const [error, setError] = useState("");
-
-  return (
-    <div className="rounded-[1.8rem] bg-white p-5 shadow-sm md:p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <span className="rounded-full bg-[#e8f3e8] px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#2f7a4a]">
-            {job.status.replaceAll("_", " ")}
-          </span>
-
-          <h3 className="mt-3 text-lg font-bold">
-            {job.farmer.farmName}
-          </h3>
-
-          <p className="mt-1 text-sm text-zinc-500">
-            {formatQuantity(job.quantity)} • Pickup {job.pickup}
-          </p>
-
-          {job.order?.address && (
-            <p className="mt-1 text-sm text-zinc-400">
-              Deliver to {job.order.address.city},{" "}
-              {job.order.address.state}
-            </p>
-          )}
-        </div>
-
-        <button
-          type="button"
-          disabled={claiming}
-          onClick={async () => {
-            setClaiming(true);
-            setError("");
-
-            try {
-              await onClaim();
-            } catch (err) {
-              setError(
-                err instanceof ApiError
-                  ? err.message
-                  : "Unable to claim this job."
-              );
-            } finally {
-              setClaiming(false);
-            }
-          }}
-          className="rounded-full bg-[#2f7a4a] px-5 py-3 text-xs font-bold text-white disabled:opacity-60"
-        >
-          {claiming ? "Claiming..." : "Claim job"}
-        </button>
-      </div>
-
-      {error && (
-        <p className="mt-3 text-sm text-rose-600">{error}</p>
-      )}
-    </div>
-  );
-}
-
-function ActiveJob({
-  job,
-  onReload,
-}: {
-  job: Job;
-  onReload: () => Promise<void>;
-}) {
-  const next = NEXT[job.status];
-  const [working, setWorking] = useState(false);
-  const [gpsMessage, setGpsMessage] = useState("");
-  const [error, setError] = useState("");
-
-  const updateStatus = async (status: string) => {
-    setWorking(true);
-    setError("");
-
-    try {
-      await api(`/api/logistics/jobs/${job.id}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      });
-
-      await onReload();
     } catch (err) {
       setError(
         err instanceof ApiError
           ? err.message
-          : "Unable to update delivery status."
+          : "Unable to load logistics profile."
       );
     } finally {
-      setWorking(false);
+      setLoading(false);
     }
-  };
+  }, []);
 
-  const sendGps = () => {
-    setGpsMessage("");
-    setError("");
+  const loadJobs = useCallback(async () => {
+    try {
+      const data = await api<{
+        jobs: Job[];
+      }>("/api/logistics/jobs");
 
-    if (!navigator.geolocation) {
-      setGpsMessage("This browser does not support geolocation.");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          await api(`/api/logistics/jobs/${job.id}/location`, {
-            method: "PATCH",
-            body: JSON.stringify({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            }),
-          });
-
-          setGpsMessage("Current GPS location stored.");
-          await onReload();
-        } catch (err) {
-          setError(
-            err instanceof ApiError
-              ? err.message
-              : "Unable to store GPS location."
-          );
-        }
-      },
-      () => {
-        setGpsMessage(
-          "Location permission was unavailable. No fake location was stored."
-        );
-      }
-    );
-  };
-
-  return (
-    <div className="rounded-[1.8rem] bg-white p-5 shadow-sm md:p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <span className="rounded-full bg-[#fff4dc] px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#9a6a13]">
-            {job.status.replaceAll("_", " ")}
-          </span>
-
-          <h3 className="mt-3 text-lg font-bold">
-            {job.farmer.farmName}
-          </h3>
-
-          <p className="mt-1 text-sm text-zinc-500">
-            {formatQuantity(job.quantity)} • {job.pickup}
-          </p>
-
-          {job.order?.address && (
-            <p className="mt-1 text-sm text-zinc-400">
-              Customer: {job.order.address.city},{" "}
-              {job.order.address.state}
-            </p>
-          )}
-        </div>
-
-        {next && (
-          <button
-            type="button"
-            disabled={working}
-            onClick={() => updateStatus(next)}
-            className="rounded-full bg-[#2f7a4a] px-5 py-3 text-xs font-bold text-white disabled:opacity-60"
-          >
-            {working
-              ? "Updating..."
-              : `Mark ${next.replaceAll("_", " ").toLowerCase()}`}
-          </button>
-        )}
-      </div>
-
-      <div className="mt-5 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={sendGps}
-          className="inline-flex items-center gap-2 rounded-full border border-zinc-200 px-4 py-2.5 text-xs font-bold"
-        >
-          <MapPin className="h-4 w-4" />
-          Send my GPS
-        </button>
-      </div>
-
-      {job.currentLat != null && job.currentLng != null && (
-        <p className="mt-3 text-xs text-zinc-400">
-          Last GPS: {job.currentLat.toFixed(5)},{" "}
-          {job.currentLng.toFixed(5)}
-          {job.locationUpdatedAt
-            ? ` • ${new Date(job.locationUpdatedAt).toLocaleString(
-                "en-IN"
-              )}`
-            : ""}
-        </p>
-      )}
-
-      {gpsMessage && (
-        <p className="mt-3 text-sm text-zinc-500">{gpsMessage}</p>
-      )}
-
-      {error && (
-        <p className="mt-3 text-sm text-rose-600">{error}</p>
-      )}
-    </div>
-  );
-}
-
-export function LogisticsJobs() {
-  const { user } = useApp();
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [error, setError] = useState("");
-  const [gpsMsg, setGpsMsg] = useState("");
-
-  const load = useCallback(() => {
-    api<{ jobs: Job[] }>("/api/logistics/jobs")
-      .then((data) => {
-        setJobs(data.jobs);
-        setError("");
-      })
-      .catch((error) =>
-        setError(
-          error instanceof ApiError
-            ? error.message
-            : "Unable to load jobs"
-        )
+      setJobs(data.jobs || []);
+      setJobsError("");
+    } catch (err) {
+      setJobsError(
+        err instanceof ApiError
+          ? err.message
+          : "Unable to load delivery jobs."
       );
+    } finally {
+      setJobsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    void loadProfile();
+    void loadJobs();
+  }, [loadProfile, loadJobs]);
 
   useRealtime(
     [
-      "LOGISTICS_BOOKED",
       "LOGISTICS_STATUS_CHANGED",
       "LOGISTICS_LOCATION_UPDATED",
+      "ORDER_STATUS_CHANGED",
+      "JOB_CREATED",
     ],
-    load
+    () => {
+      void loadJobs();
+    }
   );
 
-  const mine = jobs.filter(
-    (job) => job.assignedUserId === user?.id
+  const activeJobs = useMemo(
+    () =>
+      jobs.filter(
+        (job) =>
+          job.assignedUserId === profile?.id &&
+          !["DELIVERED", "CANCELLED"].includes(
+            job.status
+          )
+      ),
+    [jobs, profile?.id]
   );
 
-  const open = jobs.filter((job) => !job.assignedUserId);
+  const availableJobs = useMemo(
+    () =>
+      jobs.filter(
+        (job) =>
+          job.assignedUserId === null &&
+          !["DELIVERED", "CANCELLED"].includes(
+            job.status
+          ) &&
+          jobMatchesType(
+            job,
+            profile?.deliveryType || null
+          )
+      ),
+    [jobs, profile?.deliveryType]
+  );
+
+  const completedJobs = useMemo(
+    () =>
+      jobs.filter(
+        (job) =>
+          job.assignedUserId === profile?.id &&
+          job.status === "DELIVERED"
+      ),
+    [jobs, profile?.id]
+  );
+
+  const deliveryTypeLabel = profile?.deliveryType
+    ? DELIVERY_LABELS[profile.deliveryType]
+    : "Delivery partner";
+
+  const claimJob = async (job: Job) => {
+    setClaimingId(job.id);
+    setError("");
+
+    try {
+      await api(
+        `/api/logistics/jobs/${job.id}/claim`,
+        {
+          method: "POST",
+        }
+      );
+
+      await loadJobs();
+
+      navigate(`/logistics/tracker/${job.id}`);
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Unable to claim this delivery job."
+      );
+    } finally {
+      setClaimingId(null);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("f2f-token");
+    localStorage.removeItem("f2f-session");
+
+    window.location.href = "/login";
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f3f8f2]">
+        <SiteNav />
+
+        <main className="mx-auto max-w-7xl px-5 pb-16 pt-28">
+          <div className="animate-pulse">
+            <div className="h-10 w-64 rounded-xl bg-white" />
+            <div className="mt-4 h-5 w-96 rounded-xl bg-white" />
+
+            <div className="mt-10 grid gap-5 md:grid-cols-3">
+              {[1, 2, 3].map((item) => (
+                <div
+                  key={item}
+                  className="h-36 rounded-3xl bg-white"
+                />
+              ))}
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#f7f4ec]">
+    <div className="min-h-screen bg-[#f3f8f2] text-[#16271e]">
       <SiteNav />
 
-      <div className="mx-auto max-w-5xl px-5 pb-16 pt-28">
-        <Link
-          to="/logistics"
-          className="text-sm font-semibold text-[#2f7a4a]"
-        >
-          ← Logistics home
-        </Link>
+      <div className="mx-auto flex max-w-[1500px] gap-5 px-4 pb-10 pt-24 lg:px-6">
+        {/* SIDEBAR */}
 
-        <h1 className="mt-4 font-serif text-4xl">Fleet desk</h1>
+        <aside className="hidden w-[235px] shrink-0 lg:block">
+          <div className="sticky top-24 rounded-[28px] border border-[#dcebdd] bg-white p-4 shadow-[0_15px_50px_rgba(38,86,52,0.07)]">
+            {/* Brand */}
 
-        <p className="mt-2 text-sm text-zinc-500">
-          Jobs come from paid or COD orders in PostgreSQL.
-        </p>
+            <div className="px-3 pb-5 pt-2">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e4f5e7] text-[#16823f]">
+                  <Truck size={23} />
+                </div>
 
-        {error && (
-          <p className="mt-4 text-sm text-rose-600">{error}</p>
-        )}
+                <div>
+                  <p className="text-lg font-extrabold tracking-tight">
+                    Farm2Fork
+                  </p>
 
-        {gpsMsg && (
-          <p className="mt-2 text-sm text-zinc-500">{gpsMsg}</p>
-        )}
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#6d7d74]">
+                    Logistics
+                  </p>
+                </div>
+              </div>
+            </div>
 
-        <h2 className="mt-8 text-sm font-bold uppercase tracking-wide text-zinc-400">
-          Available
-        </h2>
+            {/* Navigation */}
 
-        {open.length === 0 && (
-          <p className="mt-2 text-sm text-zinc-500">
-            No unassigned jobs.
-          </p>
-        )}
-
-        <ul className="mt-3 space-y-3">
-          {open.map((job) => (
-            <li
-              key={job.id}
-              className="rounded-2xl bg-white p-5"
-            >
-              <p className="text-xs font-bold text-[#2f7a4a]">
-                {job.status}
-              </p>
-
-              <p className="mt-1 font-bold">
-                {job.farmer.farmName}
-              </p>
-
-              <p className="text-sm text-zinc-500">
-                {job.quantity} • pickup {job.pickup}
-                {job.order?.address
-                  ? ` • ${job.order.address.city}, ${job.order.address.state}`
-                  : ""}
-              </p>
+            <nav className="space-y-1">
+              <button
+                type="button"
+                onClick={() => setActiveNav("dashboard")}
+                className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-bold transition ${
+                  activeNav === "dashboard"
+                    ? "bg-[#16823f] text-white shadow-lg shadow-green-900/10"
+                    : "text-[#526158] hover:bg-[#f1f7f1]"
+                }`}
+              >
+                <Package size={18} />
+                Dashboard
+              </button>
 
               <button
                 type="button"
-                className="mt-3 rounded-full bg-[#2f7a4a] px-4 py-2 text-xs font-bold text-white"
-                onClick={() =>
-                  api(`/api/logistics/jobs/${job.id}/claim`, {
-                    method: "POST",
-                  }).then(load)
-                }
+                onClick={() => setActiveNav("fleet")}
+                className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-bold transition ${
+                  activeNav === "fleet"
+                    ? "bg-[#16823f] text-white"
+                    : "text-[#526158] hover:bg-[#f1f7f1]"
+                }`}
               >
-                Claim job
+                <Truck size={18} />
+                Fleet Desk
               </button>
-            </li>
-          ))}
-        </ul>
 
-        <h2 className="mt-10 text-sm font-bold uppercase tracking-wide text-zinc-400">
-          My jobs
-        </h2>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveNav("deliveries");
 
-        {mine.length === 0 && (
-          <p className="mt-2 text-sm text-zinc-500">
-            No assigned jobs yet.
-          </p>
-        )}
-
-        <ul className="mt-3 space-y-3">
-          {mine.map((job) => {
-            const next = NEXT[job.status];
-
-            return (
-              <li
-                key={job.id}
-                className="rounded-2xl bg-white p-5"
+                  if (activeJobs.length) {
+                    navigate(
+                      `/logistics/tracker/${activeJobs[0].id}`
+                    );
+                  }
+                }}
+                className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-bold transition ${
+                  activeNav === "deliveries"
+                    ? "bg-[#16823f] text-white"
+                    : "text-[#526158] hover:bg-[#f1f7f1]"
+                }`}
               >
-                <p className="text-xs font-bold text-[#2f7a4a]">
-                  {job.status}
-                </p>
+                <Package size={18} />
+                My Deliveries
+              </button>
 
-                <p className="mt-1 font-bold">
-                  {job.farmer.farmName}
-                </p>
+              <button
+                type="button"
+                onClick={() => setActiveNav("earnings")}
+                className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-bold transition ${
+                  activeNav === "earnings"
+                    ? "bg-[#16823f] text-white"
+                    : "text-[#526158] hover:bg-[#f1f7f1]"
+                }`}
+              >
+                <Wallet size={18} />
+                Earnings
+              </button>
+            </nav>
 
-                <p className="text-sm text-zinc-500">
-                  {job.quantity} from {job.pickup}
-                </p>
+            <div className="my-5 border-t border-[#edf1ed]" />
 
-                {job.currentLat != null &&
-                  job.currentLng != null && (
-                    <p className="text-xs text-zinc-400">
-                      Last GPS {job.currentLat.toFixed(5)},{" "}
-                      {job.currentLng.toFixed(5)}
-                      {job.locationUpdatedAt
-                        ? ` • ${new Date(
-                            job.locationUpdatedAt
-                          ).toLocaleString("en-IN")}`
-                        : ""}
-                    </p>
-                  )}
+            <nav className="space-y-1">
+              <button
+                type="button"
+                onClick={() => setActiveNav("profile")}
+                className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#526158] transition hover:bg-[#f1f7f1]"
+              >
+                <UserRound size={18} />
+                Profile
+              </button>
 
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {next && (
-                    <button
-                      type="button"
-                      className="rounded-full bg-[#2f7a4a] px-4 py-2 text-xs font-bold text-white"
-                      onClick={() =>
-                        api(
-                          `/api/logistics/jobs/${job.id}/status`,
-                          {
-                            method: "PATCH",
-                            body: JSON.stringify({
-                              status: next,
-                            }),
-                          }
-                        ).then(load)
-                      }
-                    >
-                      Mark{" "}
-                      {next.replaceAll("_", " ").toLowerCase()}
-                    </button>
-                  )}
+              <button
+                type="button"
+                onClick={() => setActiveNav("vehicle")}
+                className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#526158] transition hover:bg-[#f1f7f1]"
+              >
+                <Settings size={18} />
+                Vehicle Info
+              </button>
 
-                  <button
-                    type="button"
-                    className="rounded-full border border-zinc-200 px-4 py-2 text-xs font-bold"
-                    onClick={() => {
-                      if (!navigator.geolocation) {
-                        setGpsMsg(
-                          "This browser does not support geolocation."
-                        );
-                        return;
-                      }
+              <button
+                type="button"
+                onClick={() => setActiveNav("support")}
+                className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#526158] transition hover:bg-[#f1f7f1]"
+              >
+                <Headphones size={18} />
+                Support
+              </button>
 
-                      navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                          api(
-                            `/api/logistics/jobs/${job.id}/location`,
-                            {
-                              method: "PATCH",
-                              body: JSON.stringify({
-                                latitude:
-                                  position.coords.latitude,
-                                longitude:
-                                  position.coords.longitude,
-                              }),
-                            }
-                          ).then(() => {
-                            setGpsMsg(
-                              "GPS stored from this device."
-                            );
-                            load();
-                          });
-                        },
-                        () =>
-                          setGpsMsg(
-                            "Location permission was denied. GPS was not stored."
-                          )
-                      );
-                    }}
-                  >
-                    Send my GPS
-                  </button>
+              <button
+                type="button"
+                onClick={logout}
+                className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#a13c3c] transition hover:bg-red-50"
+              >
+                <LogOut size={18} />
+                Logout
+              </button>
+            </nav>
+
+            {/* Bottom brand card */}
+
+            <div className="mt-8 rounded-3xl bg-[#edf7ed] p-4">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#16823f]">
+                <Truck size={20} />
+              </div>
+
+              <p className="text-sm font-extrabold text-[#1b6c3a]">
+                Delivering fresh
+              </p>
+
+              <p className="mt-1 text-xs leading-5 text-[#64766a]">
+                Moving produce from farms to families.
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        {/* MAIN */}
+
+        <main className="min-w-0 flex-1">
+          {/* TOP BAR */}
+
+          <div className="mb-5 flex items-center justify-between rounded-[25px] border border-[#dcebdd] bg-white px-5 py-3 shadow-[0_10px_40px_rgba(38,86,52,0.05)]">
+            <div className="hidden sm:block">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#6b7c70]">
+                Logistics Control Centre
+              </p>
+            </div>
+
+            <div className="ml-auto flex items-center gap-3">
+              <button
+                type="button"
+                className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-[#f3f7f3] text-[#3f5548] transition hover:bg-[#e8f3e9]"
+              >
+                <Bell size={19} />
+
+                <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
+              </button>
+
+              <div className="hidden items-center gap-3 border-l border-[#e5ebe5] pl-4 sm:flex">
+                {profile?.photoUrl ? (
+                  <img
+                    src={mediaUrl(profile.photoUrl)}
+                    alt=""
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#dff2e3] text-[#16823f]">
+                    <CircleUserRound size={22} />
+                  </div>
+                )}
+
+                <div>
+                  <p className="text-sm font-extrabold">
+                    {profile?.name || user?.name || "Logistics Partner"}
+                  </p>
+
+                  <p className="text-[11px] font-semibold text-[#718078]">
+                    {deliveryTypeLabel}
+                  </p>
                 </div>
-              </li>
-            );
-          })}
-        </ul>
+              </div>
+            </div>
+          </div>
+
+          {error && (
+            <div className="mb-5 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+              <XCircle size={18} className="mt-0.5 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {/* HERO */}
+
+          <section className="overflow-hidden rounded-[30px] border border-[#dcebdd] bg-white shadow-[0_15px_60px_rgba(38,86,52,0.07)]">
+            <div className="relative p-6 md:p-8">
+              <div className="absolute right-0 top-0 h-48 w-48 rounded-full bg-[#eaf7e9] blur-3xl" />
+
+              <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-center gap-5">
+                  {profile?.photoUrl ? (
+                    <img
+                      src={mediaUrl(profile.photoUrl)}
+                      alt=""
+                      className="h-20 w-20 rounded-[25px] object-cover ring-4 ring-[#edf7ed]"
+                    />
+                  ) : (
+                    <div className="flex h-20 w-20 items-center justify-center rounded-[25px] bg-[#e5f4e6] text-[#16823f] ring-4 ring-[#f2f8f2]">
+                      <CircleUserRound size={42} />
+                    </div>
+                  )}
+
+                  <div>
+                    <p className="text-sm font-semibold text-[#718078]">
+                      Good day,
+                    </p>
+
+                    <h1 className="mt-0.5 text-3xl font-black tracking-tight md:text-4xl">
+                      {profile?.name || user?.name || "Partner"}{" "}
+                      <span className="inline-block">��</span>
+                    </h1>
+
+                    <p className="mt-2 max-w-xl text-sm leading-6 text-[#68766e]">
+                      Keep fresh produce moving from farm gate
+                      to customer.
+                    </p>
+
+                    <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#e5f7e8] px-3 py-1.5 text-xs font-extrabold text-[#19743d]">
+                      <span className="h-2 w-2 rounded-full bg-[#20a653]" />
+                      Available for jobs
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveNav("profile")}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#cbdacb] bg-white px-5 py-3 text-sm font-extrabold text-[#263a2e] shadow-sm transition hover:border-[#16823f] hover:text-[#16823f]"
+                >
+                  <Edit3 size={17} />
+                  Edit Profile
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* STAT CARDS */}
+
+          <section className="mt-5 grid gap-4 md:grid-cols-3">
+            <div className="rounded-[25px] border border-[#dcebdd] bg-white p-5 shadow-[0_10px_40px_rgba(38,86,52,0.05)]">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-bold text-[#68766e]">
+                    Completed deliveries
+                  </p>
+
+                  <p className="mt-3 text-4xl font-black">
+                    {completedJobs.length}
+                  </p>
+
+                  <p className="mt-2 text-xs font-bold text-[#258048]">
+                    Based on recorded delivery jobs
+                  </p>
+                </div>
+
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e6f7e9] text-[#16823f]">
+                  <CheckCircle2 size={23} />
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[25px] border border-[#dcebdd] bg-white p-5 shadow-[0_10px_40px_rgba(38,86,52,0.05)]">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-bold text-[#68766e]">
+                    Active jobs
+                  </p>
+
+                  <p className="mt-3 text-4xl font-black">
+                    {activeJobs.length}
+                  </p>
+
+                  <p className="mt-2 text-xs font-bold text-[#426a8e]">
+                    Currently assigned
+                  </p>
+                </div>
+
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e8f3fa] text-[#3d7ba9]">
+                  <Package size={23} />
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[25px] border border-[#dcebdd] bg-white p-5 shadow-[0_10px_40px_rgba(38,86,52,0.05)]">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-bold text-[#68766e]">
+                    Earnings
+                  </p>
+
+                  <p className="mt-3 text-3xl font-black">
+                    —
+                  </p>
+
+                  <p className="mt-2 text-xs font-bold text-[#8b6b24]">
+                    Earnings ledger not connected yet
+                  </p>
+                </div>
+
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4d8] text-[#b48116]">
+                  <Wallet size={23} />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ACTIVE JOB */}
+
+          {activeJobs.length > 0 && (
+            <section className="mt-5 rounded-[28px] border border-[#cfe4d2] bg-[#f7fcf7] p-5 md:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16823f]">
+                    Current delivery
+                  </p>
+
+                  <h2 className="mt-1 text-2xl font-black">
+                    {activeJobs[0].farmer.farmName}
+                  </h2>
+                </div>
+
+                <span className="inline-flex w-fit rounded-full bg-[#dff4e3] px-3 py-1.5 text-xs font-black text-[#16743c]">
+                  {statusLabel(activeJobs[0].status)}
+                </span>
+              </div>
+
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                <div className="rounded-2xl bg-white p-4">
+                  <div className="flex items-center gap-2 text-[#617067]">
+                    <MapPin size={17} />
+                    <span className="text-xs font-bold">
+                      Pickup
+                    </span>
+                  </div>
+
+                  <p className="mt-2 text-sm font-extrabold">
+                    {activeJobs[0].pickup || "Pickup location"}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-white p-4">
+                  <div className="flex items-center gap-2 text-[#617067]">
+                    <MapPin size={17} />
+                    <span className="text-xs font-bold">
+                      Destination
+                    </span>
+                  </div>
+
+                  <p className="mt-2 text-sm font-extrabold">
+                    {activeJobs[0].order?.address?.city ||
+                      "Destination"}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-white p-4">
+                  <div className="flex items-center gap-2 text-[#617067]">
+                    <Truck size={17} />
+                    <span className="text-xs font-bold">
+                      Vehicle
+                    </span>
+                  </div>
+
+                  <p className="mt-2 text-sm font-extrabold">
+                    {activeJobs[0].vehicle || deliveryTypeLabel}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(
+                    `/logistics/tracker/${activeJobs[0].id}`
+                  )
+                }
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#16823f] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-green-900/10 transition hover:bg-[#116d35]"
+              >
+                Open delivery tracker
+                <ChevronRight size={18} />
+              </button>
+            </section>
+          )}
+
+          {/* AVAILABLE JOBS */}
+
+          <section className="mt-5 rounded-[28px] border border-[#dcebdd] bg-white shadow-[0_10px_45px_rgba(38,86,52,0.05)]">
+            <div className="flex items-center justify-between border-b border-[#edf1ed] px-5 py-5 md:px-6">
+              <div>
+                <h2 className="text-xl font-black">
+                  Available Delivery Jobs
+                </h2>
+
+                <p className="mt-1 text-xs font-semibold text-[#748078]">
+                  Jobs available for your registered vehicle type
+                </p>
+              </div>
+
+              <span className="rounded-full bg-[#e8f5e9] px-3 py-1.5 text-xs font-black text-[#17723b]">
+                {availableJobs.length} available
+              </span>
+            </div>
+
+            {jobsError && (
+              <div className="m-5 rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                {jobsError}
+              </div>
+            )}
+
+            {jobsLoading ? (
+              <div className="space-y-3 p-5">
+                {[1, 2, 3].map((item) => (
+                  <div
+                    key={item}
+                    className="h-24 animate-pulse rounded-2xl bg-[#f2f6f2]"
+                  />
+                ))}
+              </div>
+            ) : availableJobs.length === 0 ? (
+              <div className="px-6 py-12 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-[#edf6ee] text-[#16823f]">
+                  <Package size={27} />
+                </div>
+
+                <h3 className="mt-4 text-lg font-black">
+                  No delivery jobs available
+                </h3>
+
+                <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#718078]">
+                  New jobs will appear here when they are
+                  available for your logistics profile.
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-[#edf1ed]">
+                {availableJobs
+                  .slice(0, 5)
+                  .map((job) => (
+                    <div
+                      key={job.id}
+                      className="p-5 transition hover:bg-[#fbfdfb] md:px-6"
+                    >
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+                        {/* Image placeholder / produce visual */}
+
+                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#eaf5e8] text-[#16823f]">
+                          <Package size={28} />
+                        </div>
+
+                        {/* Job information */}
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-base font-black">
+                              {job.farmer.farmName}
+                            </h3>
+
+                            <span className="rounded-full bg-[#e7f5e8] px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-[#19733c]">
+                              {job.status}
+                            </span>
+                          </div>
+
+                          <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-[#68776e]">
+                            <span className="inline-flex items-center gap-1.5">
+                              <MapPin size={14} />
+                              {job.pickup ||
+                                "Pickup location unavailable"}
+                            </span>
+
+                            <span className="inline-flex items-center gap-1.5">
+                              <Package size={14} />
+                              {job.quantity} crates
+                            </span>
+
+                            <span className="inline-flex items-center gap-1.5">
+                              <Truck size={14} />
+                              {job.vehicle ||
+                                deliveryTypeLabel}
+                            </span>
+                          </div>
+
+                          <p className="mt-2 text-xs font-semibold text-[#8a958e]">
+                            {formatDistance(job)}
+                          </p>
+                        </div>
+
+                        {/* Claim */}
+
+                        <button
+                          type="button"
+                          disabled={
+                            claimingId === job.id
+                          }
+                          onClick={() => claimJob(job)}
+                          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#16823f] px-6 py-3 text-sm font-black text-white shadow-lg shadow-green-900/10 transition hover:bg-[#116d35] disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {claimingId === job.id
+                            ? "Claiming..."
+                            : "Claim Job"}
+
+                          <ChevronRight size={17} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </section>
+
+          {/* PROFILE / VEHICLE INFORMATION */}
+
+          <section className="mt-5 grid gap-5 md:grid-cols-2">
+            <div className="rounded-[28px] border border-[#dcebdd] bg-white p-6 shadow-[0_10px_45px_rgba(38,86,52,0.05)]">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16823f]">
+                    Your Profile
+                  </p>
+
+                  <h2 className="mt-2 text-xl font-black">
+                    Partner information
+                  </h2>
+                </div>
+
+                <UserRound
+                  size={22}
+                  className="text-[#16823f]"
+                />
+              </div>
+
+              <div className="mt-5 space-y-3">
+                <div className="rounded-2xl bg-[#f5f8f5] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-[#859188]">
+                    Name
+                  </p>
+
+                  <p className="mt-1 text-sm font-extrabold">
+                    {profile?.name || "Not available"}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-[#f5f8f5] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-[#859188]">
+                    Email
+                  </p>
+
+                  <p className="mt-1 break-all text-sm font-extrabold">
+                    {profile?.email || "Not available"}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-[#f5f8f5] p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-[#859188]">
+                    Phone
+                  </p>
+
+                  <p className="mt-1 text-sm font-extrabold">
+                    {profile?.phone || "Not provided"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[28px] border border-[#dcebdd] bg-white p-6 shadow-[0_10px_45px_rgba(38,86,52,0.05)]">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16823f]">
+                    Vehicle
+                  </p>
+
+                  <h2 className="mt-2 text-xl font-black">
+                    Registered vehicle
+                  </h2>
+                </div>
+
+                {profile?.deliveryType ===
+                "LARGE_TRUCK" ? (
+                  <Truck
+                    size={23}
+                    className="text-[#16823f]"
+                  />
+                ) : (
+                  <Bike
+                    size={23}
+                    className="text-[#16823f]"
+                  />
+                )}
+              </div>
+
+              <div className="mt-5 rounded-3xl bg-[#f3f8f3] p-5">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#16823f] shadow-sm">
+                    {profile?.deliveryType ===
+                    "LARGE_TRUCK" ? (
+                      <Truck size={27} />
+                    ) : (
+                      <Bike size={27} />
+                    )}
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-black">
+                      {profile?.deliveryType
+                        ? DELIVERY_LABELS[
+                            profile.deliveryType
+                          ]
+                        : "Vehicle type not configured"}
+                    </p>
+
+                    <p className="mt-1 text-xs font-semibold text-[#718078]">
+                      {profile?.vehicleNumber ||
+                        "Vehicle number not provided"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center gap-3 rounded-2xl border border-[#dcebdd] p-4">
+                <FileText
+                  size={19}
+                  className="text-[#16823f]"
+                />
+
+                <div>
+                  <p className="text-sm font-extrabold">
+                    Verification
+                  </p>
+
+                  <p className="text-xs font-semibold text-[#718078]">
+                    Document verification module
+                    will be connected to backend storage.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* QUICK ACTIONS */}
+
+          <section className="mt-5 grid gap-4 sm:grid-cols-3">
+            <button
+              type="button"
+              onClick={() => setActiveNav("profile")}
+              className="group rounded-[25px] border border-[#dcebdd] bg-white p-5 text-left shadow-[0_10px_40px_rgba(38,86,52,0.04)] transition hover:-translate-y-0.5 hover:border-[#b8d7bc]"
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e8f5e9] text-[#16823f]">
+                <UserRound size={20} />
+              </div>
+
+              <p className="mt-4 text-sm font-black">
+                Profile
+              </p>
+
+              <p className="mt-1 text-xs text-[#718078]">
+                Manage your logistics account.
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveNav("vehicle")}
+              className="group rounded-[25px] border border-[#dcebdd] bg-white p-5 text-left shadow-[0_10px_40px_rgba(38,86,52,0.04)] transition hover:-translate-y-0.5 hover:border-[#b8d7bc]"
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e8f3fa] text-[#3d7ba9]">
+                <Settings size={20} />
+              </div>
+
+              <p className="mt-4 text-sm font-black">
+                Vehicle Info
+              </p>
+
+              <p className="mt-1 text-xs text-[#718078]">
+                Update your registered vehicle.
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveNav("support")}
+              className="group rounded-[25px] border border-[#dcebdd] bg-white p-5 text-left shadow-[0_10px_40px_rgba(38,86,52,0.04)] transition hover:-translate-y-0.5 hover:border-[#b8d7bc]"
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff4d8] text-[#a87916]">
+                <Headphones size={20} />
+              </div>
+
+              <p className="mt-4 text-sm font-black">
+                Support
+              </p>
+
+              <p className="mt-1 text-xs text-[#718078]">
+                Get help with a delivery.
+              </p>
+            </button>
+          </section>
+        </main>
       </div>
     </div>
   );
