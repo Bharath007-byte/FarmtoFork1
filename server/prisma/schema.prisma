@@ -30,6 +30,15 @@ enum OrderStatus {
   FAILED
 }
 
+enum FarmerOrderStatus {
+  PENDING
+  ACCEPTED
+  PREPARING
+  READY_FOR_PICKUP
+  CANCELLED
+  COMPLETED
+}
+
 enum PaymentStatus {
   CREATED
   AUTHORIZED
@@ -44,8 +53,25 @@ enum LogisticsStatus {
   FARMER_READY
   PICKED_UP
   IN_TRANSIT
+  OUT_FOR_DELIVERY
   DELIVERED
   CANCELLED
+}
+
+enum DeliveryType {
+  BIKE
+  LARGE_TRUCK
+}
+
+enum FulfillmentChannel {
+  SOCIETY
+  DIRECT_FARMER
+}
+
+enum LogisticsVerificationStatus {
+  INCOMPLETE
+  VERIFIED
+  REJECTED
 }
 
 enum CollabStatus {
@@ -57,16 +83,19 @@ enum CollabStatus {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  role         Role
-  name         String
-  email        String   @unique
-  phone        String?
-  passwordHash String
-  photoUrl     String?
-  language     String   @default("en")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                    String                 @id @default(cuid())
+  role                  Role
+  name                  String
+  email                 String                 @unique
+  phone                 String?
+  passwordHash          String
+  photoUrl              String?
+  deliveryType          DeliveryType?
+  vehicleNumber         String?
+  logisticsVerification LogisticsVerification?
+  language              String                 @default("en")
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
 
   farmer            FarmerProfile?
   addresses         Address[]
@@ -79,6 +108,7 @@ model User {
   collabSent        FarmerCollaboration[] @relation("CollabFrom")
   collabRecv        FarmerCollaboration[] @relation("CollabTo")
   logisticsBookings LogisticsBooking[]
+  assignedJobs      LogisticsBooking[]    @relation("LogisticsAssignee")
   priceAlerts       PriceAlert[]
 }
 
@@ -97,9 +127,12 @@ model FarmerProfile {
   details    String?
   verified   Boolean  @default(false)
 
-  products  Product[]
-  inventory Inventory[]
-  bookings  LogisticsBooking[]
+  products           Product[]
+  inventory          Inventory[]
+  bookings           LogisticsBooking[]
+  farmerOrders       FarmerOrder[]
+  societyMemberships SocietyFarmer[]
+  societySupplies    SocietySupply[]
 }
 
 model ProductCategory {
@@ -130,11 +163,13 @@ model Product {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
-  inventory  Inventory?
-  orderItems OrderItem[]
-  cartItems  CartItem[]
-  reviews    Review[]
-  priceLogs  ProductPriceLog[]
+  inventory        Inventory?
+  orderItems       OrderItem[]
+  cartItems        CartItem[]
+  reviews          Review[]
+  priceLogs        ProductPriceLog[]
+  societyInventory SocietyInventory[]
+  societySupplies  SocietySupply[]
 }
 
 model Inventory {
@@ -170,16 +205,21 @@ model CartItem {
 }
 
 model Address {
-  id       String  @id @default(cuid())
-  userId   String
-  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  line1    String
-  city     String
-  district String
-  state    String
-  pinCode  String
-  phone    String?
-  orders   Order[]
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String?
+  recipient String?
+  line1     String
+  city      String
+  district  String
+  state     String
+  pinCode   String
+  phone     String?
+  latitude  Float?
+  longitude Float?
+  isDefault Boolean @default(false)
+  orders    Order[]
 }
 
 model Order {
@@ -196,9 +236,10 @@ model Order {
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
 
-  items    OrderItem[]
-  payments Payment[]
-  bookings LogisticsBooking[]
+  items        OrderItem[]
+  payments     Payment[]
+  bookings     LogisticsBooking[]
+  farmerOrders FarmerOrder[]
 }
 
 model OrderItem {
@@ -211,6 +252,28 @@ model OrderItem {
   unitPaise Int
   linePaise Int
   farmerId  String
+
+  fulfillmentChannel FulfillmentChannel  @default(SOCIETY)
+  societyId          String?
+  society            CooperativeSociety? @relation(fields: [societyId], references: [id])
+
+  @@index([societyId])
+  @@index([fulfillmentChannel])
+}
+
+model FarmerOrder {
+  id        String            @id @default(cuid())
+  orderId   String
+  order     Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  farmerId  String
+  farmer    FarmerProfile     @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  status    FarmerOrderStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@unique([orderId, farmerId])
+  @@index([farmerId, status])
+  @@index([orderId])
 }
 
 model Payment {
@@ -259,20 +322,39 @@ model DeliverySlot {
 }
 
 model LogisticsBooking {
-  id        String          @id @default(cuid())
-  farmerId  String
-  farmer    FarmerProfile   @relation(fields: [farmerId], references: [id])
-  userId    String
-  user      User            @relation(fields: [userId], references: [id])
-  orderId   String?
-  order     Order?          @relation(fields: [orderId], references: [id])
-  slotId    String
-  slot      DeliverySlot    @relation(fields: [slotId], references: [id])
-  pickup    String
-  quantity  Float
-  vehicle   String
-  status    LogisticsStatus @default(CONFIRMED)
-  createdAt DateTime        @default(now())
+  id                 String              @id @default(cuid())
+  farmerId           String
+  farmer             FarmerProfile       @relation(fields: [farmerId], references: [id])
+  userId             String
+  user               User                @relation(fields: [userId], references: [id])
+  assignedUserId     String?
+  assignedUser       User?               @relation("LogisticsAssignee", fields: [assignedUserId], references: [id])
+  orderId            String?
+  order              Order?              @relation(fields: [orderId], references: [id])
+  fulfillmentChannel FulfillmentChannel  @default(SOCIETY)
+  societyId          String?
+  society            CooperativeSociety? @relation(fields: [societyId], references: [id])
+  slotId             String
+  slot               DeliverySlot        @relation(fields: [slotId], references: [id])
+  pickup             String
+  quantity           Float
+  vehicle            String
+  status             LogisticsStatus     @default(CONFIRMED)
+  currentLat         Float?
+  currentLng         Float?
+  locationUpdatedAt  DateTime?
+  acceptedAt         DateTime?
+  farmerReadyAt      DateTime?
+  pickedUpAt         DateTime?
+  inTransitAt        DateTime?
+  deliveredAt        DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([orderId, farmerId])
+  @@index([assignedUserId])
+  @@index([societyId])
+  @@index([fulfillmentChannel])
 }
 
 model FarmerCollaboration {
@@ -393,4 +475,124 @@ model PriceAlert {
   commodity  String
   abovePaise Int
   active     Boolean @default(true)
+}
+
+model LogisticsVerification {
+  id String @id @default(cuid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vehicleType   DeliveryType
+  vehicleNumber String
+
+  licenceNumber      String
+  licenceDocumentUrl String
+
+  status LogisticsVerificationStatus @default(INCOMPLETE)
+
+  submittedAt     DateTime?
+  reviewedAt      DateTime?
+  rejectionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CooperativeSociety {
+  id          String  @id @default(cuid())
+  name        String
+  code        String  @unique
+  description String?
+
+  address  String
+  village  String?
+  district String
+  state    String
+  pinCode  String
+
+  lat Float?
+  lng Float?
+
+  phone    String?
+  email    String?
+  imageUrl String?
+
+  verified Boolean @default(false)
+  active   Boolean @default(true)
+
+  farmers    SocietyFarmer[]
+  inventory  SocietyInventory[]
+  supplies   SocietySupply[]
+  orderItems OrderItem[]
+  bookings   LogisticsBooking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([district, state])
+  @@index([lat, lng])
+}
+
+model SocietyFarmer {
+  id        String @id @default(cuid())
+  societyId String
+  farmerId  String
+
+  society CooperativeSociety @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  farmer  FarmerProfile      @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+
+  joinedAt DateTime @default(now())
+  active   Boolean  @default(true)
+
+  @@unique([societyId, farmerId])
+  @@index([farmerId])
+}
+
+model SocietyInventory {
+  id        String @id @default(cuid())
+  societyId String
+  productId String
+
+  society CooperativeSociety @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  product Product            @relation(fields: [productId], references: [id])
+
+  available Float @default(0)
+  reserved  Float @default(0)
+  sold      Float @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([societyId, productId])
+  @@index([productId])
+}
+
+model SocietySupply {
+  id        String @id @default(cuid())
+  societyId String
+  farmerId  String
+  productId String
+
+  society CooperativeSociety @relation(fields: [societyId], references: [id], onDelete: Cascade)
+  farmer  FarmerProfile      @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  product Product            @relation(fields: [productId], references: [id])
+
+  quantity Float
+  soldQty  Float @default(0)
+
+  status SocietySupplyStatus @default(RECEIVED)
+
+  receivedAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([societyId])
+  @@index([farmerId])
+  @@index([productId])
+  @@index([status])
+}
+
+enum SocietySupplyStatus {
+  RECEIVED
+  PARTIALLY_SOLD
+  SOLD
 }

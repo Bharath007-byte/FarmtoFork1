@@ -6,11 +6,12 @@
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "build": "tsc -p tsconfig.json",
+    "create-admin": "tsx scripts/create-admin.ts",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "test": "tsx --test src/lib/predict.test.ts"
+    "test": "tsx --test src/lib/predict.test.ts src/lib/orderStatus.test.ts src/lib/deliverySlots.test.ts src/lib/claimAtomicity.test.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

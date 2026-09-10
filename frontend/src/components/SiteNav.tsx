@@ -98,17 +98,34 @@ export function SiteNav({
           </nav>
 
           <div className="hidden shrink-0 items-center gap-3 md:flex">
-            <LanguageSwitch light={overVideo} />
-            {user?.role === "admin" && (
-              <Link
-                to="/admin"
-                className={`text-sm font-semibold ${overVideo ? "text-white" : "text-[#2f7a4a]"}`}
-              >
-                {t("admin")}
-              </Link>
-            )}
-            <AccountMenu light={overVideo} />
-          </div>
+  <LanguageSwitch light={overVideo} />
+
+  {user?.role === "admin" ? (
+    <Link
+      to="/admin"
+      className={`rounded-full px-3 py-1.5 text-sm font-semibold transition ${
+        overVideo
+          ? "bg-white/15 text-white hover:bg-white/25"
+          : "bg-[#e8f0e3] text-[#2f7a4a] hover:bg-[#dce9d6]"
+      }`}
+    >
+      {t("admin")}
+    </Link>
+  ) : (
+    <Link
+      to="/login?next=/admin"
+      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+        overVideo
+          ? "bg-white/10 text-white/90 hover:bg-white/20"
+          : "bg-[#f2f5ef] text-[#2f7a4a] hover:bg-[#e8f0e3]"
+      }`}
+    >
+      Admin Portal
+    </Link>
+  )}
+
+  <AccountMenu light={overVideo} />
+</div>
 
           <button
             className={`rounded-lg p-2 xl:hidden ${overVideo ? "text-white" : "text-[#1c2b22]"}`}
@@ -129,7 +146,24 @@ export function SiteNav({
               >
                 {link.label}
               </Link>
-            ))}
+             ))}
+            {user?.role === "admin" ? (
+  <Link
+    to="/admin"
+    onClick={() => setOpen(false)}
+    className="block rounded-xl bg-[#e8f0e3] px-4 py-3 text-sm font-semibold text-[#2f7a4a]"
+  >
+    Admin Dashboard
+  </Link>
+) : (
+  <Link
+    to="/login?next=/admin"
+    onClick={() => setOpen(false)}
+    className="block rounded-xl bg-[#f2f5ef] px-4 py-3 text-sm font-semibold text-[#2f7a4a]"
+  >
+    Admin Portal
+  </Link>
+)}
             <div className="pt-2">
               <AccountMenu />
             </div>

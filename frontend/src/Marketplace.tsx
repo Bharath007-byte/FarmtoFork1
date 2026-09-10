@@ -88,6 +88,7 @@ type Product = {
   name: string;
   category: string;
   categorySlug: string;
+  variety: string;
   unit: string;
   price: number;
   imageUrl: string;
@@ -244,6 +245,68 @@ function normalizeCategorySlug(slug?: string, name?: string) {
   return source;
 }
 
+/**
+ * Display-only liquid quantity labels.
+ * Uses live API fields: category.slug / category.name / variety / name.
+ * Oils (not ghee), Milk, Buttermilk, Lassi, Milk Cream → ml / L.
+ */
+function isLiquidQuantityProduct(product: {
+  name: string;
+  category: string;
+  categorySlug: string;
+  variety?: string | null;
+}): boolean {
+  const name = product.name.toLowerCase().trim();
+  const slug = String(product.categorySlug || "")
+    .toLowerCase()
+    .trim();
+  const category = String(product.category || "")
+    .toLowerCase()
+    .trim();
+  const variety = String(product.variety || "")
+    .toLowerCase()
+    .trim();
+
+  const inOilsFamily =
+    slug === "oils-ghee" ||
+    slug === "oil" ||
+    slug.includes("oil") ||
+    category.includes("oil") ||
+    variety.includes("oil");
+
+  // Oils only — ghee stays on g/kg
+  if (
+    inOilsFamily &&
+    name.includes("oil") &&
+    !name.includes("ghee")
+  ) {
+    return true;
+  }
+
+  if (name.includes("buttermilk")) return true;
+if (name.includes("lassi")) return true;
+if (name.includes("milk cream")) return true;
+if (name.includes("fresh curd")) return true;
+if (name.includes("greek yogurt")) return true;
+
+  // Milk products (Fresh Cow Milk, A2 Cow Milk, Buffalo Milk, …)
+  if (/\bmilk\b/.test(name) && !name.includes("ghee")) {
+    return true;
+  }
+
+  return false;
+}
+
+function getProductDisplayUnit(product: {
+  name: string;
+  category: string;
+  categorySlug: string;
+  variety?: string | null;
+  unit: string;
+}): string {
+  return isLiquidQuantityProduct(product) ? "L" : product.unit || "kg";
+}
+
 function mapProduct(item: ApiProduct): Product {
   const categoryName =
     item.category?.name ||
@@ -260,6 +323,7 @@ function mapProduct(item: ApiProduct): Product {
     name: item.name,
     category: categoryName,
     categorySlug,
+    variety: item.variety || "",
     unit: item.unit,
     price: Number(item.pricePaise || 0) / 100,
     imageUrl: item.imageUrl || FALLBACK_IMAGE,
@@ -755,12 +819,8 @@ export function Marketplace() {
       <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1500px] items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <button
-            onClick={() =>
-              window.scrollTo({
-                top: 0,
-                behavior: "smooth",
-              })
-            }
+  type="button"
+  onClick={() => navigate("/")}
             className="group shrink-0 text-left"
           >
             <div className="flex items-center gap-2">
@@ -789,26 +849,48 @@ export function Marketplace() {
           </button>
 
           <nav className="hidden items-center gap-7 lg:flex">
-            <button className="text-sm font-medium text-slate-700 hover:text-[#075b42]">
-              Home
-            </button>
+  <button
+    type="button"
+    onClick={() => navigate("/")}
+    className="text-sm font-medium text-slate-700 transition hover:text-[#075b42]"
+  >
+    Home
+  </button>
 
-            <button className="border-b-2 border-[#16823f] pb-1 text-sm font-bold text-[#075b42]">
-              Marketplace
-            </button>
+  <button
+    type="button"
+    onClick={() => navigate("/shop")}
+    className="border-b-2 border-[#16823f] pb-1 text-sm font-bold text-[#075b42]"
+  >
+    Marketplace
+  </button>
 
-            <button className="text-sm font-medium text-slate-700 hover:text-[#075b42]">
-              Farmers
-            </button>
+  <button
+    type="button"
+    onClick={() => navigate("/farmers")}
+    className="text-sm font-medium text-slate-700 transition hover:text-[#075b42]"
+  >
+    Farmers
+  </button>
 
-            <button className="text-sm font-medium text-slate-700 hover:text-[#075b42]">
-              About
-            </button>
+  <button
+    type="button"
+    onClick={() => navigate("/#about")}
+    className="text-sm font-medium text-slate-700 transition hover:text-[#075b42]"
+  >
+    About
+  </button>
 
-            <button className="text-sm font-medium text-slate-700 hover:text-[#075b42]">
-              Track Order
-            </button>
-          </nav>
+  <button
+    type="button"
+    onClick={() => navigate("/orders")}
+    className="text-sm font-medium text-slate-700 transition hover:text-[#075b42]"
+  >
+    Track Order
+  </button>
+</nav>
+  
+
 
           <div className="relative ml-auto min-w-0 flex-1 lg:max-w-[480px]">
             <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
@@ -826,11 +908,11 @@ export function Marketplace() {
             />
 
             {search && (
-              <button
-                onClick={() => {
-                  setSearch("");
-                  setVisibleCount(24);
-                }}
+  <button
+    onClick={() => {
+      setSearch("");
+      setVisibleCount(24);
+    }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-200"
               >
                 <X className="h-4 w-4" />
@@ -992,6 +1074,7 @@ export function Marketplace() {
               }
               title="All Products"
               subtitle={`${products.length} products`}
+              image={CATEGORY_IMAGES.all}
               onClick={() =>
                 selectCategory("all")
               }
@@ -1028,6 +1111,7 @@ export function Marketplace() {
                       : meta?.short ||
                         "Farm Fresh"
                   }
+                  image={CATEGORY_IMAGES[category.slug]}
                   onClick={() =>
                     selectCategory(
                       category.slug,
@@ -1430,52 +1514,104 @@ export function Marketplace() {
 /* ====================================================== */
 /* CATEGORY TILE                                          */
 /* ====================================================== */
+const CATEGORY_IMAGES: Record<string, string> = {
+  all: "/images/categories/all-products.png",
 
+  dairy: "/images/categories/dairy.png",
+  "dairy-cheese": "/images/categories/dairy.png",
+
+  "dry-fruits": "/images/categories/dry-fruits.png",
+
+  fruits: "/images/categories/fruits.png",
+
+  ghee: "/images/categories/ghee.png",
+
+  grains: "/images/categories/grains.png",
+  "grains-pulses": "/images/categories/grains.png",
+
+  "honey-natural": "/images/categories/honey.png",
+
+  "leafy-vegetables":
+    "/images/categories/leafy-vegetables.png",
+
+  millets: "/images/categories/millets.png",
+
+  "oils-ghee":
+    "/images/categories/cold-pressed-oils.png",
+
+  organic:
+    "/images/categories/organic-produce.png",
+
+  other:
+    "/images/categories/other.png",
+
+  pulses:
+    "/images/categories/pulses-lentils.png",
+
+  spices:
+    "/images/categories/spices.png",
+
+  vegetables:
+    "/images/categories/vegetables.png",
+};
 function CategoryTile({
   active,
   icon,
   title,
   subtitle,
+  image,
   onClick,
 }: {
   active: boolean;
   icon: React.ReactNode;
   title: string;
   subtitle: string;
+  image?: string;
   onClick: () => void;
 }) {
+  
   return (
     <button
       onClick={onClick}
-      className={`group min-w-[145px] rounded-2xl border p-4 text-left transition duration-200 sm:min-w-[170px] ${
+      className={`group min-w-[175px] overflow-hidden rounded-2xl border text-left transition duration-200 sm:min-w-[190px] ${
         active
           ? "border-[#16823f] bg-[#16823f] text-white shadow-lg shadow-[#16823f]/15"
           : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-[#b8d8c0] hover:shadow-md"
       }`}
     >
-      <div
-        className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl ${
-          active
-            ? "bg-white/15 text-white"
-            : "bg-[#eef8f1] text-[#16823f]"
-        }`}
-      >
-        {icon}
+      {/* CATEGORY IMAGE */}
+
+      <div className="h-[125px] w-full overflow-hidden bg-[#f3f8f3]">
+      {image ? (  
+          <img
+          src={image}
+            alt={title}
+            className="h-full w-full object-cover object-center transition duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            {icon}
+          </div>
+        )}
       </div>
 
-      <p className="text-xs font-black leading-4">
-        {title}
-      </p>
+      {/* CATEGORY DETAILS */}
 
-      <p
-        className={`mt-1 text-[10px] ${
-          active
-            ? "text-white/70"
-            : "text-slate-400"
-        }`}
-      >
-        {subtitle}
-      </p>
+      <div className="p-4">
+        <p className="text-xs font-black leading-4">
+          {title}
+        </p>
+
+        <p
+          className={`mt-1 text-[10px] ${
+            active
+              ? "text-white/70"
+              : "text-slate-400"
+          }`}
+        >
+          {subtitle}
+        </p>
+      </div>
     </button>
   );
 }
@@ -1501,6 +1637,8 @@ function ProductCard({
   onRemove: () => void;
   onLike: () => void;
 }) {
+  const displayUnit = getProductDisplayUnit(product);
+
   return (
     <article
       className="group flex min-h-[390px] cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#b9d8c0] hover:shadow-xl"
@@ -1508,7 +1646,7 @@ function ProductCard({
     >
       {/* IMAGE */}
 
-      <div className="relative aspect-square overflow-hidden bg-[#f3e8d7]">
+      <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#f3e8d7]">
         <img
           src={product.imageUrl}
           alt={product.name}
@@ -1517,7 +1655,7 @@ function ProductCard({
             event.currentTarget.src =
               FALLBACK_IMAGE;
           }}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+          className="absolute inset-0 h-full w-full object-contain object-center p-5"
         />
 
         {/* Organic */}
@@ -1637,7 +1775,7 @@ function ProductCard({
               </p>
 
               <p className="text-[10px] font-semibold text-slate-400">
-                per {product.unit}
+                per {displayUnit}
               </p>
             </div>
 
@@ -1719,6 +1857,17 @@ function ProductModal({
         : 0.25,
     );
 
+  const [quantityMode, setQuantityMode] = useState<
+    "preset" | "bulk"
+  >("preset");
+  const [bulkKgInput, setBulkKgInput] = useState("");
+  const [bulkError, setBulkError] = useState("");
+
+  const isLiquid = isLiquidQuantityProduct(product);
+  const displayUnit = getProductDisplayUnit(product);
+  const bulkUnitLabel = isLiquid ? "L" : "kg";
+  const bulkUnitName = isLiquid ? "L" : "KG";
+
   useEffect(() => {
     if (
       quantity === 0.25 ||
@@ -1726,27 +1875,88 @@ function ProductModal({
       quantity === 1
     ) {
       setSelectedWeight(quantity);
+      setQuantityMode("preset");
     }
   }, [quantity, product.id]);
 
+  const bulkKg = Number(bulkKgInput.trim());
+  const bulkKgValid =
+    /^\d+$/.test(bulkKgInput.trim()) &&
+    Number.isInteger(bulkKg) &&
+    bulkKg > 0;
+
+  const effectiveWeight =
+    quantityMode === "bulk" && bulkKgValid
+      ? bulkKg
+      : selectedWeight;
+
   const selectedPrice = Math.round(
-    product.price * selectedWeight,
+    product.price * effectiveWeight,
   );
 
-  const weightOptions = [
-    {
-      label: "250 g",
-      value: 0.25,
-    },
-    {
-      label: "500 g",
-      value: 0.5,
-    },
-    {
-      label: "1 kg",
-      value: 1,
-    },
-  ];
+  const weightOptions = isLiquid
+    ? [
+        {
+          label: "250 ml",
+          value: 0.25,
+        },
+        {
+          label: "500 ml",
+          value: 0.5,
+        },
+        {
+          label: "1 L",
+          value: 1,
+        },
+      ]
+    : [
+        {
+          label: "250 g",
+          value: 0.25,
+        },
+        {
+          label: "500 g",
+          value: 0.5,
+        },
+        {
+          label: "1 kg",
+          value: 1,
+        },
+      ];
+
+  const formatSelectedLabel = () => {
+    if (quantityMode === "bulk") {
+      return bulkKgValid
+        ? `${bulkKg} ${bulkUnitLabel}`
+        : "Bulk Order";
+    }
+
+    if (selectedWeight === 0.25) {
+      return isLiquid ? "250 ml" : "250 g";
+    }
+    if (selectedWeight === 0.5) {
+      return isLiquid ? "500 ml" : "500 g";
+    }
+    return isLiquid ? "1 L" : "1 kg";
+  };
+
+  const handleAddToCart = () => {
+    if (quantityMode === "bulk") {
+      if (!bulkKgValid) {
+        setBulkError(
+          `Enter a valid whole-number ${bulkUnitLabel} quantity for Bulk Order.`,
+        );
+        return;
+      }
+
+      setBulkError("");
+      onAdd(bulkKg);
+      return;
+    }
+
+    setBulkError("");
+    onAdd(selectedWeight);
+  };
 
   return (
     <div
@@ -1845,7 +2055,7 @@ function ProductModal({
               )}
 
               <span className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-600">
-                {product.unit}
+                {displayUnit}
               </span>
 
               {product.organic && (
@@ -1865,7 +2075,7 @@ function ProductModal({
               </p>
 
               <p className="mt-1 text-xs font-semibold text-slate-400">
-                per {product.unit}
+                per {displayUnit}
               </p>
             </div>
 
@@ -1909,7 +2119,7 @@ function ProductModal({
 
               <InfoBox
                 title="Available"
-                value={`${product.available} ${product.unit}`}
+                value={`${product.available} ${displayUnit}`}
               />
 
               {harvestDate && (
@@ -1924,21 +2134,22 @@ function ProductModal({
 
             <div className="mt-7">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
+                <h3 className="text-sm font-black uppercase tracking-wider text-slate-500">
                   Choose quantity
                 </h3>
 
-                <span className="text-xs font-bold text-slate-400">
+                <span className="text-sm font-bold text-slate-500">
                   {money(selectedPrice)}
                 </span>
               </div>
 
-              <div className="mt-3 grid grid-cols-3 gap-2">
+              <div className="mt-3 grid grid-cols-3 gap-2.5">
                 {weightOptions.map((option) => {
                   const optionAvailable =
                     product.available >= option.value;
 
                   const selected =
+                    quantityMode === "preset" &&
                     selectedWeight === option.value;
 
                   return (
@@ -1946,16 +2157,18 @@ function ProductModal({
                       key={option.value}
                       type="button"
                       disabled={!optionAvailable}
-                      onClick={() =>
+                      onClick={() => {
+                        setQuantityMode("preset");
+                        setBulkError("");
                         setSelectedWeight(
                           option.value,
-                        )
-                      }
+                        );
+                      }}
                       className={[
-                        "rounded-xl border px-3 py-3 text-xs font-black transition",
+                        "rounded-xl border px-3 py-4 text-sm font-black transition",
                         selected
                           ? "border-[#16823f] bg-[#16823f] text-white shadow-md shadow-[#16823f]/15"
-                          : "border-slate-200 bg-white text-slate-700 hover:border-[#16823f]",
+                          : "border-slate-200 bg-white text-slate-900 hover:border-[#16823f]",
                         !optionAvailable
                           ? "cursor-not-allowed opacity-40"
                           : "",
@@ -1967,18 +2180,74 @@ function ProductModal({
                 })}
               </div>
 
-              <div className="mt-3 flex items-center justify-between rounded-xl bg-[#f3f8f4] px-4 py-3">
+              <div className="mt-4">
+                <p className="text-sm font-black uppercase tracking-wider text-slate-500">
+                  Bulk Order
+                </p>
+
+                <div
+                  className={[
+                    "mt-2.5 flex items-center gap-3 rounded-xl border px-4 py-3.5 transition",
+                    quantityMode === "bulk"
+                      ? "border-[#16823f] bg-[#f3f8f4]"
+                      : "border-slate-200 bg-white",
+                  ].join(" ")}
+                >
+                  <span className="shrink-0 text-sm font-black text-slate-900">
+                    Enter {bulkUnitName}:
+                  </span>
+
+                  <span className="h-5 w-px shrink-0 bg-slate-200" />
+
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={bulkKgInput}
+                    placeholder="10"
+                    onFocus={() => {
+                      setQuantityMode("bulk");
+                      setBulkError("");
+                    }}
+                    onChange={(event) => {
+                      const next = event.target.value;
+                      if (
+                        next === "" ||
+                        /^\d+$/.test(next)
+                      ) {
+                        setBulkKgInput(next);
+                        setQuantityMode("bulk");
+                        setBulkError("");
+                      }
+                    }}
+                    className="min-w-0 flex-1 bg-transparent text-base font-black text-slate-900 outline-none placeholder:font-bold placeholder:text-slate-300"
+                  />
+
+                  <span className="shrink-0 text-sm font-black text-slate-900">
+                    {bulkUnitLabel}
+                  </span>
+                </div>
+
+                <p className="mt-2 text-[11px] font-medium text-slate-400">
+                  Enter quantity in {bulkUnitName} (e.g. 10, 15, 25) for
+                  bulk orders
+                </p>
+
+                {bulkError && (
+                  <p className="mt-2 text-[11px] font-bold text-rose-600">
+                    {bulkError}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4 flex items-center justify-between rounded-xl bg-[#f3f8f4] px-4 py-4">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-wide text-slate-400">
                     Selected
                   </p>
 
-                  <p className="mt-0.5 text-sm font-black text-slate-900">
-                    {selectedWeight === 0.25
-                      ? "250 g"
-                      : selectedWeight === 0.5
-                        ? "500 g"
-                        : "1 kg"}
+                  <p className="mt-1 text-base font-black text-slate-900">
+                    {formatSelectedLabel()}
                   </p>
                 </div>
 
@@ -1987,8 +2256,10 @@ function ProductModal({
                     Total
                   </p>
 
-                  <p className="mt-0.5 text-lg font-black text-[#16823f]">
-                    {money(selectedPrice)}
+                  <p className="mt-1 text-xl font-black text-[#16823f]">
+                    {quantityMode === "bulk" && !bulkKgValid
+                      ? "—"
+                      : money(selectedPrice)}
                   </p>
                 </div>
               </div>
@@ -1997,20 +2268,17 @@ function ProductModal({
             <div className="mt-auto flex gap-3 pt-7">
               {quantity === 0 ? (
                 <button
-                  onClick={() =>
-                    onAdd(selectedWeight)
-                  }
-                  className="flex-1 rounded-xl bg-[#16823f] py-3.5 text-xs font-black text-white shadow-lg shadow-[#16823f]/20 transition hover:bg-[#126e36]"
+                  onClick={handleAddToCart}
+                  className="flex-1 rounded-xl bg-[#16823f] py-4 text-sm font-black text-white shadow-lg shadow-[#16823f]/20 transition hover:bg-[#126e36]"
                 >
                   ADD{" "}
-                  {selectedWeight === 0.25
-                    ? "250 g"
-                    : selectedWeight === 0.5
-                      ? "500 g"
-                      : "1 kg"}{" "}
+                  {formatSelectedLabel()}{" "}
                   TO CART
                   <span className="ml-2 text-white/70">
-                    • {money(selectedPrice)}
+                    •{" "}
+                    {quantityMode === "bulk" && !bulkKgValid
+                      ? "—"
+                      : money(selectedPrice)}
                   </span>
                 </button>
               ) : (

@@ -590,40 +590,81 @@ export function FarmerProductInfo() {
 
 export function FarmerOrdersPage() {
   const [orders, setOrders] = useState<
-    { id: string; status: string; totalPaise: number; consumer?: { name: string } }[]
+    {
+      id: string;
+      status: string;
+      totalPaise: number;
+      createdAt?: string;
+      consumer?: { name: string };
+      address?: { city?: string; district?: string; state?: string } | null;
+      items: { qty: number; farmerId?: string; product: { name: string; unit: string } }[];
+      payments?: { status: string }[];
+    }[]
   >([]);
-  const load = () => api<{ orders: typeof orders }>("/api/orders").then((d) => setOrders(d.orders));
+  const [error, setError] = useState("");
+  const load = () =>
+    api<{ orders: typeof orders }>("/api/orders")
+      .then((d) => {
+        setOrders(d.orders);
+        setError("");
+      })
+      .catch((e) => setError(e instanceof ApiError ? e.message : "Unable to load orders"));
   useEffect(() => {
     load();
   }, []);
-  useRealtime(["ORDER_CREATED", "ORDER_STATUS_CHANGED"], load);
+  useRealtime(["ORDER_CREATED", "ORDER_STATUS_CHANGED", "PAYMENT_CONFIRMED", "LOGISTICS_BOOKED"], load);
+
+  const nextFor = (status: string) => {
+    if (status === "PAID" || status === "COD_PENDING") return "ACCEPTED";
+    if (status === "ACCEPTED") return "PREPARING";
+    if (status === "PREPARING") return "READY_FOR_PICKUP";
+    return null;
+  };
+
   return (
     <div>
       <h1 className="font-serif text-3xl">Orders</h1>
-      {orders.length === 0 && <p className="mt-6 text-zinc-500">No orders yet.</p>}
+      {error && <p className="mt-4 text-sm text-rose-600">{error}</p>}
+      {orders.length === 0 && !error && <p className="mt-6 text-zinc-500">No orders yet.</p>}
       <ul className="mt-6 space-y-2">
-        {orders.map((o) => (
-          <li key={o.id} className="rounded-xl bg-white px-4 py-3 text-sm">
-            <p className="font-bold">
-              {o.status} · {rupees(o.totalPaise)}
-            </p>
-            <p className="text-xs text-zinc-400">{o.consumer?.name}</p>
-            {o.status === "PAID" && (
-              <button
-                type="button"
-                className="mt-2 text-xs font-bold text-[#2f7a4a]"
-                onClick={() =>
-                  api(`/api/orders/${o.id}/status`, {
-                    method: "POST",
-                    body: JSON.stringify({ status: "ACCEPTED" }),
-                  }).then(load)
-                }
-              >
-                Accept
-              </button>
-            )}
-          </li>
-        ))}
+        {orders.map((o) => {
+          const next = nextFor(o.status);
+          const paid = o.payments?.some((p) => p.status === "CAPTURED") || o.status !== "PENDING_PAYMENT";
+          return (
+            <li key={o.id} className="rounded-xl bg-white px-4 py-3 text-sm">
+              <p className="font-bold">
+                {o.status} · {o.id.slice(0, 8)} · {rupees(o.totalPaise)}
+              </p>
+              <p className="text-xs text-zinc-400">
+                {o.consumer?.name}
+                {o.createdAt ? ` · ${new Date(o.createdAt).toLocaleString("en-IN")}` : ""}
+              </p>
+              <p className="mt-1 text-xs text-zinc-500">
+                {o.items.map((i) => `${i.product.name} ${i.qty} ${i.product.unit}`).join(" · ")}
+              </p>
+              {o.address && (
+                <p className="text-xs text-zinc-400">
+                  Deliver to {o.address.city}, {o.address.district}, {o.address.state}
+                </p>
+              )}
+              <p className="text-[11px] text-zinc-400">Payment: {paid ? "recorded" : "awaiting"}</p>
+              {next && (
+                <button
+                  type="button"
+                  className="mt-2 text-xs font-bold text-[#2f7a4a]"
+                  onClick={() =>
+                    api(`/api/orders/${o.id}/status`, {
+                      method: "POST",
+                      body: JSON.stringify({ status: next }),
+                    }).then(load)
+                  }
+                >
+                  Mark {next.replaceAll("_", " ").toLowerCase()}
+                </button>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

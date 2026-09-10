@@ -6,18 +6,32 @@ import { auth, requireRole } from "../middleware/auth.js";
 import { emitEvent } from "../socket.js";
 import { notify } from "../lib/notify.js";
 import { env } from "../env.js";
-import { issueOtp, consumeOtp } from "../lib/otp.js";
+import { consumeOtp } from "../lib/otp.js";
 import { razorpaySignature } from "../lib/predict.js";
 import {
+  FulfillmentChannel,
+  LogisticsStatus,
   OrderStatus,
   PaymentStatus,
+  type Prisma,
 } from "@prisma/client";
 import { turnstileGuard } from "../lib/turnstile.js";
+import {
+  ensureOrderLogisticsBookings,
+  ensureFarmerLogisticsBooking,
+  releaseInventoryForOrder,
+} from "../lib/orderLogistics.js";
+import {
+  assertOrderTransition,
+  bookingBlocksConsumerCancel,
+  canCancelOrder,
+  FARMER_STATUSES,
+  LOGISTICS_ORDER_STATUSES,
+} from "../lib/orderStatus.js";
 
 export const commerceRouter = Router();
-function isPrismaUniqueViolation(
-  error: unknown
-): boolean {
+
+function isPrismaUniqueViolation(error: unknown): boolean {
   return (
     typeof error === "object" &&
     error !== null &&
@@ -25,86 +39,57 @@ function isPrismaUniqueViolation(
     (error as { code?: unknown }).code === "P2002"
   );
 }
-/**
- * Valid order-status transitions.
- *
- * The backend is the source of truth for the order lifecycle.
- * A request cannot arbitrarily jump between statuses.
- *
- * Logistics-related transitions are included because the
- * OrderStatus enum already supports them, but the actual
- * logistics workflow will be hardened further in the
- * logistics milestone.
- */
-const ORDER_STATUS_TRANSITIONS: Record<
-  OrderStatus,
-  OrderStatus[]
-> = {
-  [OrderStatus.DRAFT]: [
-    OrderStatus.PENDING_PAYMENT,
-    OrderStatus.COD_PENDING,
-    OrderStatus.CANCELLED,
-  ],
 
-  [OrderStatus.PENDING_PAYMENT]: [
-    OrderStatus.PAID,
-    OrderStatus.CANCELLED,
-    OrderStatus.FAILED,
-  ],
+async function notifyNewLogisticsJobs(orderId: string, bookingIds: string[]) {
+  if (!bookingIds.length) return;
+  const logisticsUsers = await prisma.user.findMany({
+    where: { role: "LOGISTICS" },
+    select: { id: true },
+  });
+  emitEvent("LOGISTICS_BOOKED", { orderId, bookingIds });
+  for (const u of logisticsUsers) {
+    await notify(u.id, "LOGISTICS_BOOKED", "New logistics job", orderId);
+  }
+}
 
-  [OrderStatus.COD_PENDING]: [
-    OrderStatus.PAID,
-    OrderStatus.CANCELLED,
-    OrderStatus.FAILED,
-  ],
+function preferredChannelFromItems(
+  items: { fulfillmentChannel: FulfillmentChannel }[],
+): FulfillmentChannel {
+  return items[0]?.fulfillmentChannel === FulfillmentChannel.DIRECT_FARMER
+    ? FulfillmentChannel.DIRECT_FARMER
+    : FulfillmentChannel.SOCIETY;
+}
 
-  [OrderStatus.PAID]: [
-    OrderStatus.ACCEPTED,
-    OrderStatus.CANCELLED,
-    OrderStatus.FAILED,
-  ],
-
-  [OrderStatus.ACCEPTED]: [
-    OrderStatus.PREPARING,
-    OrderStatus.CANCELLED,
-  ],
-
-  [OrderStatus.PREPARING]: [
-    OrderStatus.READY_FOR_PICKUP,
-    OrderStatus.CANCELLED,
-  ],
-
-  [OrderStatus.READY_FOR_PICKUP]: [
-    OrderStatus.PICKED_UP,
-    OrderStatus.CANCELLED,
-  ],
-
-  [OrderStatus.PICKED_UP]: [
-    OrderStatus.IN_TRANSIT,
-    OrderStatus.CANCELLED,
-  ],
-
-  [OrderStatus.IN_TRANSIT]: [
-    OrderStatus.OUT_FOR_DELIVERY,
-    OrderStatus.CANCELLED,
-  ],
-
-  [OrderStatus.OUT_FOR_DELIVERY]: [
-    OrderStatus.DELIVERED,
-    OrderStatus.CANCELLED,
-  ],
-
-  [OrderStatus.DELIVERED]: [],
-
-  [OrderStatus.CANCELLED]: [],
-
-  [OrderStatus.FAILED]: [],
-};
-/**
- * ---------------------------------------------------------
- * CART
- * ---------------------------------------------------------
- */
+async function captureOnlinePayment(
+  tx: Prisma.TransactionClient,
+  paymentId: string,
+  orderId: string,
+  extra: { providerPayId?: string; signature?: string | null; method?: string | null }
+) {
+  await tx.payment.update({
+    where: { id: paymentId },
+    data: {
+      ...(extra.providerPayId ? { providerPayId: extra.providerPayId } : {}),
+      ...(extra.signature !== undefined ? { signature: extra.signature } : {}),
+      ...(extra.method ? { method: extra.method } : {}),
+      status: PaymentStatus.CAPTURED,
+    },
+  });
+  const order = await tx.order.update({
+    where: { id: orderId },
+    data: { status: OrderStatus.PAID },
+    include: { items: true },
+  });
+  const preferredChannel = preferredChannelFromItems(order.items);
+  await ensureOrderLogisticsBookings(tx, {
+    orderId: order.id,
+    consumerUserId: order.consumerId,
+    items: order.items,
+    preferredChannel,
+  });
+  await tx.cartItem.deleteMany({ where: { userId: order.consumerId } });
+  return order;
+}
 
 /**
  * Get current user's cart.
@@ -277,12 +262,38 @@ commerceRouter.post(
       ? String(req.body.addressId).trim()
       : null;
 
+    const rawFulfillmentChannel = String(
+      req.body?.fulfillmentChannel || FulfillmentChannel.SOCIETY
+    )
+      .trim()
+      .toUpperCase();
+
     /**
      * Validate payment method.
      */
     if (method !== "ONLINE" && method !== "COD") {
       return res.status(422).json({
         error: "Unsupported payment method",
+        code: 422,
+      });
+    }
+
+    if (
+      rawFulfillmentChannel !== FulfillmentChannel.SOCIETY &&
+      rawFulfillmentChannel !== FulfillmentChannel.DIRECT_FARMER
+    ) {
+      return res.status(422).json({
+        error: "fulfillmentChannel must be SOCIETY or DIRECT_FARMER",
+        code: 422,
+      });
+    }
+
+    const requestedChannel =
+      rawFulfillmentChannel as FulfillmentChannel;
+
+    if (!addressId) {
+      return res.status(422).json({
+        error: "Delivery address required",
         code: 422,
       });
     }
@@ -329,10 +340,28 @@ commerceRouter.post(
       });
     }
 
+    if (method === "ONLINE") {
+      const unpaid = await prisma.order.findFirst({
+        where: {
+          consumerId: req.user!.id,
+          paymentMethod: "ONLINE",
+          status: OrderStatus.PENDING_PAYMENT,
+        },
+      });
+      if (unpaid) {
+        return res.status(409).json({
+          error: "Complete or cancel the unpaid online order before placing another.",
+          code: 409,
+          orderId: unpaid.id,
+        });
+      }
+    }
+
     try {
       const order = await prisma.$transaction(
         async (tx) => {
           let total = 0;
+          let totalQuantity = 0;
 
           /**
            * First validate every line.
@@ -410,6 +439,7 @@ commerceRouter.post(
             total += Math.round(
               line.qty * product.pricePaise
             );
+            totalQuantity += line.qty;
           }
 
           if (total <= 0) {
@@ -422,9 +452,31 @@ commerceRouter.post(
           }
 
           /**
+           * Enforce the 50kg fulfillment rule server-side.
+           * <50kg must use SOCIETY. ≥50kg may choose either channel.
+           */
+          const fulfillmentChannel =
+            totalQuantity < 50
+              ? FulfillmentChannel.SOCIETY
+              : requestedChannel;
+
+          if (
+            totalQuantity < 50 &&
+            requestedChannel === FulfillmentChannel.DIRECT_FARMER
+          ) {
+            throw Object.assign(
+              new Error(
+                "Orders below 50 kg must be fulfilled through a cooperative society."
+              ),
+              { code: 409 }
+            );
+          }
+
+          /**
            * Create the order.
            *
-           * OrderItem stores the price at purchase time.
+           * OrderItem stores the price at purchase time
+           * and the selected fulfillment channel.
            */
           const created = await tx.order.create({
             data: {
@@ -439,14 +491,7 @@ commerceRouter.post(
 
               totalPaise: total,
 
-              /**
-               * Current platform fee rule.
-               * This is stored with the order so historical
-               * orders are not affected by future fee changes.
-               */
-              platformFeePaise: Math.round(
-                total * 0.03
-              ),
+              platformFeePaise: Math.round(total * 0.03),
 
               items: {
                 create: cart.map((line) => ({
@@ -457,6 +502,7 @@ commerceRouter.post(
                     line.qty * line.product.pricePaise
                   ),
                   farmerId: line.product.farmerId,
+                  fulfillmentChannel,
                 })),
               },
             },
@@ -473,23 +519,22 @@ commerceRouter.post(
            * multiple customers checkout simultaneously.
            */
           for (const line of cart) {
-            const updated =
-              await tx.inventory.updateMany({
-                where: {
-                  productId: line.productId,
-                  available: {
-                    gte: line.qty,
-                  },
+            const updated = await tx.inventory.updateMany({
+              where: {
+                productId: line.productId,
+                available: {
+                  gte: line.qty,
                 },
-                data: {
-                  available: {
-                    decrement: line.qty,
-                  },
-                  reserved: {
-                    increment: line.qty,
-                  },
+              },
+              data: {
+                available: {
+                  decrement: line.qty,
                 },
-              });
+                reserved: {
+                  increment: line.qty,
+                },
+              },
+            });
 
             if (updated.count !== 1) {
               throw Object.assign(
@@ -502,14 +547,23 @@ commerceRouter.post(
           }
 
           /**
-           * Only clear cart after order + inventory
-           * reservation have succeeded.
+           * COD resolves fulfillment in the same transaction.
+           * ONLINE waits until payment is captured.
            */
-          await tx.cartItem.deleteMany({
-            where: {
-              userId: req.user!.id,
-            },
-          });
+          if (method === "COD") {
+            await ensureOrderLogisticsBookings(tx, {
+              orderId: created.id,
+              consumerUserId: req.user!.id,
+              items: created.items,
+              preferredChannel: fulfillmentChannel,
+            });
+
+            await tx.cartItem.deleteMany({
+              where: {
+                userId: req.user!.id,
+              },
+            });
+          }
 
           return created;
         },
@@ -526,15 +580,19 @@ commerceRouter.post(
       });
 
       /**
-       * Notify affected farmers.
+       * Notify farmers only for DIRECT_FARMER lines.
+       * Society fulfillment does not require farmer acceptance.
        */
       for (const item of order.items) {
-        const farmer =
-          await prisma.farmerProfile.findUnique({
-            where: {
-              id: item.farmerId,
-            },
-          });
+        if (item.fulfillmentChannel !== FulfillmentChannel.DIRECT_FARMER) {
+          continue;
+        }
+
+        const farmer = await prisma.farmerProfile.findUnique({
+          where: {
+            id: item.farmerId,
+          },
+        });
 
         if (farmer) {
           await notify(
@@ -546,34 +604,17 @@ commerceRouter.post(
         }
       }
 
-      /**
-       * COD requires OTP verification.
-       */
       if (method === "COD") {
-        const user = await prisma.user.findUnique({
-          where: {
-            id: req.user!.id,
-          },
+        const bookings = await prisma.logisticsBooking.findMany({
+          where: { orderId: order.id },
+          select: { id: true },
         });
-
-        if (!user) {
-          return res.status(401).json({
-            error: "User account no longer exists",
-            code: 401,
-          });
-        }
-
-        const otp = await issueOtp({
-          userId: user.id,
-          channel: user.phone || user.email,
-          purpose: `cod:${order.id}`,
-        });
-
+        await notifyNewLogisticsJobs(
+          order.id,
+          bookings.map((b) => b.id)
+        );
         return res.status(201).json({
           order,
-          otpId: otp.id,
-          delivery: otp.delivery,
-          message: "COD verification pending",
         });
       }
 
@@ -741,6 +782,10 @@ commerceRouter.get(
         await prisma.orderItem.findMany({
           where: {
             farmerId: farmer.id,
+            /**
+             * Society fulfillment does not require farmer acceptance.
+             */
+            fulfillmentChannel: FulfillmentChannel.DIRECT_FARMER,
           },
           include: {
             order: {
@@ -778,10 +823,10 @@ commerceRouter.get(
       >();
 
       for (const item of items) {
-        uniqueOrders.set(
-          item.order.id,
-          item.order
-        );
+        uniqueOrders.set(item.order.id, {
+          ...item.order,
+          items: item.order.items.filter((line) => line.farmerId === farmer.id),
+        });
       }
 
       return res.json({
@@ -807,6 +852,7 @@ commerceRouter.get(
           },
           payments: true,
           address: true,
+          bookings: true,
         },
         orderBy: {
           createdAt: "desc",
@@ -816,6 +862,164 @@ commerceRouter.get(
     return res.json({
       orders,
     });
+  }
+);
+/**
+ * Get one order for the authenticated consumer.
+ *
+ * Returns the real database state needed by the
+ * consumer Order Details and Tracking screens.
+ */
+commerceRouter.get(
+  "/orders/:id",
+  auth,
+  requireRole("CONSUMER"),
+  async (req, res) => {
+    const orderId = String(req.params.id).trim();
+
+    if (!orderId) {
+      return res.status(422).json({
+        error: "Order ID required",
+        code: 422,
+      });
+    }
+
+    const order = await prisma.order.findFirst({
+      where: {
+        id: orderId,
+        consumerId: req.user!.id,
+      },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+
+        payments: true,
+
+        address: true,
+
+        bookings: {
+          include: {
+            slot: true,
+
+            farmer: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    phone: true,
+                    photoUrl: true,
+                  },
+                },
+              },
+            },
+
+            assignedUser: {
+              select: {
+                id: true,
+                name: true,
+                phone: true,
+                photoUrl: true,
+                deliveryType: true,
+                vehicleNumber: true,
+              },
+            },
+
+            society: true,
+          },
+
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        error: "Order not found",
+        code: 404,
+      });
+    }
+
+    return res.json({
+      order,
+    });
+  }
+);
+commerceRouter.post(
+  "/orders/:id/cancel",
+  auth,
+  async (req, res) => {
+    const orderId = String(req.params.id);
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true, bookings: true },
+    });
+    if (!order) return res.status(404).json({ error: "Order not found", code: 404 });
+
+    if (req.user!.role === "CONSUMER" && order.consumerId !== req.user!.id) {
+      return res.status(403).json({ error: "You cannot cancel this order", code: 403 });
+    }
+    if (req.user!.role === "FARMER") {
+      const farmer = await prisma.farmerProfile.findUnique({ where: { userId: req.user!.id } });
+      if (!farmer || !order.items.some((i) => i.farmerId === farmer.id)) {
+        return res.status(403).json({ error: "You cannot cancel this order", code: 403 });
+      }
+    }
+    if (req.user!.role === "LOGISTICS") {
+      return res.status(403).json({ error: "Logistics cannot cancel orders here", code: 403 });
+    }
+    if (!canCancelOrder(order.status) || bookingBlocksConsumerCancel(order.bookings)) {
+      return res.status(409).json({
+        error: "This order can no longer be cancelled",
+        code: 409,
+      });
+    }
+
+    try {
+      const updated = await prisma.$transaction(async (tx) => {
+        const current = await tx.order.findUnique({
+          where: { id: order.id },
+          include: { items: true, bookings: true },
+        });
+        if (!current) throw Object.assign(new Error("Order not found"), { code: 404 });
+        if (current.status === OrderStatus.CANCELLED) return current;
+        if (!canCancelOrder(current.status) || bookingBlocksConsumerCancel(current.bookings)) {
+          throw Object.assign(new Error("This order can no longer be cancelled"), { code: 409 });
+        }
+        assertOrderTransition(current.status, OrderStatus.CANCELLED);
+        await releaseInventoryForOrder(tx, current.items, "cancel");
+        for (const booking of current.bookings) {
+          if (booking.status === LogisticsStatus.CANCELLED) continue;
+          await tx.deliverySlot.updateMany({
+            where: { id: booking.slotId, booked: { gte: 1 } },
+            data: { booked: { decrement: 1 } },
+          });
+          await tx.logisticsBooking.update({
+            where: { id: booking.id },
+            data: { status: LogisticsStatus.CANCELLED },
+          });
+        }
+        return tx.order.update({
+          where: { id: current.id },
+          data: { status: OrderStatus.CANCELLED },
+          include: { items: true },
+        });
+      });
+      await notify(updated.consumerId, "ORDER_STATUS", "Order cancelled", updated.id);
+      emitEvent("ORDER_STATUS_CHANGED", { orderId: updated.id, status: updated.status });
+      return res.json({ order: updated });
+    } catch (err) {
+      const e = err as Error & { code?: number };
+      if (e.code === 404 || e.code === 409) {
+        return res.status(Number(e.code)).json({ error: e.message, code: Number(e.code) });
+      }
+      throw err;
+    }
   }
 );
 
@@ -911,15 +1115,27 @@ commerceRouter.post(
         code: 409,
       });
     }
-const allowedTransitions:OrderStatus[] =
-  ORDER_STATUS_TRANSITIONS[order.status] ?? [];
+    try {
+      assertOrderTransition(order.status, status);
+    } catch (err) {
+      const e = err as Error & { code?: number };
+      return res.status(e.code || 409).json({ error: e.message, code: e.code || 409 });
+    }
 
-if (!allowedTransitions.includes(status)) {
-  return res.status(409).json({
-    error: `Invalid order status transition: ${order.status} → ${status}`,
-    code: 409,
-  });
-}
+    if (req.user!.role === "FARMER" && !FARMER_STATUSES.includes(status)) {
+      return res.status(403).json({
+        error: "Farmers can only accept, prepare, or mark ready for pickup",
+        code: 403,
+      });
+    }
+
+    if (req.user!.role === "LOGISTICS" && !LOGISTICS_ORDER_STATUSES.includes(status)) {
+      return res.status(403).json({
+        error: "Logistics can only update pickup and delivery statuses",
+        code: 403,
+      });
+    }
+
     /**
      * Farmer ownership check.
      *
@@ -998,118 +1214,135 @@ if (!allowedTransitions.includes(status)) {
               );
             }
 
+            if (current.status !== order.status) {
+              assertOrderTransition(current.status, status);
+            }
+
             /**
              * Update order.
              */
             const changed =
-              await tx.order.update({
-                where: {
-                  id: current.id,
-                },
-                data: {
-                  status,
-                },
-                include: {
-                  items: true,
-                },
-              });
+  await tx.order.update({
+    where: {
+      id: current.id,
+    },
+    data: {
+      status,
+    },
+    include: {
+      items: true,
+    },
+  });
 
-            /**
-             * DELIVERED:
-             *
-             * reserved -> sold
-             *
-             * updateMany uses reserved >= qty
-             * to protect against negative inventory.
-             */
-            if (
-              status ===
-              OrderStatus.DELIVERED
-            ) {
-              for (const item of changed.items) {
-                const inventory =
-                  await tx.inventory.updateMany(
-                    {
-                      where: {
-                        productId:
-                          item.productId,
-                        reserved: {
-                          gte: item.qty,
-                        },
-                      },
-                      data: {
-                        reserved: {
-                          decrement:
-                            item.qty,
-                        },
-                        sold: {
-                          increment:
-                            item.qty,
-                        },
-                      },
-                    }
-                  );
+/**
+ * When a farmer marks the order READY_FOR_PICKUP,
+ * create/use a DIRECT_FARMER logistics booking so
+ * logistics workers can claim the job.
+ *
+ * SOCIETY fulfillment is intentionally ignored here —
+ * those bookings are already CONFIRMED at order time.
+ */
+if (
+  status === OrderStatus.READY_FOR_PICKUP &&
+  req.user!.role === "FARMER"
+) {
+  const farmer = await tx.farmerProfile.findUnique({
+    where: {
+      userId: req.user!.id,
+    },
+  });
 
-                if (
-                  inventory.count !== 1
-                ) {
-                  throw Object.assign(
-                    new Error(
-                      `Inventory reservation missing for ${item.productId}`
-                    ),
-                    { code: 409 }
-                  );
-                }
-              }
-            }
+  if (!farmer) {
+    throw Object.assign(
+      new Error("Farmer profile not found"),
+      { code: 403 }
+    );
+  }
 
-            /**
-             * CANCELLED:
-             *
-             * reserved -> available
-             */
-            if (
-              status ===
-              OrderStatus.CANCELLED
-            ) {
-              for (const item of changed.items) {
-                const inventory =
-                  await tx.inventory.updateMany(
-                    {
-                      where: {
-                        productId:
-                          item.productId,
-                        reserved: {
-                          gte: item.qty,
-                        },
-                      },
-                      data: {
-                        reserved: {
-                          decrement:
-                            item.qty,
-                        },
-                        available: {
-                          increment:
-                            item.qty,
-                        },
-                      },
-                    }
-                  );
+  const directItems = changed.items.filter(
+    (item) =>
+      item.farmerId === farmer.id &&
+      item.fulfillmentChannel === FulfillmentChannel.DIRECT_FARMER
+  );
 
-                if (
-                  inventory.count !== 1
-                ) {
-                  throw Object.assign(
-                    new Error(
-                      `Inventory reservation missing for ${item.productId}`
-                    ),
-                    { code: 409 }
-                  );
-                }
-              }
-            }
+  if (!directItems.length) {
+    throw Object.assign(
+      new Error(
+        "No direct-farmer items available to mark ready for pickup"
+      ),
+      { code: 409 }
+    );
+  }
 
-            return changed;
+  const farmerOrder = await tx.farmerOrder.findUnique({
+    where: {
+      orderId_farmerId: {
+        orderId: changed.id,
+        farmerId: farmer.id,
+      },
+    },
+  });
+
+  if (!farmerOrder) {
+    throw Object.assign(
+      new Error(
+        "Farmer order record missing for direct-farmer fulfillment"
+      ),
+      { code: 409 }
+    );
+  }
+
+  await ensureFarmerLogisticsBooking(tx, {
+    orderId: changed.id,
+    consumerUserId: changed.consumerId,
+    farmerId: farmer.id,
+  });
+
+  /**
+   * If a DIRECT_FARMER booking already existed in an earlier
+   * status, advance only that channel to FARMER_READY.
+   * Never touch SOCIETY bookings for this order+farmer.
+   */
+  await tx.logisticsBooking.updateMany({
+    where: {
+      orderId: changed.id,
+      farmerId: farmer.id,
+      fulfillmentChannel: FulfillmentChannel.DIRECT_FARMER,
+      status: {
+        in: [
+          LogisticsStatus.CONFIRMED,
+          LogisticsStatus.PICKUP_SCHEDULED,
+        ],
+      },
+    },
+    data: {
+      status: LogisticsStatus.FARMER_READY,
+      farmerReadyAt: new Date(),
+    },
+  });
+}
+
+if (status === OrderStatus.DELIVERED) {
+  await releaseInventoryForOrder(
+    tx,
+    changed.items,
+    "deliver"
+  );
+}
+
+if (
+  status === OrderStatus.CANCELLED ||
+  status === OrderStatus.FAILED
+) {
+  await releaseInventoryForOrder(
+    tx,
+    changed.items,
+    "cancel"
+  );
+}
+
+return changed;
+                  
           },
           {
             isolationLevel:
@@ -1123,7 +1356,64 @@ if (!allowedTransitions.includes(status)) {
         "Order update",
         `${updated.id} is ${updated.status}`
       );
+      if (
+  updated.status === OrderStatus.READY_FOR_PICKUP &&
+  req.user!.role === "FARMER"
+) {
+  const bookings =
+    await prisma.logisticsBooking.findMany({
+      where: {
+        orderId: updated.id,
+        farmerId: (
+          await prisma.farmerProfile.findUnique({
+            where: {
+              userId: req.user!.id,
+            },
+          })
+        )?.id,
+        fulfillmentChannel: FulfillmentChannel.DIRECT_FARMER,
+        status: LogisticsStatus.FARMER_READY,
+      },
+      select: {
+        id: true,
+        farmer: {
+          select: {
+            farmName: true,
+          },
+        },
+      },
+    });
 
+  const logisticsUsers =
+    await prisma.user.findMany({
+      where: {
+        role: "LOGISTICS",
+      },
+      select: {
+        id: true,
+      },
+    });
+
+  for (const booking of bookings) {
+    emitEvent(
+      "LOGISTICS_STATUS_CHANGED",
+      {
+        id: booking.id,
+        status: LogisticsStatus.FARMER_READY,
+        orderId: updated.id,
+      }
+    );
+
+    for (const worker of logisticsUsers) {
+      await notify(
+        worker.id,
+        "LOGISTICS_JOB_READY",
+        "New delivery job available",
+        `${booking.farmer.farmName} has prepared order ${updated.id} for pickup.`
+      );
+    }
+  }
+}
       emitEvent(
         "ORDER_STATUS_CHANGED",
         {
@@ -1425,6 +1715,17 @@ commerceRouter.post(
       payment.order.status ===
         OrderStatus.PAID
     ) {
+      await prisma.$transaction(async (tx) => {
+        const items = await tx.orderItem.findMany({
+          where: { orderId: payment.orderId },
+        });
+        await ensureOrderLogisticsBookings(tx, {
+          orderId: payment.orderId,
+          consumerUserId: payment.order.consumerId,
+          items,
+          preferredChannel: preferredChannelFromItems(items),
+        });
+      });
       return res.json({
         ok: true,
         orderId:
@@ -1499,38 +1800,25 @@ commerceRouter.post(
           }
 
           if (
-            current.status ===
-              PaymentStatus.CAPTURED &&
-            current.order.status ===
-              OrderStatus.PAID
+            current.status === PaymentStatus.CAPTURED &&
+            current.order.status === OrderStatus.PAID
           ) {
+            const items = await tx.orderItem.findMany({
+              where: { orderId: current.orderId },
+            });
+            await ensureOrderLogisticsBookings(tx, {
+              orderId: current.orderId,
+              consumerUserId: current.order.consumerId,
+              items,
+              preferredChannel: preferredChannelFromItems(items),
+            });
             return current;
           }
 
-          await tx.payment.update({
-            where: {
-              id: current.id,
-            },
-            data: {
-              providerPayId:
-                providerPayment,
-              signature,
-              status:
-                PaymentStatus.CAPTURED,
-            },
+          return captureOnlinePayment(tx, current.id, current.orderId, {
+            providerPayId: providerPayment,
+            signature,
           });
-
-          await tx.order.update({
-            where: {
-              id: current.orderId,
-            },
-            data: {
-              status:
-                OrderStatus.PAID,
-            },
-          });
-
-          return current;
         },
         {
           isolationLevel:
@@ -1556,7 +1844,7 @@ commerceRouter.post(
         },
       });
 
-    if (order) {
+      if (order) {
       await notify(
         order.consumerId,
         "PAYMENT_SUCCESS",
@@ -1565,6 +1853,10 @@ commerceRouter.post(
       );
 
       for (const item of order.items) {
+        if (item.fulfillmentChannel !== FulfillmentChannel.DIRECT_FARMER) {
+          continue;
+        }
+
         const farmer =
           await prisma.farmerProfile.findUnique(
             {
@@ -1583,14 +1875,17 @@ commerceRouter.post(
           );
         }
       }
+      const bookings = await prisma.logisticsBooking.findMany({
+        where: { orderId: order.id },
+        select: { id: true },
+      });
+      await notifyNewLogisticsJobs(order.id, bookings.map((b) => b.id));
     }
 
     return res.json({
       ok: true,
-      orderId:
-        payment.orderId,
-      paymentId:
-        result.id,
+      orderId: payment.orderId,
+      paymentId: payment.id,
     });
   }
 );
@@ -1899,6 +2194,15 @@ commerceRouter.post(
                 payment.order.status ===
                   OrderStatus.PAID
               ) {
+                const items = await tx.orderItem.findMany({
+                  where: { orderId: payment.orderId },
+                });
+                await ensureOrderLogisticsBookings(tx, {
+                  orderId: payment.orderId,
+                  consumerUserId: payment.order.consumerId,
+                  items,
+                  preferredChannel: preferredChannelFromItems(items),
+                });
                 await tx.paymentWebhookEvent.update({
                   where: {
                     provider_eventId: {
@@ -1914,6 +2218,7 @@ commerceRouter.post(
                 return {
                   alreadyProcessed: false,
                   captured: true,
+                  orderId: payment.orderId,
                 };
               }
 
@@ -1933,31 +2238,12 @@ commerceRouter.post(
                 );
               }
 
-              await tx.payment.update({
-                where: {
-                  id: payment.id,
-                },
-                data: {
-                  providerPayId:
-                    providerPaymentId,
-                  method:
-                    typeof paymentEntity?.method ===
-                    "string"
-                      ? paymentEntity.method
-                      : payment.method,
-                  status:
-                    PaymentStatus.CAPTURED,
-                },
-              });
-
-              await tx.order.update({
-                where: {
-                  id: payment.orderId,
-                },
-                data: {
-                  status:
-                    OrderStatus.PAID,
-                },
+              await captureOnlinePayment(tx, payment.id, payment.orderId, {
+                providerPayId: providerPaymentId,
+                method:
+                  typeof paymentEntity?.method === "string"
+                    ? paymentEntity.method
+                    : payment.method,
               });
 
               await tx.paymentWebhookEvent.update({
@@ -1975,6 +2261,7 @@ commerceRouter.post(
               return {
                 alreadyProcessed: false,
                 captured: true,
+                orderId: payment.orderId,
               };
             }
 
@@ -2014,7 +2301,7 @@ commerceRouter.post(
                 },
               });
 
-              await tx.order.update({
+              const failedOrder = await tx.order.update({
                 where: {
                   id: payment.orderId,
                 },
@@ -2022,7 +2309,9 @@ commerceRouter.post(
                   status:
                     OrderStatus.FAILED,
                 },
+                include: { items: true },
               });
+              await releaseInventoryForOrder(tx, failedOrder.items, "cancel");
             } else {
               await tx.payment.update({
                 where: {
@@ -2066,6 +2355,21 @@ commerceRouter.post(
           alreadyProcessed: true,
           eventId,
         });
+      }
+
+      if ("captured" in result && result.captured && "orderId" in result && result.orderId) {
+        const paidOrder = await prisma.order.findUnique({
+          where: { id: String(result.orderId) },
+          include: { items: true, bookings: true },
+        });
+        if (paidOrder) {
+          emitEvent("PAYMENT_CONFIRMED", { orderId: paidOrder.id });
+          await notify(paidOrder.consumerId, "PAYMENT_SUCCESS", "Payment confirmed", paidOrder.id);
+          await notifyNewLogisticsJobs(
+            paidOrder.id,
+            paidOrder.bookings.map((b) => b.id)
+          );
+        }
       }
 
       return res.json({
@@ -2117,6 +2421,11 @@ commerceRouter.post(
       state,
       pinCode,
       phone,
+      label,
+      recipient,
+      latitude,
+      longitude,
+      isDefault,
     } = req.body || {};
 
     const cleanLine1 =
@@ -2169,11 +2478,22 @@ commerceRouter.post(
       });
     }
 
+    const lat = latitude === undefined || latitude === null ? null : Number(latitude);
+    const lng = longitude === undefined || longitude === null ? null : Number(longitude);
+    if (lat !== null && (!Number.isFinite(lat) || lat < -90 || lat > 90)) {
+      return res.status(422).json({ error: "Invalid latitude", code: 422 });
+    }
+    if (lng !== null && (!Number.isFinite(lng) || lng < -180 || lng > 180)) {
+      return res.status(422).json({ error: "Invalid longitude", code: 422 });
+    }
+
     const address =
       await prisma.address.create({
         data: {
           userId:
             req.user!.id,
+          label: label ? String(label).trim() : null,
+          recipient: recipient ? String(recipient).trim() : null,
           line1:
             cleanLine1,
           city:
@@ -2186,6 +2506,9 @@ commerceRouter.post(
             cleanPinCode,
           phone:
             cleanPhone,
+          latitude: lat,
+          longitude: lng,
+          isDefault: Boolean(isDefault),
         },
       });
 

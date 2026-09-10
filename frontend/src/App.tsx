@@ -11,15 +11,19 @@ import { ForgotPassword } from "./pages/ForgotPassword";
 import { Shop, CartPage } from "./pages/Shop";
 import { ProductPage } from "./pages/ProductPage";
 import { Checkout } from "./pages/Checkout";
+import { Farmers } from "./pages/Farmers";
 import { AddressSelection } from "./pages/AddressSelection";
 import { FarmerDashboard, FarmerFeature } from "./pages/FarmerDashboard";
 import { FarmerProduce } from "./pages/FarmerProduce";
 import { SellProduce } from "./pages/SellProduce";
 import { AiAdvisory } from "./pages/AiAdvisory";
 import { LogisticsDashboard } from "./pages/LogisticsDashboard";
+import { LogisticsDeliveries } from "./pages/LogisticsDeliveries";
 import { LogisticsJobs } from "./pages/LogisticsJobs";
 import { LogisticsTracker } from "./pages/LogisticsTracker";
 import { Orders } from "./pages/Orders";
+import { OrderDetails } from "./pages/OrderDetails";
+import { OrderTracking } from "./pages/OrderTracking";
 import { FarmerShell } from "./features/farmer/FarmerShell";
 import {
   CollabPage,
@@ -33,15 +37,21 @@ import {
   NotificationsPage,
   PredictionsPage,
 } from "./features/farmer/FarmerDesk";
-
+import { AdminLayout } from "./layouts/AdminLayout";
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
+import { AdminSocieties } from "./pages/admin/AdminSocieties";
+import { AdminLogistics } from "./pages/admin/AdminLogistics";
+import { AdminSocietyDetails } from "./pages/admin/AdminSocietyDetails";
+import { AdminPayments } from "./pages/admin/AdminPayments";
+import { AdminSettings } from "./pages/admin/AdminSettings";
+import { AdminFarmers } from "./pages/admin/AdminFarmers";
+import { AdminInventory } from "./pages/admin/AdminInventory";
+import { AdminOrders } from "./pages/admin/AdminOrders";
 const FarmAI = lazy(() =>
   import("./pages/FarmAI").then((m) => ({ default: m.FarmAI }))
 );
 const DigitalTwin = lazy(() =>
   import("./pages/DigitalTwin").then((m) => ({ default: m.DigitalTwin }))
-);
-const CommandCenter = lazy(() =>
-  import("./pages/CommandCenter").then((m) => ({ default: m.CommandCenter }))
 );
 const AgriMapPage = lazy(() =>
   import("./pages/AgriMapPage").then((m) => ({ default: m.AgriMapPage }))
@@ -66,6 +76,7 @@ export default function App() {
           <Suspense fallback={<Fallback />}>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/farmers" element={<Farmers />} />
               <Route path="/join" element={<Join />} />
               <Route path="/register/:role" element={<Register />} />
               <Route path="/login" element={<Login />} />
@@ -112,6 +123,22 @@ export default function App() {
 </ProtectedRoute>
                 }
               />
+             <Route
+  path="/orders/:id"
+  element={
+    <ProtectedRoute role="consumer">
+      <OrderDetails />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/orders/:id/track"
+  element={
+    <ProtectedRoute role="consumer">
+      <OrderTracking />
+    </ProtectedRoute>
+  }
+/>
               <Route
                 path="/farmer"
                 element={
@@ -183,13 +210,23 @@ export default function App() {
                 }
               />
               <Route
-  path="/logistics"
-  element={
-    <ProtectedRoute role="logistics">
-      <LogisticsDashboard />
-    </ProtectedRoute>
-  }
-/>
+                path="/logistics"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/logistics/deliveries"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsDeliveries />
+                  </ProtectedRoute>
+                }
+              />
+
               <Route
                 path="/logistics/jobs"
                 element={
@@ -198,22 +235,37 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+
               <Route
-  path="/logistics/tracker/:jobId"
-  element={
-    <ProtectedRoute role="logistics">
-      <LogisticsTracker />
-    </ProtectedRoute>
-  }
-/>
-              <Route
-                path="/admin"
+                path="/logistics/tracker/:jobId"
                 element={
-                  <ProtectedRoute role="admin">
-                    <CommandCenter />
+                  <ProtectedRoute role="logistics">
+                    <LogisticsTracker />
                   </ProtectedRoute>
                 }
               />
+
+              <Route
+  path="/admin"
+  element={
+    <ProtectedRoute role="admin">
+      <AdminLayout />
+    </ProtectedRoute>
+  }
+>
+    <Route index element={<AdminDashboard />} />
+<Route path="societies" element={<AdminSocieties />} />
+<Route path="logistics" element={<AdminLogistics />} />
+<Route path="payments" element={<AdminPayments />} />
+<Route
+  path="societies/:id"
+  element={<AdminSocietyDetails />}
+/>
+<Route path="farmers" element={<AdminFarmers />} />
+<Route path="inventory" element={<AdminInventory />} />
+<Route path="orders" element={<AdminOrders />} />
+<Route path="settings" element={<AdminSettings />} />
+</Route>
               <Route
                 path="/admin/waste"
                 element={

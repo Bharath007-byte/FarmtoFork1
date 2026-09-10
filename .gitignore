@@ -8,3 +8,10 @@ frontend/public/hero.mov
 frontend/public/upscaled-video.mov
 frontend/public/hero-hd.mp4
 frontend/public/hero-hd.m4v
+
+# Local backups / temporary files
+frontend/src/App.tsx.save
+server/src/index.ts.admin-backup
+server/prisma/schema-before-society-system.prisma
+server/build
+server/check-db.ts
