@@ -3,8 +3,8 @@ services:
     name: samruddhi-setu
     env: node
     plan: free
-    buildCommand: npm install --prefix frontend --legacy-peer-deps && npm run build --prefix frontend && npm install --prefix server --legacy-peer-deps && npx prisma generate --schema server/prisma/schema.prisma && npm run build --prefix server
-    startCommand: cd server && npx prisma db push && npm run db:seed && npm start
+    buildCommand: npm install --prefix frontend --include=dev --legacy-peer-deps && npm run build --prefix frontend && npm install --prefix server --include=dev --legacy-peer-deps && npx prisma generate --schema server/prisma/schema.prisma && npm run build --prefix server
+    startCommand: npx prisma db push --schema server/prisma/schema.prisma && npm run db:seed && npm start
     envVars:
       - key: NODE_ENV
         value: production
