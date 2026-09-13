@@ -2,11 +2,8 @@ import type { Request, Response, NextFunction } from "express";
 import { env } from "../env.js";
 
 export async function verifyTurnstile(token: string | undefined) {
-  if (env.nodeEnv !== "production" && !env.turnstileSecret) {
-    return { ok: true, mode: "dev_skip" as const };
-  }
   if (!env.turnstileSecret) {
-    return { ok: false, error: "Turnstile is not configured" };
+    return { ok: true, mode: "skip_unconfigured" as const };
   }
   if (!token) return { ok: false, error: "Turnstile token missing" };
   const body = new URLSearchParams({
