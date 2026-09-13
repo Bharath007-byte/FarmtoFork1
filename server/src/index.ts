@@ -26,7 +26,12 @@ import { auth, requireRole } from "./middleware/auth.js";
 import { autoSeedIfEmpty } from "./seedData.js";
 
 const app = express();
-app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -970,6 +975,22 @@ app.post("/api/admin/trigger-seed", async (_req, res) => {
     res.status(500).json({ error: err.message || "Failed to seed database" });
   }
 });
+
+// Explicitly serve product images directly
+const candidateProductDirs = [
+  path.resolve(process.cwd(), "../frontend/public/products"),
+  path.resolve(process.cwd(), "frontend/public/products"),
+  path.resolve(process.cwd(), "../frontend/dist/products"),
+  path.resolve(process.cwd(), "frontend/dist/products"),
+];
+
+for (const pDir of candidateProductDirs) {
+  if (fs.existsSync(pDir)) {
+    app.use("/products", express.static(pDir));
+    app.use("/FarmtoFork1/products", express.static(pDir));
+    break;
+  }
+}
 
 // Serve frontend SPA bundle when built
 const candidateDistPaths = [

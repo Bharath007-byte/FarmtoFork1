@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "./db.js";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const categories = [
   ["Vegetables", "vegetables"],
@@ -115,17 +116,13 @@ const SOCIETIES = [
 
 export async function autoSeedIfEmpty() {
   try {
-    const existingUsers = await prisma.user.count();
-    if (existingUsers > 0) {
-      console.log(`[AutoSeed] Database already has ${existingUsers} users. Checking products...`);
-      const prodCount = await prisma.product.count();
-      if (prodCount > 0) {
-        console.log(`[AutoSeed] Database has ${prodCount} products. Skipping seeding.`);
-        return;
-      }
+    const prodCount = await prisma.product.count();
+    if (prodCount >= 150) {
+      console.log(`[AutoSeed] Database already has ${prodCount} products. Seeding up to date.`);
+      return;
     }
 
-    console.log("[AutoSeed] Seeding fresh database with demo accounts, catalog, and societies...");
+    console.log(`[AutoSeed] Database currently has ${prodCount} products (< 150). Running full seed...`);
 
     // 1. Categories
     for (const [name, slug] of categories) {
@@ -338,9 +335,28 @@ export async function autoSeedIfEmpty() {
       },
     }).catch(() => {});
 
-    // 8. Catalog Import (159 products if catalog.json is available)
+    // 8. Fix existing demo product images to local webp assets
+    const fixMap: Record<string, string> = {
+      Tomato: "/products/tomato.webp",
+      Onion: "/products/onion.webp",
+      Banana: "/products/banana.webp",
+      Rice: "/products/basmati-rice.webp",
+      Chilli: "/products/whole-red-chillies.webp",
+    };
+    for (const [name, img] of Object.entries(fixMap)) {
+      await prisma.product.updateMany({
+        where: { name: { contains: name, mode: "insensitive" } },
+        data: { imageUrl: img },
+      }).catch(() => {});
+    }
+
+    // 9. Catalog Import (159 products if catalog.json is available)
+    const thisDir = path.dirname(fileURLToPath(import.meta.url));
     const catalogCandidates = [
+      path.resolve(thisDir, "../data/catalog.json"),
+      path.resolve(thisDir, "../../server/data/catalog.json"),
       path.resolve(process.cwd(), "data/catalog.json"),
+      path.resolve(process.cwd(), "server/data/catalog.json"),
       path.resolve(process.cwd(), "../frontend/src/Data/catalog.json"),
       path.resolve(process.cwd(), "frontend/src/Data/catalog.json"),
     ];

@@ -39,7 +39,12 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 export function mediaUrl(path: string | null | undefined) {
   if (!path) return "";
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
-  return `${import.meta.env.VITE_API_URL || ""}${path}`;
+  const clean = path.startsWith("/") ? path.slice(1) : path;
+  const apiBase = import.meta.env.VITE_API_URL || "";
+  if (apiBase) {
+    return `${apiBase.replace(/\/+$/, "")}/${clean}`;
+  }
+  return `${import.meta.env.BASE_URL}${clean}`;
 }
 
 export function rupees(paise: number) {

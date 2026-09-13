@@ -32,8 +32,18 @@ import {
 
 const API_BASE = import.meta.env.VITE_API_URL || "";
 
-const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1542838132-92c53300491e?w=900&auto=format&fit=crop&q=85";
+function resolveImage(url: string | null | undefined): string {
+  if (!url) return `${import.meta.env.BASE_URL}products/tomato.webp`;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  const clean = url.startsWith("/") ? url.slice(1) : url;
+  const apiBase = import.meta.env.VITE_API_URL || "";
+  if (apiBase) {
+    return `${apiBase.replace(/\/+$/, "")}/${clean}`;
+  }
+  return `${import.meta.env.BASE_URL}${clean}`;
+}
+
+const FALLBACK_IMAGE = resolveImage("/products/tomato.webp");
 
 type ApiProduct = {
   id: string;
@@ -326,7 +336,7 @@ function mapProduct(item: ApiProduct): Product {
     variety: item.variety || "",
     unit: item.unit,
     price: Number(item.pricePaise || 0) / 100,
-    imageUrl: item.imageUrl || FALLBACK_IMAGE,
+    imageUrl: resolveImage(item.imageUrl),
     description:
       item.description ||
       "Freshly sourced through the Farm2Fork farmer marketplace.",
