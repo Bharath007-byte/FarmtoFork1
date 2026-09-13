@@ -975,8 +975,8 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 const httpServer = createServer(app);
 attachIo(httpServer);
 
-httpServer.listen(env.port, () => {
-  console.log(`farm2fork API on :${env.port}`);
+httpServer.listen(env.port, "0.0.0.0", () => {
+  console.log(`farm2fork API on 0.0.0.0:${env.port}`);
   if (env.dataGovKey) {
     ingestMarket().catch((e) => console.warn("market ingest", e));
   }

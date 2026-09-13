@@ -9,7 +9,7 @@
     "db:generate": "prisma generate",
     "create-admin": "tsx scripts/create-admin.ts",
     "db:migrate": "prisma migrate dev",
-    "db:push": "prisma db push",
+    "db:push": "prisma db push --accept-data-loss",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "test": "tsx --test src/lib/predict.test.ts src/lib/orderStatus.test.ts src/lib/deliverySlots.test.ts src/lib/claimAtomicity.test.ts"
