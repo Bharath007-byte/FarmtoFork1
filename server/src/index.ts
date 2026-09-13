@@ -23,10 +23,28 @@ import { aiAgricultureRouter } from "./routes/aiAgriculture.js";
 import { mandiForecastRouter } from "./routes/mandiForecast.js";
 import { krishiAiRouter } from "./routes/krishiAiSuite.js";
 import { auth, requireRole } from "./middleware/auth.js";
+import { autoSeedIfEmpty } from "./seedData.js";
 
 const app = express();
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
-app.use(cors({ origin: env.corsOrigins, credentials: true }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (
+        env.corsOrigins.includes(origin) ||
+        origin.endsWith(".github.io") ||
+        origin.endsWith(".onrender.com") ||
+        origin.includes("localhost") ||
+        origin.includes("127.0.0.1")
+      ) {
+        return callback(null, true);
+      }
+      callback(null, true);
+    },
+    credentials: true,
+  })
+);
 
 /**
  * Razorpay webhook must receive the exact raw request body
@@ -943,6 +961,16 @@ app.get("/api/admin/waste-analytics", auth, requireRole("ADMIN", "FARMER"), asyn
   }
 });
 
+// Trigger-seed endpoint for admin or manual testing
+app.post("/api/admin/trigger-seed", async (_req, res) => {
+  try {
+    await autoSeedIfEmpty();
+    res.json({ ok: true, message: "Database seeding completed successfully" });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || "Failed to seed database" });
+  }
+});
+
 // Serve frontend SPA bundle when built
 const candidateDistPaths = [
   path.resolve(process.cwd(), "../frontend/dist"),
@@ -953,6 +981,7 @@ const candidateDistPaths = [
 for (const distPath of candidateDistPaths) {
   if (fs.existsSync(distPath)) {
     app.use(express.static(distPath));
+    app.use("/FarmtoFork1", express.static(distPath));
     app.get("*", (req, res, next) => {
       if (
         req.path.startsWith("/api") ||
@@ -980,4 +1009,6 @@ httpServer.listen(env.port, "0.0.0.0", () => {
   if (env.dataGovKey) {
     ingestMarket().catch((e) => console.warn("market ingest", e));
   }
+  // Auto-seed demo database in background after port 10000 has bound
+  autoSeedIfEmpty().catch((err) => console.warn("auto-seed error:", err));
 });

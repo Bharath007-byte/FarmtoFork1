@@ -33,7 +33,7 @@ jobs:
         run: |
           cd frontend
           npm install --legacy-peer-deps
-          npm run build
+          VITE_BASE_PATH=/FarmtoFork1/ VITE_API_URL=https://samruddhi-setu.onrender.com npm run build
           cp dist/index.html dist/404.html
 
       - name: Setup Pages

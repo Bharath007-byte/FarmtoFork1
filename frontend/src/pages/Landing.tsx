@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { SiteNav } from "../components/SiteNav";
@@ -11,6 +11,7 @@ import farmTechImg from "../assets/farm-tech.png";
 export function Landing() {
   const { t } = useI18n();
   const location = useLocation();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (!location.hash) return;
@@ -18,12 +19,21 @@ export function Landing() {
     el?.scrollIntoView({ behavior: "smooth" });
   }, [location.hash]);
 
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
+
   return (
     <div className="bg-[#f7f4ec] text-[#1c2b22]">
       <SiteNav transparent />
 
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#142018]">
         <video
+          ref={videoRef}
           autoPlay
           loop
           muted
@@ -32,6 +42,8 @@ export function Landing() {
           className="absolute inset-0 h-[115%] w-full scale-110 object-cover object-center"
         >
           <source src={`${import.meta.env.BASE_URL}hero-hd.mp4`} type="video/mp4" />
+          <source src="/hero-hd.mp4" type="video/mp4" />
+          <source src="hero-hd.mp4" type="video/mp4" />
         </video>
 
         <div className="pointer-events-none absolute inset-0 bg-black/15" />

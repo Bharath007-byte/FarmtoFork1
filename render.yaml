@@ -3,8 +3,8 @@ services:
     name: samruddhi-setu
     env: node
     plan: free
-    buildCommand: npm install --prefix frontend --include=dev --legacy-peer-deps && npm run build --prefix frontend && npm install --prefix server --include=dev --legacy-peer-deps && npm run db:generate --prefix server && npm run build --prefix server
-    startCommand: npm run db:push --prefix server && npm run db:seed --prefix server && npm start --prefix server
+    buildCommand: npm install --prefix frontend --include=dev --legacy-peer-deps && npm run build --prefix frontend && npm install --prefix server --include=dev --legacy-peer-deps && npm run db:generate --prefix server && npm run build --prefix server && npm run db:push --prefix server
+    startCommand: npm start --prefix server
     envVars:
       - key: NODE_ENV
         value: production
