@@ -18,16 +18,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
-      - name: Install Root & Workspace Dependencies
+      - name: Install and Build Frontend
         run: |
-          npm install
-          npm install --prefix frontend
-          npm install --prefix server
+          cd frontend
+          npm install --legacy-peer-deps
+          npm run build
 
-      - name: Generate Prisma Client
-        run: npx prisma generate --schema server/prisma/schema.prisma
-
-      - name: Build Frontend & Backend
-        run: npm run build
+      - name: Install and Build Server
+        run: |
+          cd server
+          npm install --legacy-peer-deps
+          npx prisma generate
+          npm run build
