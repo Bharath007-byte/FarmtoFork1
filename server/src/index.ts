@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import path from "node:path";
+import fs from "node:fs";
 import { createServer } from "node:http";
 import { env } from "./env.js";
 import { prisma } from "./db.js";
@@ -16,6 +17,11 @@ import { opsRouter } from "./routes/ops.js";
 import { societyRouter } from "./routes/societies.js";
 import { adminLogisticsRouter } from "./routes/adminLogistics.js";
 import { adminPaymentsRouter } from "./routes/adminPayments.js";
+import { logisticsRegistrationRouter } from "./routes/logisticsRegistration.js";
+import { aiProduceRouter } from "./routes/aiProduceGrading.js";
+import { aiAgricultureRouter } from "./routes/aiAgriculture.js";
+import { mandiForecastRouter } from "./routes/mandiForecast.js";
+import { krishiAiRouter } from "./routes/krishiAiSuite.js";
 import { auth, requireRole } from "./middleware/auth.js";
 
 const app = express();
@@ -64,10 +70,15 @@ app.use("/api/farmers", farmerRouter);
 app.use("/api/products", productRouter);
 app.use("/api", commerceRouter);
 app.use("/api/market-prices", marketRouter);
+app.use("/api/mandi-forecast", mandiForecastRouter);
+app.use("/api/ai", aiProduceRouter);
+app.use("/api/ai", aiAgricultureRouter);
+app.use("/api/krishi-ai", krishiAiRouter);
 app.get("/api/ai/price-prediction", (req, res) => {
   const q = new URLSearchParams(req.query as Record<string, string>).toString();
   res.redirect(307, `/api/market-prices/prediction${q ? `?${q}` : ""}`);
 });
+app.use("/api/logistics", logisticsRegistrationRouter);
 app.use("/api", opsRouter);
 app.use("/api/societies", societyRouter);
 app.use("/api/admin/logistics", adminLogisticsRouter);
@@ -576,6 +587,57 @@ app.get("/api/admin/farmers", auth, requireRole("ADMIN"), async (_req, res) => {
       },
     });
 
+    const result = farmers.map((farmer) => {
+      const inventory = farmer.inventory.reduce(
+        (totals, row) => ({
+          available: totals.available + row.available,
+          reserved: totals.reserved + row.reserved,
+          sold: totals.sold + row.sold,
+        }),
+        {
+          available: 0,
+          reserved: 0,
+          sold: 0,
+        },
+      );
+
+      return {
+        id: farmer.id,
+        user: farmer.user,
+        farmName: farmer.farmName,
+        district: farmer.district,
+        state: farmer.state,
+        pinCode: farmer.pinCode,
+        location: farmer.location,
+        lat: farmer.lat,
+        lng: farmer.lng,
+        categories: farmer.categories,
+        details: farmer.details,
+        verified: farmer.verified,
+        products: farmer.products,
+        inventory,
+        societies: farmer.societyMemberships.map((membership) => ({
+          membershipId: membership.id,
+          joinedAt: membership.joinedAt,
+          society: membership.society,
+        })),
+      };
+    });
+
+    res.json({
+      farmers: result,
+      total: result.length,
+    });
+  } catch (error) {
+    console.error("GET /api/admin/farmers", error);
+
+    res.status(500).json({
+      error: "Failed to load admin farmers",
+      code: 500,
+    });
+  }
+});
+
 app.get("/api/admin/inventory", auth, requireRole("ADMIN"), async (_req, res) => {
   try {
     const products = await prisma.product.findMany({
@@ -741,56 +803,170 @@ app.get("/api/admin/inventory", auth, requireRole("ADMIN"), async (_req, res) =>
   }
 });
 
-    const result = farmers.map((farmer) => {
-      const inventory = farmer.inventory.reduce(
-        (totals, row) => ({
-          available: totals.available + row.available,
-          reserved: totals.reserved + row.reserved,
-          sold: totals.sold + row.sold,
-        }),
-        {
-          available: 0,
-          reserved: 0,
-          sold: 0,
+app.get("/api/admin/waste-analytics", auth, requireRole("ADMIN", "FARMER"), async (_req, res) => {
+  try {
+    const products = await prisma.product.findMany({
+      where: { active: true },
+      include: {
+        category: true,
+        inventory: true,
+        farmer: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                phone: true,
+                email: true,
+              },
+            },
+          },
         },
-      );
+        societyInventory: {
+          include: {
+            society: {
+              select: {
+                name: true,
+                code: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+
+    const wasteRows = products.map((product) => {
+      const available = product.inventory?.available ?? 0;
+      const reserved = product.inventory?.reserved ?? 0;
+      const sold = product.inventory?.sold ?? 0;
+      const harvestedKg = available + reserved + sold;
+      const leftoverKg = available;
+      const inTransitKg = reserved;
+
+      const catSlug = product.category.slug.toLowerCase();
+      const catName = product.category.name.toLowerCase();
+
+      // Perishability calculation based on produce type
+      let shelfLifeDays = 7;
+      if (catSlug.includes("leafy") || catName.includes("leafy") || catName.includes("greens")) {
+        shelfLifeDays = 3;
+      } else if (catSlug.includes("dairy") || catName.includes("dairy") || catName.includes("egg")) {
+        shelfLifeDays = 4;
+      } else if (catSlug.includes("veg") || catName.includes("vegetable")) {
+        shelfLifeDays = 6;
+      } else if (catSlug.includes("fruit") || catName.includes("fruit")) {
+        shelfLifeDays = 9;
+      } else if (catSlug.includes("grain") || catSlug.includes("pulse") || catSlug.includes("staple") || catSlug.includes("spice")) {
+        shelfLifeDays = 180;
+      }
+
+      // Age calculation
+      const lastUpdate = product.inventory?.updatedAt ? new Date(product.inventory.updatedAt) : new Date();
+      const ageHours = Math.max(1, Math.floor((Date.now() - lastUpdate.getTime()) / (1000 * 60 * 60)));
+      const ageDays = Math.max(0.5, +(ageHours / 24).toFixed(1));
+
+      // Waste Risk scoring: 0 - 100
+      let baseScore = Math.round((ageDays / shelfLifeDays) * 100);
+      if (shelfLifeDays > 30) {
+        baseScore = Math.min(20, Math.round(baseScore * 0.1));
+      }
+      if (available === 0) {
+        baseScore = 5;
+      }
+      const score = Math.min(98, Math.max(10, baseScore));
+      const approaching = score >= 50 && available > 0;
+
+      let reason = `Produce age ~${ageDays} days vs ${shelfLifeDays}-day shelf life (${product.category.name}).`;
+      let action = "Standard retail distribution on track.";
+
+      if (approaching) {
+        if (available > 100) {
+          reason = `Surplus ${available} kg perishable ${product.name} nearing ${Math.round((ageDays / shelfLifeDays) * 100)}% of shelf limit.`;
+          action = `Transfer bulk lot to cooperative cold-storage hub or dispatch at 25% flash-sale discount.`;
+        } else {
+          reason = `Stock aging: ${available} kg remaining at ${product.farmer.farmName}.`;
+          action = `Trigger consumer notification for local area instant delivery.`;
+        }
+      } else if (available === 0) {
+        reason = `Zero inventory at farm gate; 100% sold/dispatched.`;
+        action = `Replenish listing or schedule next harvesting batch.`;
+      }
 
       return {
-        id: farmer.id,
-        user: farmer.user,
-        farmName: farmer.farmName,
-        district: farmer.district,
-        state: farmer.state,
-        pinCode: farmer.pinCode,
-        location: farmer.location,
-        lat: farmer.lat,
-        lng: farmer.lng,
-        categories: farmer.categories,
-        details: farmer.details,
-        verified: farmer.verified,
-        products: farmer.products,
-        inventory,
-        societies: farmer.societyMemberships.map((membership) => ({
-          membershipId: membership.id,
-          joinedAt: membership.joinedAt,
-          society: membership.society,
-        })),
+        id: product.id,
+        listingId: product.id,
+        name: product.name,
+        variety: product.variety,
+        category: product.category.name,
+        farmName: product.farmer.farmName,
+        district: product.farmer.district,
+        harvestedKg,
+        soldKg: sold,
+        inTransitKg,
+        leftoverKg,
+        shelfLifeDays,
+        score,
+        approaching,
+        reason,
+        action,
+        origin: "PostgreSQL Inventory & AI Model",
       };
     });
 
+    // Summary calculations
+    const totalHarvestedKg = wasteRows.reduce((sum, r) => sum + r.harvestedKg, 0);
+    const totalSoldKg = wasteRows.reduce((sum, r) => sum + r.soldKg, 0);
+    const totalLeftoverKg = wasteRows.reduce((sum, r) => sum + r.leftoverKg, 0);
+    const highRiskLots = wasteRows.filter((r) => r.approaching && r.leftoverKg > 0);
+    const atRiskKg = highRiskLots.reduce((sum, r) => sum + r.leftoverKg, 0);
+
     res.json({
-      farmers: result,
-      total: result.length,
+      waste: wasteRows,
+      summary: {
+        totalHarvestedKg,
+        totalSoldKg,
+        totalLeftoverKg,
+        atRiskKg,
+        highRiskCount: highRiskLots.length,
+        savedRatePct: totalHarvestedKg > 0 ? Math.round((totalSoldKg / totalHarvestedKg) * 100) : 100,
+      },
     });
   } catch (error) {
-    console.error("GET /api/admin/farmers", error);
-
+    console.error("GET /api/admin/waste-analytics error:", error);
     res.status(500).json({
-      error: "Failed to load admin farmers",
+      error: "Failed to calculate food-waste analytics",
       code: 500,
     });
   }
 });
+
+// Serve frontend SPA bundle when built
+const candidateDistPaths = [
+  path.resolve(process.cwd(), "../frontend/dist"),
+  path.resolve(process.cwd(), "frontend/dist"),
+  path.resolve(process.cwd(), "dist/frontend"),
+];
+
+for (const distPath of candidateDistPaths) {
+  if (fs.existsSync(distPath)) {
+    app.use(express.static(distPath));
+    app.get("*", (req, res, next) => {
+      if (
+        req.path.startsWith("/api") ||
+        req.path.startsWith("/uploads") ||
+        req.path.startsWith("/socket.io")
+      ) {
+        return next();
+      }
+      res.sendFile(path.join(distPath, "index.html"));
+    });
+    break;
+  }
+}
+
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);
   res.status(500).json({ error: err.message || "Server error", code: 500 });

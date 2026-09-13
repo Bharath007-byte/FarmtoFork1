@@ -1,14 +1,15 @@
+import { useState, useEffect, useMemo } from "react";
+import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft,
   Check,
   Circle,
   MapPin,
-  Package,
-  X,
+  AlertCircle,
+  Navigation,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { api, ApiError } from "../services/api";
+import { LogisticsLayout } from "../layouts/LogisticsLayout";
+import { api, ApiError, rupees } from "../services/api";
 import { useRealtime } from "../hooks/useRealtime";
 
 type JobStatus =
@@ -42,35 +43,18 @@ type Job = {
     address?: {
       city: string;
       state: string;
+      line1?: string;
     } | null;
   } | null;
 };
 
 const STEPS = [
-  {
-    status: "CONFIRMED",
-    label: "Job Accepted",
-  },
-  {
-    status: "PICKUP_SCHEDULED",
-    label: "Pickup Scheduled",
-  },
-  {
-    status: "PICKED_UP",
-    label: "Picked Up",
-  },
-  {
-    status: "IN_TRANSIT",
-    label: "In Transit",
-  },
-  {
-    status: "OUT_FOR_DELIVERY",
-    label: "Out for Delivery",
-  },
-  {
-    status: "DELIVERED",
-    label: "Delivered",
-  },
+  { status: "CONFIRMED", label: "Job Accepted" },
+  { status: "PICKUP_SCHEDULED", label: "Pickup Scheduled" },
+  { status: "PICKED_UP", label: "Cargo Picked Up" },
+  { status: "IN_TRANSIT", label: "In Transit" },
+  { status: "OUT_FOR_DELIVERY", label: "Out for Delivery" },
+  { status: "DELIVERED", label: "Delivered to Society" },
 ] as const;
 
 const STATUS_RANK: Record<string, number> = {
@@ -93,21 +77,16 @@ const NEXT_STATUS: Record<string, string | null> = {
   DELIVERED: null,
 };
 
-function getStepState(
-  stepStatus: string,
-  currentStatus: string
-): "complete" | "current" | "upcoming" {
+function getStepState(stepStatus: string, currentStatus: string): "complete" | "current" | "upcoming" {
   const stepRank = STATUS_RANK[stepStatus] ?? 0;
   const currentRank = STATUS_RANK[currentStatus] ?? 0;
 
   if (stepRank < currentRank) return "complete";
   if (stepRank === currentRank) return "current";
-
   return "upcoming";
 }
 
 export function LogisticsTracker() {
-  const navigate = useNavigate();
   const { jobId } = useParams();
 
   const [job, setJob] = useState<Job | null>(null);
@@ -126,9 +105,7 @@ export function LogisticsTracker() {
 
     try {
       setError("");
-
       const data = await api<{ jobs: Job[] }>("/api/logistics/jobs");
-
       const found = data.jobs.find((item) => item.id === jobId);
 
       if (!found) {
@@ -139,34 +116,24 @@ export function LogisticsTracker() {
 
       setJob(found);
     } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Unable to load this delivery job."
-      );
+      setError(err instanceof ApiError ? err.message : "Unable to load this delivery job.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadJob();
+    void loadJob();
   }, [jobId]);
 
   useRealtime(
-    [
-      "LOGISTICS_BOOKED",
-      "LOGISTICS_STATUS_CHANGED",
-      "LOGISTICS_LOCATION_UPDATED",
-      "ORDER_STATUS_CHANGED",
-    ],
-    loadJob
+    ["LOGISTICS_BOOKED", "LOGISTICS_STATUS_CHANGED", "LOGISTICS_LOCATION_UPDATED", "ORDER_STATUS_CHANGED"],
+    () => {
+      void loadJob();
+    }
   );
 
-  const nextStatus = useMemo(
-    () => (job ? NEXT_STATUS[job.status] : null),
-    [job]
-  );
+  const nextStatus = useMemo(() => (job ? NEXT_STATUS[job.status] : null), [job]);
 
   const updateStatus = async () => {
     if (!job || !nextStatus) return;
@@ -177,18 +144,11 @@ export function LogisticsTracker() {
     try {
       await api(`/api/logistics/jobs/${job.id}/status`, {
         method: "PATCH",
-        body: JSON.stringify({
-          status: nextStatus,
-        }),
+        body: JSON.stringify({ status: nextStatus }),
       });
-
       await loadJob();
     } catch (err) {
-      setActionError(
-        err instanceof ApiError
-          ? err.message
-          : "Unable to update delivery status."
-      );
+      setActionError(err instanceof ApiError ? err.message : "Unable to update delivery status.");
     } finally {
       setSavingStatus(false);
     }
@@ -196,7 +156,6 @@ export function LogisticsTracker() {
 
   const sendGps = () => {
     if (!job) return;
-
     setGpsMessage("");
 
     if (!navigator.geolocation) {
@@ -214,246 +173,241 @@ export function LogisticsTracker() {
               longitude: position.coords.longitude,
             }),
           });
-
-          setGpsMessage("GPS location stored from this device.");
+          setGpsMessage("GPS location stored & broadcasted to admin hub.");
           await loadJob();
         } catch (err) {
-          setGpsMessage(
-            err instanceof ApiError
-              ? err.message
-              : "Unable to store GPS location."
-          );
+          setGpsMessage(err instanceof ApiError ? err.message : "Unable to broadcast GPS location.");
         }
       },
       () => {
-        setGpsMessage(
-          "Location permission was denied. GPS was not stored."
-        );
+        setGpsMessage("Location permission was denied. GPS was not stored.");
       }
     );
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f7f4ec] px-5 py-10">
-        <div className="mx-auto max-w-3xl animate-pulse">
-          <div className="h-5 w-28 rounded bg-zinc-200" />
-          <div className="mt-8 h-8 w-64 rounded bg-zinc-200" />
-          <div className="mt-8 h-96 rounded-[2rem] bg-white" />
+      <LogisticsLayout>
+        <div className="p-8 animate-pulse space-y-4">
+          <div className="h-6 w-40 bg-slate-200 rounded" />
+          <div className="h-64 bg-white rounded-2xl border border-slate-200" />
         </div>
-      </div>
+      </LogisticsLayout>
     );
   }
 
   if (error || !job) {
     return (
-      <div className="min-h-screen bg-[#f7f4ec] px-5 py-10 text-[#1c2b22]">
-        <div className="mx-auto max-w-3xl">
-          <button
-            type="button"
-            onClick={() => navigate("/logistics/jobs")}
-            className="flex items-center gap-2 text-sm font-semibold text-[#2f7a4a]"
+      <LogisticsLayout>
+        <div className="space-y-4">
+          <Link
+            to="/logistics/deliveries"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-900"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Back to jobs
-          </button>
-
-          <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-sm">
-            <h1 className="font-serif text-3xl">
-              Delivery job unavailable
-            </h1>
-
-            <p className="mt-3 text-sm text-zinc-500">
-              {error || "This job is no longer available."}
-            </p>
+            <ArrowLeft size={14} />
+            <span>Back to deliveries</span>
+          </Link>
+          <div className="p-8 text-center rounded-2xl bg-white border border-slate-200 shadow-xs">
+            <AlertCircle size={32} className="mx-auto text-rose-500 mb-2" />
+            <h3 className="text-sm font-bold text-slate-900">{error || "Delivery consignment unavailable"}</h3>
           </div>
         </div>
-      </div>
+      </LogisticsLayout>
     );
   }
 
+  const isDelivered = job.status === "DELIVERED";
+  const isHeavy = job.quantity > 30 || job.vehicle.toLowerCase().includes("truck");
+  const payoutPaise = isHeavy ? 35000 + job.quantity * 150 : 6000 + job.quantity * 200;
+
   return (
-    <div className="min-h-screen bg-[#f7f4ec] text-[#1c2b22]">
-      <div className="mx-auto max-w-4xl px-5 py-8 lg:px-8">
-        <button
-          type="button"
-          onClick={() => navigate("/logistics/jobs")}
-          className="flex items-center gap-2 text-sm font-semibold text-[#2f7a4a] transition hover:text-[#205c38]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to jobs
-        </button>
-
-        <div className="mt-8">
-          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#2f7a4a]">
-            Delivery tracker
-          </p>
-
-          <h1 className="mt-2 font-serif text-4xl">
-            Current delivery
-          </h1>
+    <LogisticsLayout>
+      <div className="space-y-6">
+        {/* Top Back Navigation */}
+        <div className="flex items-center justify-between">
+          <Link
+            to="/logistics/deliveries"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 transition"
+          >
+            <ArrowLeft size={14} />
+            <span>Back to deliveries</span>
+          </Link>
+          <span className="font-mono text-xs font-bold text-slate-700 bg-white border border-slate-200 px-3 py-1 rounded-lg">
+            Shipment ID: SS-{job.id.slice(0, 8)}
+          </span>
         </div>
 
-        <div className="mt-8 overflow-hidden rounded-[2rem] bg-white shadow-sm">
-          <div className="border-b border-zinc-100 p-6 sm:p-8">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#e8f3e8]">
-                  <Package className="h-7 w-7 text-[#2f7a4a]" />
-                </div>
-
-                <div>
-                  <h2 className="text-xl font-bold">
-                    {job.farmer.farmName}
-                  </h2>
-
-                  <p className="mt-1 text-sm text-zinc-500">
-                    {job.order?.address
-                      ? `${job.order.address.city}, ${job.order.address.state}`
-                      : "Customer address available in order"}
-                  </p>
-
-                  <p className="mt-1 text-sm text-zinc-500">
-                    {job.quantity} • Pickup from {job.pickup}
-                  </p>
-                </div>
+        {/* Primary Route Card */}
+        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
+                  {job.quantity} kg Fresh Cargo
+                </span>
+                <span className="text-xs font-bold text-slate-500">• {job.vehicle} • {isDelivered ? "Delivered" : "In Progress"}</span>
               </div>
+              <h2 className="text-xl font-black text-slate-900 mt-1">
+                {job.farmer?.farmName || "Farm Hub"} ➔ {job.order?.address?.city || "Retail Society"}
+              </h2>
+            </div>
 
-              <span className="w-fit rounded-full bg-[#e7f6ea] px-3 py-1.5 text-xs font-bold text-[#2f7a4a]">
-                {job.status.replaceAll("_", " ")}
-              </span>
+            <div className="text-right">
+              <span className="text-[10px] text-slate-400 font-bold uppercase">Estimated Driver Payout</span>
+              <p className="text-xl font-black text-slate-900">{rupees(payoutPaise)}</p>
             </div>
           </div>
 
-          <div className="p-6 sm:p-8">
-            <h2 className="text-lg font-bold">
-              Delivery progress
-            </h2>
+          {/* Pin-to-Pin Route */}
+          <div className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+                <MapPin size={18} />
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-emerald-700 uppercase">Pickup Location</span>
+                <h4 className="text-xs font-bold text-slate-900 mt-0.5">{job.pickup || job.farmer.farmName}</h4>
+                <p className="text-xs text-slate-500">Contact: {job.farmer.user.name}</p>
+              </div>
+            </div>
 
-            <div className="mt-7">
-              {STEPS.map((step, index) => {
-                const state = getStepState(step.status, job.status);
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
+                <MapPin size={18} />
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-blue-700 uppercase">Drop Destination</span>
+                <h4 className="text-xs font-bold text-slate-900 mt-0.5">
+                  {job.order?.address ? `${job.order.address.city}, ${job.order.address.state}` : "Consumer Address"}
+                </h4>
+                <p className="text-xs text-slate-500">Verified Consumer Society</p>
+              </div>
+            </div>
+          </div>
 
-                const completed =
-                  state === "complete" || state === "current";
+          {/* External Map Navigation Link */}
+          <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="text-slate-600">
+              {job.currentLat && job.currentLng ? (
+                <span className="text-emerald-700 font-semibold flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>GPS Broadcast Active ({job.currentLat.toFixed(4)}, {job.currentLng.toFixed(4)})</span>
+                </span>
+              ) : (
+                <span className="text-slate-400">GPS ready · Tap 'Broadcast GPS Position' below to stream coordinates</span>
+              )}
+            </div>
 
-                const isCurrent =
-                  step.status === job.status ||
-                  (step.status === "PICKED_UP" &&
-                    job.status === "FARMER_READY");
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(
+                job.pickup
+              )}&destination=${encodeURIComponent(
+                job.order?.address ? `${job.order.address.city}, ${job.order.address.state}` : "Devanahalli, Bengaluru"
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-900 hover:text-slate-600 transition"
+            >
+              <span>Launch Turn-by-Turn Navigation</span>
+              <Navigation size={13} />
+            </a>
+          </div>
+        </div>
 
-                return (
-                  <div
-                    key={step.status}
-                    className="relative flex min-h-[76px] gap-4"
-                  >
-                    {index < STEPS.length - 1 && (
-                      <div
-                        className={`absolute left-[11px] top-7 h-[76px] w-0.5 ${
-                          completed
-                            ? "bg-[#2f7a4a]"
-                            : "bg-zinc-200"
-                        }`}
-                      />
-                    )}
+        {/* Milestone Stepper & Actions */}
+        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
+          <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wide mb-6">
+            Consignment Milestones & Status Progression
+          </h3>
 
+          <div className="space-y-4">
+            {STEPS.map((step, index) => {
+              const state = getStepState(step.status, job.status);
+              const completed = state === "complete" || state === "current";
+              const isCurrent =
+                step.status === job.status ||
+                (step.status === "PICKED_UP" && job.status === "FARMER_READY");
+
+              return (
+                <div key={step.status} className="relative flex items-center gap-4">
+                  {index < STEPS.length - 1 && (
                     <div
-                      className={`relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
-                        completed
-                          ? "border-[#2f7a4a] bg-[#2f7a4a] text-white"
-                          : "border-zinc-300 bg-white text-zinc-300"
+                      className={`absolute left-[13px] top-7 h-8 w-0.5 ${
+                        completed ? "bg-slate-900" : "bg-slate-200"
                       }`}
-                    >
-                      {completed ? (
-                        <Check className="h-3.5 w-3.5" />
-                      ) : (
-                        <Circle className="h-2 w-2 fill-current" />
-                      )}
-                    </div>
+                    />
+                  )}
 
-                    <div className="pt-0.5">
+                  <div
+                    className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition ${
+                      completed
+                        ? "bg-slate-900 text-white"
+                        : "bg-white border-2 border-slate-200 text-slate-400"
+                    }`}
+                  >
+                    {completed ? <Check size={14} /> : <Circle size={8} />}
+                  </div>
+
+                  <div className="flex-1 flex items-center justify-between">
+                    <div>
                       <p
-                        className={`text-sm font-semibold ${
-                          completed || isCurrent
-                            ? "text-[#1c2b22]"
-                            : "text-zinc-400"
+                        className={`text-xs font-bold ${
+                          completed || isCurrent ? "text-slate-900" : "text-slate-400"
                         }`}
                       >
                         {step.label}
                       </p>
-
                       {isCurrent && (
-                        <p className="mt-1 text-xs font-medium text-[#2f7a4a]">
-                          Current step
-                        </p>
+                        <span className="text-[10px] font-semibold text-emerald-600">Active milestone</span>
                       )}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              );
+            })}
+          </div>
+
+          {actionError && (
+            <div className="mt-6 p-3 rounded-xl bg-rose-50 text-rose-700 text-xs border border-rose-200">
+              {actionError}
             </div>
+          )}
 
-            {actionError && (
-              <div className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                {actionError}
-              </div>
-            )}
+          {gpsMessage && (
+            <div className="mt-6 p-3 rounded-xl bg-slate-50 text-slate-700 text-xs border border-slate-200">
+              {gpsMessage}
+            </div>
+          )}
 
-            {gpsMessage && (
-              <div className="mt-4 rounded-2xl bg-zinc-50 px-4 py-3 text-sm text-zinc-600">
-                {gpsMessage}
-              </div>
-            )}
-
-            <div className="mt-4 grid gap-3">
-              {nextStatus && (
-                <button
-                  type="button"
-                  disabled={savingStatus}
-                  onClick={updateStatus}
-                  className="flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#16804a] px-5 text-sm font-bold text-white transition hover:bg-[#116a3e] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <Check className="h-4 w-4" />
-                  {savingStatus
-                    ? "Updating..."
-                    : `Mark as ${nextStatus
-                        .replaceAll("_", " ")
-                        .toLowerCase()}`}
-                </button>
-              )}
-
-              {job.status === "OUT_FOR_DELIVERY" && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActionError(
-                      "Not Delivered requires a reason. The delivery outcome form will be added next."
-                    );
-                  }}
-                  className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-rose-300 bg-white px-5 text-sm font-bold text-rose-600 transition hover:bg-rose-50"
-                >
-                  <X className="h-4 w-4" />
-                  Not Delivered
-                </button>
-              )}
-
+          {/* Action Buttons */}
+          <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
+            {nextStatus && (
               <button
                 type="button"
-                onClick={sendGps}
-                className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-zinc-200 bg-white px-5 text-sm font-bold text-zinc-700 transition hover:bg-zinc-50"
+                disabled={savingStatus}
+                onClick={updateStatus}
+                className="flex-1 py-3 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-xs disabled:opacity-50"
               >
-                <MapPin className="h-4 w-4" />
-                Send My GPS Location
+                <Check size={15} />
+                <span>
+                  {savingStatus
+                    ? "Updating Milestone..."
+                    : `Confirm: Advance to ${nextStatus.replaceAll("_", " ")}`}
+                </span>
               </button>
-            </div>
+            )}
 
-            <p className="mt-5 text-center text-xs text-zinc-400">
-              GPS uses this device's real browser location. No
-              coordinates are generated by the application.
-            </p>
+            <button
+              type="button"
+              onClick={sendGps}
+              className="py-3 px-5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 text-xs font-bold transition flex items-center justify-center gap-2 shadow-xs"
+            >
+              <MapPin size={15} />
+              <span>Broadcast GPS Position</span>
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </LogisticsLayout>
   );
 }

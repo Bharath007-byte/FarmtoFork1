@@ -1,0 +1,33 @@
+name: FarmtoFork CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Root & Workspace Dependencies
+        run: |
+          npm install
+          npm install --prefix frontend
+          npm install --prefix server
+
+      - name: Generate Prisma Client
+        run: npx prisma generate --schema server/prisma/schema.prisma
+
+      - name: Build Frontend & Backend
+        run: npm run build

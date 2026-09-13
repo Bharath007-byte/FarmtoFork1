@@ -70,7 +70,11 @@ enum FulfillmentChannel {
 
 enum LogisticsVerificationStatus {
   INCOMPLETE
+  DOCUMENTS_UPLOADED
+  PENDING_REVIEW
+  ACTION_REQUIRED
   VERIFIED
+  APPROVED
   REJECTED
 }
 
@@ -156,7 +160,7 @@ model Product {
   organic       Boolean         @default(false)
   harvestDate   DateTime?
   availableFrom DateTime?
-  minQty        Float           @default(1)
+  minQty        Float           @default(0.1)
   maxQty        Float?
   imageUrl      String?
   active        Boolean         @default(true)
@@ -484,10 +488,38 @@ model LogisticsVerification {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   vehicleType   DeliveryType
-  vehicleNumber String
+  vehicleNumber String?
 
-  licenceNumber      String
-  licenceDocumentUrl String
+  licenceNumber      String?
+  licenceDocumentUrl String?
+
+  // Personal info
+  dateOfBirth String?
+  gender      String?
+  address     String?
+  district    String?
+  city        String?
+  state       String?
+  pinCode     String?
+
+  // Emergency contact
+  emergencyName     String?
+  emergencyPhone    String?
+  emergencyRelation String?
+
+  // Consents
+  termsAccepted   Boolean @default(false)
+  consentAccepted Boolean @default(false)
+
+  // Vehicle details (Step 5)
+  vehicleMake   String?
+  vehicleModel  String?
+  vehicleColour String?
+  vehicleYear   Int?
+  truckType     String?
+  capacityKg    Float?
+
+  currentStep Int @default(1)
 
   status LogisticsVerificationStatus @default(INCOMPLETE)
 
@@ -495,9 +527,40 @@ model LogisticsVerification {
   reviewedAt      DateTime?
   rejectionReason String?
 
+  documents LogisticsDocument[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model LogisticsDocument {
+  id              String    @id @default(cuid())
+  verificationId  String
+  verification    LogisticsVerification @relation(fields: [verificationId], references: [id], onDelete: Cascade)
+  userId          String
+  documentType    String    // PROFILE_PHOTO, DRIVING_LICENCE_FRONT, DRIVING_LICENCE_BACK, VEHICLE_RC, VEHICLE_INSURANCE, PUC, TRANSPORT_PERMIT
+  fileUrl         String    // Internal storage path
+  fileName        String
+  fileSize        Int
+  mimeType        String
+  fileHash        String?   // SHA-256 for duplicate upload detection
+  status          String    @default("PENDING_REVIEW") // UPLOADED, PROCESSING, PENDING_REVIEW, VERIFIED, REJECTED, EXPIRED, REUPLOAD_REQUIRED, REPLACED
+  rejectionReason String?
+  reviewerNotes   String?
+  extractedData   Json?
+  documentNumber  String?
+  expiryDate      DateTime?
+  attempts        Int       @default(1)
+  verifiedAt      DateTime?
+  uploadedAt      DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([verificationId])
+  @@index([userId])
+  @@index([documentType])
+}
+
 
 model CooperativeSociety {
   id          String  @id @default(cuid())

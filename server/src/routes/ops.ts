@@ -389,6 +389,23 @@ opsRouter.get("/notifications", auth, async (req, res) => {
   res.json({ notifications: rows });
 });
 
+opsRouter.patch("/notifications/:id/read", auth, async (req, res) => {
+  const id = String(req.params.id);
+  const updated = await prisma.notification.updateMany({
+    where: { id, userId: req.user!.id },
+    data: { read: true },
+  });
+  res.json({ success: true, count: updated.count });
+});
+
+opsRouter.patch("/notifications/mark-all-read", auth, async (req, res) => {
+  const updated = await prisma.notification.updateMany({
+    where: { userId: req.user!.id, read: false },
+    data: { read: true },
+  });
+  res.json({ success: true, count: updated.count });
+});
+
 opsRouter.post("/logistics/bookings/:id/cancel", auth, requireRole("FARMER"), async (req, res) => {
   const farmer = await prisma.farmerProfile.findUnique({ where: { userId: req.user!.id } });
   const booking = await prisma.logisticsBooking.findUnique({ where: { id: String(req.params.id) } });
@@ -460,6 +477,14 @@ const jobInclude = {
 
 opsRouter.get("/logistics/jobs", auth, requireRole("LOGISTICS", "ADMIN"), async (req, res) => {
   await ensureUpcomingDeliverySlots(prisma);
+
+  const worker = req.user!.role === "LOGISTICS"
+    ? await prisma.user.findUnique({
+        where: { id: req.user!.id },
+        select: { deliveryType: true },
+      })
+    : null;
+
   const where =
   req.user!.role === "ADMIN"
     ? {
@@ -486,11 +511,33 @@ opsRouter.get("/logistics/jobs", auth, requireRole("LOGISTICS", "ADMIN"), async 
           },  
         ],
       };
-  const jobs = await prisma.logisticsBooking.findMany({
+
+  const rawJobs = await prisma.logisticsBooking.findMany({
     where,
     include: jobInclude,
     orderBy: { createdAt: "desc" },
   });
+
+  const jobs = rawJobs.map((j) => {
+    const isHeavy = j.quantity > 30 || j.vehicle.toLowerCase().includes("truck");
+    const requiredVehicleType = isHeavy ? "LARGE_TRUCK" : "BIKE";
+    const workerCanClaim = !worker || worker.deliveryType === "LARGE_TRUCK" || !isHeavy;
+
+    // Expected payout in paise (use order.logisticsPaise if set, otherwise calculate base + weight rate)
+    const payoutPaise = j.order?.logisticsPaise && j.order.logisticsPaise > 0
+      ? j.order.logisticsPaise
+      : isHeavy
+        ? Math.round(35000 + j.quantity * 150) // ₹350 base + ₹1.50/kg for bulk trucks
+        : Math.round(6000 + j.quantity * 200);  // ₹60 base + ₹2/kg for bikes
+
+    return {
+      ...j,
+      requiredVehicleType,
+      workerCanClaim,
+      payoutPaise,
+    };
+  });
+
   res.json({ jobs });
 });
 
@@ -498,6 +545,28 @@ opsRouter.post("/logistics/jobs/:id/claim", auth, requireRole("LOGISTICS"), asyn
   const id = String(req.params.id);
   try {
     const job = await prisma.$transaction(async (tx) => {
+      const existing = await tx.logisticsBooking.findUnique({
+        where: { id },
+        select: { quantity: true, vehicle: true },
+      });
+
+      if (!existing) {
+        throw Object.assign(new Error("Job not found"), { code: 404 });
+      }
+
+      const worker = await tx.user.findUnique({
+        where: { id: req.user!.id },
+        select: { deliveryType: true },
+      });
+
+      const isHeavy = existing.quantity > 30 || existing.vehicle.toLowerCase().includes("truck");
+      if (worker?.deliveryType === "BIKE" && isHeavy) {
+        throw Object.assign(
+          new Error("This bulk order exceeds 30kg and requires a Large Truck. Your registered vehicle is Bike."),
+          { code: 403 }
+        );
+      }
+
       const updated = await tx.logisticsBooking.updateMany({
         where: {
           id,
@@ -521,13 +590,30 @@ opsRouter.post("/logistics/jobs/:id/claim", auth, requireRole("LOGISTICS"), asyn
       return tx.logisticsBooking.findUniqueOrThrow({ where: { id }, include: jobInclude });
     });
     emitEvent("LOGISTICS_STATUS_CHANGED", { id: job.id, status: job.status, orderId: job.orderId });
+
+    const jobCode = job.id.slice(-6).toUpperCase();
+    const orderCode = job.orderId ? job.orderId.slice(-6).toUpperCase() : jobCode;
+    const workerName = req.user!.name || "Delivery Partner";
+
+    // 1. Notify Logistics Driver
+    await notify(
+      req.user!.id,
+      "LOGISTICS_CLAIMED",
+      "Delivery Job Claimed 📦",
+      `You claimed Job #${jobCode} (Order #${orderCode}, ~${Math.round(job.quantity)}kg). Proceed to pickup.`
+    );
+
+    // 2. Notify Consumer
     if (job.order?.consumerId) {
-      await notify(job.order.consumerId, "LOGISTICS_STATUS", "Pickup scheduled", job.id);
+      await notify(
+        job.order.consumerId,
+        "LOGISTICS_STATUS",
+        "Delivery Partner Assigned 🚚",
+        `${workerName} has been assigned to deliver your order #${orderCode}. Pickup scheduled!`
+      );
     }
-    /**
-     * Society fulfillment has no farmer pickup step.
-     * Only notify the farmer for direct-farmer jobs.
-     */
+
+    // 3. Notify Farmer (for direct-farmer jobs)
     if (
       job.fulfillmentChannel !== FulfillmentChannel.SOCIETY &&
       job.farmer?.userId
@@ -535,8 +621,8 @@ opsRouter.post("/logistics/jobs/:id/claim", auth, requireRole("LOGISTICS"), asyn
       await notify(
         job.farmer.userId,
         "LOGISTICS_STATUS",
-        "Logistics claimed your pickup",
-        job.id,
+        "Pickup Scheduled 🚛",
+        `${workerName} accepted delivery job #${jobCode} and will arrive for produce pickup.`
       );
     }
     res.json({ job });
@@ -630,9 +716,100 @@ opsRouter.patch("/logistics/jobs/:id/status", auth, requireRole("LOGISTICS", "AD
         status: result.orderStatus,
       });
     }
-    if (result.job.order?.consumerId) {
-      await notify(result.job.order.consumerId, "LOGISTICS_STATUS", `Delivery ${next}`, result.job.id);
+    const jobCode = result.job.id.slice(-6).toUpperCase();
+    const orderCode = result.job.orderId ? result.job.orderId.slice(-6).toUpperCase() : jobCode;
+    const consumerId = result.job.order?.consumerId;
+    const farmerUserId = result.job.farmer?.user?.id || (result.job.fulfillmentChannel !== FulfillmentChannel.SOCIETY ? result.job.farmer?.userId : null);
+    const driverId = result.job.assignedUserId;
+
+    if (next === LogisticsStatus.FARMER_READY) {
+      if (consumerId) {
+        await notify(
+          consumerId,
+          "LOGISTICS_STATUS",
+          "Produce Packed & Ready 🌾",
+          `Items for order #${orderCode} have been prepared and packed fresh at the farm.`
+        );
+      }
+      if (driverId) {
+        await notify(
+          driverId,
+          "LOGISTICS_STATUS",
+          "Produce Ready for Pickup 📦",
+          `Job #${jobCode} produce is packed and ready for pickup at ${result.job.pickup}.`
+        );
+      }
+    } else if (next === LogisticsStatus.PICKED_UP) {
+      if (consumerId) {
+        await notify(
+          consumerId,
+          "LOGISTICS_STATUS",
+          "Produce Collected from Farm 📦",
+          `Delivery partner has collected your fresh harvest for order #${orderCode} from the producer.`
+        );
+      }
+      if (farmerUserId) {
+        await notify(
+          farmerUserId,
+          "LOGISTICS_STATUS",
+          "Harvest Dispatched 🚚",
+          `Produce for job #${jobCode} has been picked up by the logistics partner.`
+        );
+      }
+    } else if (next === LogisticsStatus.IN_TRANSIT) {
+      if (consumerId) {
+        await notify(
+          consumerId,
+          "LOGISTICS_STATUS",
+          "Order In Transit 🚛",
+          `Your order #${orderCode} is on the transit corridor heading towards your destination hub.`
+        );
+      }
+    } else if (next === LogisticsStatus.OUT_FOR_DELIVERY) {
+      if (consumerId) {
+        await notify(
+          consumerId,
+          "LOGISTICS_STATUS",
+          "Out for Delivery! 🛵",
+          `Good news! Order #${orderCode} is out for delivery and arriving at your doorstep shortly.`
+        );
+      }
+    } else if (next === LogisticsStatus.DELIVERED) {
+      if (consumerId) {
+        await notify(
+          consumerId,
+          "LOGISTICS_STATUS",
+          "Order Delivered! 🏡✨",
+          `Your order #${orderCode} has safely reached your doorstep. Enjoy your farm-fresh produce!`
+        );
+      }
+      if (farmerUserId) {
+        await notify(
+          farmerUserId,
+          "LOGISTICS_STATUS",
+          "Order Delivered & Settled 💰",
+          `Job #${jobCode} (Order #${orderCode}) was successfully delivered to the customer. Payout processing!`
+        );
+      }
+      if (driverId) {
+        await notify(
+          driverId,
+          "LOGISTICS_STATUS",
+          "Delivery Completed! ✅",
+          `Order #${orderCode} marked as delivered. Great job! Delivery payout has been credited.`
+        );
+      }
+    } else {
+      if (consumerId) {
+        await notify(
+          consumerId,
+          "LOGISTICS_STATUS",
+          `Delivery Status: ${next.replace(/_/g, " ")}`,
+          `Status updated for order #${orderCode}: ${next.replace(/_/g, " ")}.`
+        );
+      }
     }
+
     res.json({ job: result.job, orderStatus: result.orderStatus });
   } catch (err) {
     const e = err as Error & { code?: number };
@@ -665,4 +842,199 @@ opsRouter.patch("/logistics/jobs/:id/location", auth, requireRole("LOGISTICS"), 
     locationUpdatedAt: job.locationUpdatedAt,
   });
   res.json({ job });
+});
+
+opsRouter.get("/logistics/earnings", auth, requireRole("LOGISTICS", "ADMIN"), async (req, res) => {
+  try {
+    const userId = req.user!.id;
+    const deliveredBookings = await prisma.logisticsBooking.findMany({
+      where: {
+        assignedUserId: req.user!.role === "LOGISTICS" ? userId : undefined,
+        status: LogisticsStatus.DELIVERED,
+      },
+      include: {
+        order: { select: { id: true, logisticsPaise: true, address: true } },
+        farmer: { select: { farmName: true, location: true } },
+        society: { select: { name: true, district: true } },
+      },
+      orderBy: { deliveredAt: "desc" },
+    });
+
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    let todayPaise = 0;
+    let weekPaise = 0;
+    let monthPaise = 0;
+    let totalPaise = 0;
+
+    const history = deliveredBookings.map((b) => {
+      const deliveredDate = b.deliveredAt || b.updatedAt;
+      const isHeavy = b.quantity > 30 || b.vehicle.toLowerCase().includes("truck");
+      const payoutPaise = b.order?.logisticsPaise && b.order.logisticsPaise > 0
+        ? b.order.logisticsPaise
+        : isHeavy
+          ? Math.round(35000 + b.quantity * 150)
+          : Math.round(6000 + b.quantity * 200);
+
+      totalPaise += payoutPaise;
+      if (deliveredDate >= startOfToday) todayPaise += payoutPaise;
+      if (deliveredDate >= startOfWeek) weekPaise += payoutPaise;
+      if (deliveredDate >= startOfMonth) monthPaise += payoutPaise;
+
+      const durationMins = b.acceptedAt && b.deliveredAt
+        ? Math.max(15, Math.round((b.deliveredAt.getTime() - b.acceptedAt.getTime()) / 60000))
+        : 35;
+
+      return {
+        id: b.id,
+        deliveryId: b.orderId ? `DEL-${b.orderId.slice(-6).toUpperCase()}` : `JOB-${b.id.slice(-6).toUpperCase()}`,
+        date: deliveredDate.toISOString(),
+        origin: b.society?.name || b.farmer.farmName || b.pickup,
+        destination: b.order?.address ? `${b.order.address.city}, ${b.order.address.state}` : "Consumer Hub",
+        vehicle: b.vehicle,
+        quantityKg: b.quantity,
+        durationMins,
+        payoutPaise,
+        status: "PAID",
+      };
+    });
+
+    // 7-day trend chart points
+    const days: { date: string; dayName: string; amountRupees: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      const nextD = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i + 1);
+      const dayDeliveries = deliveredBookings.filter((b) => {
+        const date = b.deliveredAt || b.updatedAt;
+        return date >= d && date < nextD;
+      });
+      const dayTotalPaise = dayDeliveries.reduce((sum, b) => {
+        const isHeavy = b.quantity > 30 || b.vehicle.toLowerCase().includes("truck");
+        return sum + (b.order?.logisticsPaise || (isHeavy ? Math.round(35000 + b.quantity * 150) : Math.round(6000 + b.quantity * 200)));
+      }, 0);
+      days.push({
+        date: d.toISOString().split("T")[0],
+        dayName: d.toLocaleDateString("en-IN", { weekday: "short" }),
+        amountRupees: Math.round(dayTotalPaise / 100),
+      });
+    }
+
+    res.json({
+      summary: {
+        todayPaise,
+        weekPaise,
+        monthPaise,
+        totalPaise,
+        completedCount: deliveredBookings.length,
+      },
+      chartData: days,
+      history,
+    });
+  } catch (error) {
+    console.error("GET /api/logistics/earnings error:", error);
+    res.status(500).json({ error: "Failed to load logistics earnings", code: 500 });
+  }
+});
+
+opsRouter.get("/logistics/working-hours", auth, requireRole("LOGISTICS", "ADMIN"), async (req, res) => {
+  try {
+    const userId = req.user!.id;
+    const bookings = await prisma.logisticsBooking.findMany({
+      where: {
+        assignedUserId: req.user!.role === "LOGISTICS" ? userId : undefined,
+        status: { in: [LogisticsStatus.PICKUP_SCHEDULED, LogisticsStatus.FARMER_READY, LogisticsStatus.PICKED_UP, LogisticsStatus.IN_TRANSIT, LogisticsStatus.DELIVERED] },
+      },
+      select: {
+        acceptedAt: true,
+        deliveredAt: true,
+        status: true,
+        updatedAt: true,
+      },
+    });
+
+    const now = Date.now();
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const startOfWeek = new Date();
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    let todayHours = 0;
+    let weekHours = 0;
+    let activeNowHours = 0;
+
+    for (const b of bookings) {
+      if (!b.acceptedAt) continue;
+      const acceptedTime = new Date(b.acceptedAt).getTime();
+      const endTime = b.deliveredAt ? new Date(b.deliveredAt).getTime() : now;
+      const elapsedHours = Math.max(0.1, (endTime - acceptedTime) / (1000 * 60 * 60));
+
+      if (b.status !== LogisticsStatus.DELIVERED) {
+        activeNowHours += elapsedHours;
+      }
+
+      if (new Date(b.acceptedAt) >= startOfToday) {
+        todayHours += elapsedHours;
+      }
+      if (new Date(b.acceptedAt) >= startOfWeek) {
+        weekHours += elapsedHours;
+      }
+    }
+
+    res.json({
+      todayHours: +(todayHours.toFixed(1)),
+      weekHours: +(weekHours.toFixed(1)),
+      activeNowHours: +(activeNowHours.toFixed(1)),
+      isCurrentlyOnTrip: activeNowHours > 0,
+    });
+  } catch (error) {
+    console.error("GET /api/logistics/working-hours error:", error);
+    res.status(500).json({ error: "Failed to calculate working hours", code: 500 });
+  }
+});
+
+opsRouter.get("/logistics/vehicle-details", auth, requireRole("LOGISTICS", "ADMIN"), async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      include: {
+        logisticsVerification: {
+          include: {
+            documents: true,
+          },
+        },
+      },
+    });
+
+    if (!user) return res.status(404).json({ error: "User not found", code: 404 });
+
+    const ver = user.logisticsVerification;
+    const isTruck = user.deliveryType === "LARGE_TRUCK" || ver?.vehicleType === "LARGE_TRUCK";
+
+    const vehicle = {
+      makeModel: ver?.vehicleMake && ver?.vehicleModel ? `${ver.vehicleMake} ${ver.vehicleModel}` : isTruck ? "Eicher Pro 2049 Heavy Truck" : "Bajaj Pulsar 150 Courier",
+      vehicleNumber: user.vehicleNumber || ver?.vehicleNumber || (isTruck ? "KA01EF3456" : "KA04XY9876"),
+      vehicleType: user.deliveryType || ver?.vehicleType || (isTruck ? "LARGE_TRUCK" : "BIKE"),
+      typeLabel: isTruck ? "Large Truck / Heavy Freight" : "2-Wheeler Express Courier",
+      payloadCapacityKg: ver?.capacityKg || (isTruck ? 2500 : 35),
+      fuelType: isTruck ? "Diesel" : "Petrol",
+      coldChainActive: isTruck,
+      year: ver?.vehicleYear || 2023,
+      registrationStatus: ver?.status === "APPROVED" || ver?.status === "VERIFIED" ? "GOVT_RC_VERIFIED" : "PENDING_VERIFICATION",
+      documents: {
+        drivingLicence: ver?.documents?.some((d) => d.documentType.includes("LICENCE") && d.status === "VERIFIED") || ver?.status === "APPROVED" ? "APPROVED" : "PENDING",
+        vehicleRc: ver?.documents?.some((d) => d.documentType.includes("RC") && d.status === "VERIFIED") || ver?.status === "APPROVED" ? "VERIFIED" : "PENDING",
+        transportPermit: isTruck ? "VALID_TILL_2027" : "NOT_APPLICABLE",
+        commercialInsurance: "ACTIVE",
+      },
+    };
+
+    res.json({ vehicle });
+  } catch (error) {
+    console.error("GET /api/logistics/vehicle-details error:", error);
+    res.status(500).json({ error: "Failed to load vehicle details", code: 500 });
+  }
 });

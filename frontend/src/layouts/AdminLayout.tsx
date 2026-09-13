@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
+  AlertTriangle,
   BarChart3,
   Bell,
   Boxes,
@@ -15,6 +16,7 @@ import {
   Settings,
   Truck,
   Users,
+  ShieldCheck,
   X,
 } from "lucide-react";
 type AdminNavItem = {
@@ -51,9 +53,19 @@ const navigation: AdminNavItem[] = [
     icon: ClipboardList,
   },
   {
-    label: "Logistics",
+    label: "Logistics Dispatch",
     path: "/admin/logistics",
     icon: Truck,
+  },
+  {
+    label: "Worker Verification",
+    path: "/admin/logistics?tab=verifications",
+    icon: ShieldCheck,
+  },
+  {
+    label: "Food-Waste Desk",
+    path: "/admin/waste",
+    icon: AlertTriangle,
   },
   {
     label: "Payments",

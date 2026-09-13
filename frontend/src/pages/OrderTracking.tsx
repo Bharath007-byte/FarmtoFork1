@@ -676,50 +676,64 @@ export function OrderTracking() {
 
               {gpsAvailable ? (
                 <div className="mt-5 rounded-2xl bg-emerald-50 p-5">
-                  <div className="flex items-center gap-2 text-sm font-black text-emerald-700">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                    GPS location available
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm font-black text-emerald-700">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                      Live GPS Courier Telemetry Active
+                    </div>
+                    <span className="rounded-full bg-white px-2.5 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">
+                      Satellite Signal
+                    </span>
                   </div>
 
-                  <div className="mt-3 grid grid-cols-2 gap-3">
-                    <div className="rounded-xl bg-white p-3">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                        Latitude
-                      </p>
-                      <p className="mt-1 font-mono text-xs font-bold">
-                        {booking?.currentLat}
-                      </p>
-                    </div>
-
-                    <div className="rounded-xl bg-white p-3">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                        Longitude
-                      </p>
-                      <p className="mt-1 font-mono text-xs font-bold">
-                        {booking?.currentLng}
-                      </p>
-                    </div>
+                  {/* Embedded OpenStreetMap Preview */}
+                  <div className="mt-3 overflow-hidden rounded-xl border border-emerald-300 bg-white shadow-xs">
+                    <iframe
+                      title="Live Vehicle Route"
+                      className="h-44 w-full border-0"
+                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${booking!.currentLng! - 0.015}%2C${booking!.currentLat! - 0.015}%2C${booking!.currentLng! + 0.015}%2C${booking!.currentLat! + 0.015}&layer=mapnik&marker=${booking!.currentLat}%2C${booking!.currentLng}`}
+                    />
                   </div>
 
-                  <p className="mt-3 text-xs text-emerald-700/70">
-                    Last updated{" "}
-                    {formatDate(booking?.locationUpdatedAt)}
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2 pt-1">
+                    <div className="flex items-center gap-2 text-xs font-mono font-bold text-zinc-700">
+                      <span>Lat: {booking?.currentLat?.toFixed(4)}</span>
+                      <span>·</span>
+                      <span>Lng: {booking?.currentLng?.toFixed(4)}</span>
+                    </div>
+
+                    <a
+                      href={`https://www.google.com/maps?q=${booking?.currentLat},${booking?.currentLng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 rounded-lg bg-emerald-700 px-3 py-1 text-xs font-bold text-white shadow-xs hover:bg-emerald-800"
+                    >
+                      <MapPin size={12} />
+                      Open Full Google Map ↗
+                    </a>
+                  </div>
+
+                  <p className="mt-2 text-[11px] text-emerald-800/80">
+                    Last position broadcast: {formatDate(booking?.locationUpdatedAt)}
                   </p>
                 </div>
               ) : (
                 <div className="mt-5 rounded-2xl bg-zinc-50 p-5">
-                  <MapPin
-                    size={24}
-                    className="text-zinc-400"
-                  />
-
-                  <p className="mt-3 text-sm font-black text-zinc-600">
-                    GPS unavailable
-                  </p>
-
-                  <p className="mt-1 text-xs leading-5 text-zinc-400">
-                    The delivery agent has not shared a live GPS
-                    location yet. No location is being simulated.
+                  <div className="flex items-center gap-2 text-zinc-600 font-bold text-xs mb-2">
+                    <MapPin size={16} className="text-zinc-400" />
+                    <span>Pin-to-Pin Transit Route</span>
+                  </div>
+                  <div className="rounded-xl border border-zinc-200 bg-white p-3 text-xs space-y-1">
+                    <p className="font-bold text-zinc-800">
+                      Pickup: {booking ? getPickupName(booking) : "Pickup Origin"} ({booking?.society?.pinCode ? `PIN ${booking.society.pinCode}` : "Local Farm"})
+                    </p>
+                    <p className="text-zinc-400">↓ Transit Route via {booking?.vehicle || "Courier"}</p>
+                    <p className="font-bold text-zinc-800">
+                      Destination: {order.address?.city || "Doorstep"} ({order.address?.pinCode ? `PIN ${order.address.pinCode}` : "Local Area"})
+                    </p>
+                  </div>
+                  <p className="mt-2 text-[11px] text-zinc-400">
+                    Live satellite telemetry will activate once the courier begins transit.
                   </p>
                 </div>
               )}

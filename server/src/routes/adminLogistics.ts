@@ -1,8 +1,12 @@
 import { Router } from "express";
+import path from "node:path";
+import fs from "node:fs";
 import { prisma } from "../db.js";
 import { auth, requireRole } from "../middleware/auth.js";
+import { emitEvent } from "../socket.js";
 
 export const adminLogisticsRouter = Router();
+
 
 /**
  * GET /api/admin/logistics
@@ -237,6 +241,346 @@ adminLogisticsRouter.get(
       });
     }
   },
+);
+
+/**
+ * GET /api/admin/logistics/verifications
+ * List all logistics workers with verification status, worker type, and document counts.
+ */
+adminLogisticsRouter.get(
+  "/verifications",
+  auth,
+  requireRole("ADMIN"),
+  async (req, res) => {
+    try {
+      const status = req.query.status ? String(req.query.status).toUpperCase() : undefined;
+
+      const workers = await prisma.user.findMany({
+        where: {
+          role: "LOGISTICS",
+          ...(status && status !== "ALL"
+            ? {
+                logisticsVerification: {
+                  status: status as any,
+                },
+              }
+            : {}),
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          logisticsVerification: {
+            include: {
+              documents: {
+                orderBy: { uploadedAt: "desc" },
+              },
+            },
+          },
+        },
+      });
+
+      const list = workers.map((w) => {
+        const v = w.logisticsVerification;
+        const activeDocs = v?.documents.filter((d) => d.status !== "REPLACED") || [];
+        const verifiedCount = activeDocs.filter((d) => d.status === "VERIFIED").length;
+        const rejectedCount = activeDocs.filter((d) => d.status === "REJECTED" || d.status === "REUPLOAD_REQUIRED").length;
+
+        return {
+          id: w.id,
+          name: w.name,
+          email: w.email,
+          phone: w.phone,
+          photoUrl: w.photoUrl,
+          workerType: v?.vehicleType || w.deliveryType || "BIKE",
+          vehicleNumber: v?.vehicleNumber || w.vehicleNumber,
+          verificationId: v?.id || null,
+          status: v?.status || "INCOMPLETE",
+          currentStep: v?.currentStep || 1,
+          submittedAt: v?.submittedAt || null,
+          reviewedAt: v?.reviewedAt || null,
+          rejectionReason: v?.rejectionReason || null,
+          documentsCount: activeDocs.length,
+          verifiedDocumentsCount: verifiedCount,
+          rejectedDocumentsCount: rejectedCount,
+          documents: activeDocs.map((d) => ({
+            id: d.id,
+            documentType: d.documentType,
+            status: d.status,
+            fileName: d.fileName,
+            fileSize: d.fileSize,
+            mimeType: d.mimeType,
+            uploadedAt: d.uploadedAt,
+            attempts: d.attempts,
+            rejectionReason: d.rejectionReason,
+            reviewerNotes: d.reviewerNotes,
+            extractedData: d.extractedData,
+          })),
+        };
+      });
+
+      res.json({ workers: list });
+    } catch (error: any) {
+      console.error("GET /api/admin/logistics/verifications error:", error);
+      res.status(500).json({ error: "Failed to load logistics verifications", code: 500 });
+    }
+  }
+);
+
+/**
+ * GET /api/admin/logistics/verifications/:id
+ * Detailed verification view for one worker
+ */
+adminLogisticsRouter.get(
+  "/verifications/:id",
+  auth,
+  requireRole("ADMIN"),
+  async (req, res) => {
+    try {
+      const worker = await prisma.user.findUnique({
+        where: { id: String(req.params.id) },
+        include: {
+          logisticsVerification: {
+            include: {
+              documents: {
+                orderBy: { uploadedAt: "desc" },
+              },
+            },
+          },
+        },
+      });
+
+      if (!worker) {
+        return res.status(404).json({ error: "Logistics worker not found", code: 404 });
+      }
+
+      res.json({ worker });
+    } catch (error: any) {
+      console.error("GET /api/admin/logistics/verifications/:id error:", error);
+      res.status(500).json({ error: "Failed to load worker verification details", code: 500 });
+    }
+  }
+);
+
+/**
+ * PATCH /api/admin/logistics/verifications/:id
+ * Admin action: Approve, Reject, Verify Document, Reject Document, Request Re-upload
+ */
+adminLogisticsRouter.patch(
+  "/verifications/:id",
+  auth,
+  requireRole("ADMIN"),
+  async (req, res) => {
+    try {
+      const userId = String(req.params.id);
+      const { action, documentId, rejectionReason, reviewerNotes } = req.body;
+
+      const verification = await prisma.logisticsVerification.findUnique({
+        where: { userId },
+        include: { documents: true },
+      });
+
+      if (!verification) {
+        return res.status(404).json({ error: "Verification record not found", code: 404 });
+      }
+
+      // Action 1: Reject Worker (REJECTION REASON REQUIRED!)
+      if (action === "REJECT_WORKER") {
+        if (!rejectionReason || !rejectionReason.trim()) {
+          return res.status(422).json({
+            error: "Rejection reason is strictly required when rejecting a worker.",
+            code: 422,
+          });
+        }
+
+        const updated = await prisma.logisticsVerification.update({
+          where: { id: verification.id },
+          data: {
+            status: "REJECTED",
+            rejectionReason: rejectionReason.trim(),
+            reviewedAt: new Date(),
+          },
+        });
+
+        emitEvent("worker:verification_updated", {
+          userId,
+          status: "REJECTED",
+          rejectionReason: rejectionReason.trim(),
+        });
+
+        return res.json({ success: true, verification: updated, message: "Worker verification rejected." });
+      }
+
+      // Action 2: Approve Worker
+      if (action === "APPROVE_WORKER") {
+        const updated = await prisma.logisticsVerification.update({
+          where: { id: verification.id },
+          data: {
+            status: "APPROVED",
+            rejectionReason: null,
+            reviewedAt: new Date(),
+          },
+        });
+
+        emitEvent("worker:verification_updated", {
+          userId,
+          status: "APPROVED",
+        });
+
+        return res.json({ success: true, verification: updated, message: "Worker approved successfully! Dashboard unlocked." });
+      }
+
+      // Action 3: Verify Specific Document
+      if (action === "VERIFY_DOCUMENT") {
+        if (!documentId) {
+          return res.status(422).json({ error: "Document ID is required", code: 422 });
+        }
+
+        await prisma.logisticsDocument.update({
+          where: { id: String(documentId) },
+          data: {
+            status: "VERIFIED",
+            verifiedAt: new Date(),
+            reviewerNotes: reviewerNotes?.trim() || null,
+            rejectionReason: null,
+          },
+        });
+
+        // Check if all active documents are now verified
+        const allActive = await prisma.logisticsDocument.findMany({
+          where: { verificationId: verification.id, status: { not: "REPLACED" } },
+        });
+
+        const allVerified = allActive.length > 0 && allActive.every((d) => d.status === "VERIFIED");
+        if (allVerified) {
+          await prisma.logisticsVerification.update({
+            where: { id: verification.id },
+            data: { status: "VERIFIED" },
+          });
+        }
+
+        return res.json({ success: true, message: "Document marked as verified." });
+      }
+
+      // Action 4: Reject Specific Document (REJECTION REASON REQUIRED!)
+      if (action === "REJECT_DOCUMENT") {
+        if (!documentId) {
+          return res.status(422).json({ error: "Document ID is required", code: 422 });
+        }
+        if (!rejectionReason || !rejectionReason.trim()) {
+          return res.status(422).json({
+            error: "Rejection reason is strictly required when rejecting a document.",
+            code: 422,
+          });
+        }
+
+        await prisma.logisticsDocument.update({
+          where: { id: String(documentId) },
+          data: {
+            status: "REJECTED",
+            rejectionReason: rejectionReason.trim(),
+            reviewerNotes: reviewerNotes?.trim() || null,
+          },
+        });
+
+        await prisma.logisticsVerification.update({
+          where: { id: verification.id },
+          data: {
+            status: "ACTION_REQUIRED",
+            rejectionReason: `Document rejected: ${rejectionReason.trim()}`,
+          },
+        });
+
+        return res.json({ success: true, message: "Document rejected with reason recorded." });
+      }
+
+      // Action 5: Request Re-upload (REASON / INSTRUCTION REQUIRED!)
+      if (action === "REQUEST_REUPLOAD") {
+        if (!documentId) {
+          return res.status(422).json({ error: "Document ID is required", code: 422 });
+        }
+        if (!rejectionReason || !rejectionReason.trim()) {
+          return res.status(422).json({
+            error: "Please specify what needs to be corrected for the re-upload.",
+            code: 422,
+          });
+        }
+
+        await prisma.logisticsDocument.update({
+          where: { id: String(documentId) },
+          data: {
+            status: "REUPLOAD_REQUIRED",
+            rejectionReason: rejectionReason.trim(),
+            reviewerNotes: reviewerNotes?.trim() || null,
+          },
+        });
+
+        await prisma.logisticsVerification.update({
+          where: { id: verification.id },
+          data: {
+            status: "ACTION_REQUIRED",
+            rejectionReason: `Re-upload requested: ${rejectionReason.trim()}`,
+          },
+        });
+
+        return res.json({ success: true, message: "Re-upload request sent to worker." });
+      }
+
+      // Action 6: Keep Pending
+      if (action === "KEEP_PENDING") {
+        await prisma.logisticsVerification.update({
+          where: { id: verification.id },
+          data: {
+            status: "PENDING_REVIEW",
+            rejectionReason: reviewerNotes?.trim() || null,
+          },
+        });
+
+        return res.json({ success: true, message: "Worker verification kept in pending review." });
+      }
+
+      return res.status(400).json({ error: "Invalid action specified", code: 400 });
+    } catch (error: any) {
+      console.error("PATCH /api/admin/logistics/verifications/:id error:", error);
+      res.status(500).json({ error: "Failed to update verification", code: 500 });
+    }
+  }
+);
+
+/**
+ * GET /api/admin/logistics/documents/:id/file
+ * Stream document securely for admin review
+ */
+adminLogisticsRouter.get(
+  "/documents/:id/file",
+  auth,
+  requireRole("ADMIN"),
+  async (req, res) => {
+    try {
+      const doc = await prisma.logisticsDocument.findUnique({
+        where: { id: String(req.params.id) },
+      });
+
+      if (!doc) {
+        return res.status(404).json({ error: "Document not found", code: 404 });
+      }
+
+      const safePath = path.resolve(doc.fileUrl);
+      if (!fs.existsSync(safePath)) {
+        return res.status(404).json({ error: "Document file not found on disk", code: 404 });
+      }
+
+      res.setHeader("Content-Type", doc.mimeType || "application/octet-stream");
+      res.setHeader("Content-Disposition", `inline; filename="${encodeURIComponent(doc.fileName)}"`);
+      res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
+
+      const stream = fs.createReadStream(safePath);
+      stream.pipe(res);
+    } catch (error: any) {
+      console.error("GET /api/admin/logistics/documents/:id/file error:", error);
+      res.status(500).json({ error: "Failed to stream document", code: 500 });
+    }
+  }
 );
 
 /**

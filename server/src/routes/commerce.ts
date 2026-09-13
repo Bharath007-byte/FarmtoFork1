@@ -46,9 +46,21 @@ async function notifyNewLogisticsJobs(orderId: string, bookingIds: string[]) {
     where: { role: "LOGISTICS" },
     select: { id: true },
   });
+  const bookings = await prisma.logisticsBooking.findMany({
+    where: { id: { in: bookingIds } },
+    select: { quantity: true, pickup: true },
+  });
+  const totalWeight = bookings.reduce((sum, b) => sum + (b.quantity || 0), 0);
+  const pickupLoc = bookings[0]?.pickup ? bookings[0].pickup.slice(0, 35) : "Farm Gate";
+
   emitEvent("LOGISTICS_BOOKED", { orderId, bookingIds });
   for (const u of logisticsUsers) {
-    await notify(u.id, "LOGISTICS_BOOKED", "New logistics job", orderId);
+    await notify(
+      u.id,
+      "LOGISTICS_BOOKED",
+      "New Delivery Job Available 📦",
+      `Order #${orderId.slice(-6).toUpperCase()} ready for transit corridor (~${Math.round(totalWeight)} kg from ${pickupLoc}). Tap to claim.`
+    );
   }
 }
 
@@ -341,18 +353,24 @@ commerceRouter.post(
     }
 
     if (method === "ONLINE") {
-      const unpaid = await prisma.order.findFirst({
+      const unpaidOrders = await prisma.order.findMany({
         where: {
           consumerId: req.user!.id,
           paymentMethod: "ONLINE",
           status: OrderStatus.PENDING_PAYMENT,
         },
+        include: { items: true },
       });
-      if (unpaid) {
-        return res.status(409).json({
-          error: "Complete or cancel the unpaid online order before placing another.",
-          code: 409,
-          orderId: unpaid.id,
+      for (const unpaid of unpaidOrders) {
+        for (const item of unpaid.items) {
+          await prisma.inventory.updateMany({
+            where: { productId: item.productId, reserved: { gte: item.qty } },
+            data: { reserved: { decrement: item.qty }, available: { increment: item.qty } },
+          });
+        }
+        await prisma.order.update({
+          where: { id: unpaid.id },
+          data: { status: OrderStatus.CANCELLED },
         });
       }
     }
@@ -579,9 +597,19 @@ commerceRouter.post(
         orderId: order.id,
       });
 
+      const orderCode = order.id.slice(-6).toUpperCase();
+      const totalRupees = (order.totalPaise / 100).toFixed(2);
+
+      // 1. Notify Consumer
+      await notify(
+        order.consumerId,
+        "ORDER_CONFIRMED",
+        "Order Placed Successfully! 🎉",
+        `Your order #${orderCode} has been confirmed (Total: ₹${totalRupees}). Fresh produce is being prepped for dispatch.`
+      );
+
       /**
-       * Notify farmers only for DIRECT_FARMER lines.
-       * Society fulfillment does not require farmer acceptance.
+       * Notify farmers for their items in this order.
        */
       for (const item of order.items) {
         if (item.fulfillmentChannel !== FulfillmentChannel.DIRECT_FARMER) {
@@ -595,11 +623,12 @@ commerceRouter.post(
         });
 
         if (farmer) {
+          const itemPayout = ((item.linePaise || item.unitPaise * item.qty) / 100).toFixed(2);
           await notify(
             farmer.userId,
             "NEW_ORDER",
-            "New order",
-            `Order ${order.id}`
+            "New Order Received! 🌾",
+            `New order #${orderCode} placed for ${item.qty} units of your produce (₹${itemPayout}). Please keep harvest ready for pickup.`
           );
         }
       }
@@ -2364,7 +2393,13 @@ commerceRouter.post(
         });
         if (paidOrder) {
           emitEvent("PAYMENT_CONFIRMED", { orderId: paidOrder.id });
-          await notify(paidOrder.consumerId, "PAYMENT_SUCCESS", "Payment confirmed", paidOrder.id);
+          const paidCode = paidOrder.id.slice(-6).toUpperCase();
+          await notify(
+            paidOrder.consumerId,
+            "PAYMENT_SUCCESS",
+            "Payment Confirmed 🎉",
+            `Payment confirmed for Order #${paidCode}. Your fresh produce is being prepared for dispatch.`
+          );
           await notifyNewLogisticsJobs(
             paidOrder.id,
             paidOrder.bookings.map((b) => b.id)

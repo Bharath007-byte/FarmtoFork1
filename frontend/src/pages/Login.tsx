@@ -88,7 +88,7 @@ export function Login() {
         {isAdminLogin ? (
           <>
             <div className="mb-5 inline-flex items-center rounded-full bg-slate-100 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-600">
-              Farm2Fork Administration
+              Samruddhi Setu Administration
             </div>
 
             <h1 className="text-4xl font-extrabold tracking-tight text-slate-950">
@@ -96,8 +96,8 @@ export function Login() {
             </h1>
 
             <p className="mt-2 text-sm leading-6 text-slate-500">
-              Sign in with the authorized Farm2Fork administrator account to
-              access the Admin Portal.
+              Sign in with your authorized administrator credentials to access the
+              Command Center.
             </p>
           </>
         ) : (
@@ -113,7 +113,7 @@ export function Login() {
           </>
         )}
 
-        <form onSubmit={onSubmit} className="mt-8 space-y-4">
+        <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div>
             <label className="mb-1.5 block text-xs font-bold text-slate-600">
               Email

@@ -1,20 +1,43 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SiteNav } from "../components/SiteNav";
 import { DataBadge } from "../components/DataBadge";
 import { useApp } from "../context/AppState";
 import { useI18n } from "../i18n";
 import { detectFromImageSignals } from "../ai/engine";
+import { api } from "../services/api";
+import {
+  Camera,
+  Mic,
+  Send,
+  ShieldCheck,
+  CheckCircle2,
+  RefreshCw,
+} from "lucide-react";
+
+interface AgriAssistantResponse {
+  success: boolean;
+  tag: string;
+  crop: string;
+  district: string;
+  soil: string;
+  answer: string;
+  actionItem: string;
+  confidenceScore: number;
+  verifiedSource: string;
+}
 
 export function FarmAI() {
   const { t } = useI18n();
   const { user, locationLabel } = useApp();
-  const [cropHint, setCropHint] = useState(user?.crops?.[0] || "Tomato Large");
+  const [cropHint, setCropHint] = useState(user?.crops?.[0] || "Tomato");
   const [question, setQuestion] = useState("");
   const [photo, setPhoto] = useState("");
   const [voiceNote, setVoiceNote] = useState("");
   const [result, setResult] = useState<ReturnType<typeof detectFromImageSignals> | null>(null);
-  const [chat, setChat] = useState("");
+  const [assistantLoading, setAssistantLoading] = useState(false);
+  const [assistantResponse, setAssistantResponse] = useState<AgriAssistantResponse | null>(null);
+  const [assistantError, setAssistantError] = useState("");
 
   const onFile = (file?: File) => {
     if (!file) return;
@@ -65,7 +88,7 @@ export function FarmAI() {
     };
     const Ctor = w.webkitSpeechRecognition;
     if (!Ctor) {
-      setVoiceNote("Voice needs Chrome/Safari speech recognition on this device.");
+      setVoiceNote("Voice recognition requires Chrome or Edge browser.");
       return;
     }
     const rec = new Ctor();
@@ -74,38 +97,57 @@ export function FarmAI() {
       const text = ev.results[0]?.[0]?.transcript || "";
       setQuestion(text);
       setVoiceNote(text);
+      // Automatically trigger assistant inquiry with voice transcript
+      queryAssistant(text);
     };
     rec.start();
   };
 
-  const answer = useMemo(() => {
-    const q = (question || voiceNote).toLowerCase();
-    if (!q && !result) return "";
-    if (q.includes("price") || q.includes("rate"))
-      return `Near ${locationLabel || "your pin"}, keep farm-gate within 5% of the buy sheet. This is an AI Prediction, not a mandi guarantee.`;
-    if (q.includes("water") || q.includes("irrig"))
-      return "If drip is on, cut 10–15% if leaf is dark and soil is cool at 8am. Estimated from season heuristics.";
-    if (result)
-      return `${result.crop}: ${result.health}. ${result.action}`;
-    return "Ask about disease, irrigation, or price — or upload a leaf photo. Answers are model/heuristic, not certified agronomy.";
-  }, [question, voiceNote, result, locationLabel]);
+  const queryAssistant = async (queryText?: string) => {
+    const q = (queryText || question || voiceNote).trim();
+    if (!q && !result) return;
+
+    setAssistantLoading(true);
+    setAssistantError("");
+    try {
+      const data = await api<AgriAssistantResponse>("/api/ai/agri-assistant", {
+        method: "POST",
+        body: JSON.stringify({
+          query: q || `Health check for ${cropHint}`,
+          crop: cropHint,
+          district: locationLabel || "Bengaluru Rural",
+          soil: "Red Sandy Loam",
+        }),
+      });
+      setAssistantResponse(data);
+    } catch (err: any) {
+      console.error("Assistant error:", err);
+      setAssistantError("Could not reach real-time agronomy assistant. Please check connection.");
+    } finally {
+      setAssistantLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f7f4ec] text-[#1c2b22]">
       <SiteNav />
       <div className="mx-auto max-w-3xl px-5 pb-16 pt-28">
-        <Link to="/farmer/dashboard" className="text-sm font-semibold text-[#2f7a4a]">
-          ← Dashboard
+        <Link to="/farmer/dashboard" className="text-sm font-semibold text-[#2f7a4a] hover:underline">
+          ← Back to Farmer Dashboard
         </Link>
         <p className="mt-6 text-xs font-bold uppercase tracking-[0.25em] text-[#2f7a4a]">
           {t("farmAI")} 🌱
         </p>
-        <h1 className="mt-2 font-serif text-4xl">Farmer assistant</h1>
-        <p className="mt-2 text-sm text-zinc-500">{t("demo")}</p>
+        <h1 className="mt-2 font-serif text-4xl font-bold text-zinc-900">Grounded Farm AI Assistant</h1>
+        <p className="mt-2 text-sm text-zinc-600">
+          ICAR-verified crop health, pest diagnosis, irrigation scheduling, and APMC modal price intelligence.
+        </p>
 
+        {/* Action bar */}
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          <label className="cursor-pointer rounded-2xl bg-white p-4 text-center text-sm font-semibold shadow-sm">
-            📷 {t("upload")}
+          <label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-white p-4 text-center text-sm font-semibold text-zinc-800 shadow-sm border border-zinc-200 hover:border-emerald-500 transition">
+            <Camera className="h-4 w-4 text-emerald-700" />
+            <span>📷 {t("upload")} Leaf Photo</span>
             <input
               type="file"
               accept="image/*"
@@ -116,53 +158,127 @@ export function FarmAI() {
           <button
             type="button"
             onClick={listen}
-            className="rounded-2xl bg-white p-4 text-sm font-semibold shadow-sm"
+            className="flex items-center justify-center gap-2 rounded-2xl bg-white p-4 text-sm font-semibold text-zinc-800 shadow-sm border border-zinc-200 hover:border-emerald-500 transition"
           >
-            🎤 {t("voice")}
+            <Mic className="h-4 w-4 text-emerald-700" />
+            <span>🎤 {t("voice")} Assistant</span>
           </button>
           <button
             type="button"
-            onClick={() => setChat(answer || "Upload a photo or type a question first.")}
-            className="rounded-2xl bg-[#2f7a4a] p-4 text-sm font-semibold text-white"
+            disabled={assistantLoading}
+            onClick={() => queryAssistant()}
+            className="flex items-center justify-center gap-2 rounded-2xl bg-[#2f7a4a] p-4 text-sm font-semibold text-white shadow-sm hover:bg-[#26633c] disabled:opacity-50 transition"
           >
-            💬 {t("ask")}
+            {assistantLoading ? (
+              <RefreshCw className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+            <span>{t("ask")} Advisory</span>
           </button>
         </div>
 
-        <input
-          value={cropHint}
-          onChange={(e) => setCropHint(e.target.value)}
-          className="mt-4 w-full rounded-2xl bg-white px-4 py-3 text-sm"
-          placeholder="Crop name"
-        />
-        <textarea
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          rows={3}
-          className="mt-3 w-full rounded-2xl bg-white px-4 py-3 text-sm"
-          placeholder="Symptoms, irrigation, price…"
-        />
-        {voiceNote && <p className="mt-2 text-xs text-zinc-500">Voice: {voiceNote}</p>}
+        {/* Crop Hint & Question Inputs */}
+        <div className="mt-4 space-y-3">
+          <div>
+            <label className="block text-xs font-bold text-zinc-700 mb-1">Target Crop</label>
+            <input
+              value={cropHint}
+              onChange={(e) => setCropHint(e.target.value)}
+              className="w-full rounded-2xl bg-white px-4 py-3 text-sm border border-zinc-200 focus:border-emerald-600 focus:outline-none shadow-sm"
+              placeholder="Crop name (e.g. Tomato, Onion, Mango, Ragi)"
+            />
+          </div>
 
-        {photo && (
-          <img src={photo} alt="" className="mt-4 h-40 w-full rounded-2xl object-cover" />
+          <div>
+            <label className="block text-xs font-bold text-zinc-700 mb-1">Your Question or Symptom</label>
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              rows={3}
+              className="w-full rounded-2xl bg-white px-4 py-3 text-sm border border-zinc-200 focus:border-emerald-600 focus:outline-none shadow-sm"
+              placeholder="Ask about blight symptoms, fertilizer dosing, drip irrigation intervals, or mandi price outlook…"
+            />
+          </div>
+        </div>
+
+        {voiceNote && (
+          <p className="mt-2 text-xs font-medium text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
+            Recorded voice: "{voiceNote}"
+          </p>
         )}
 
-        {result && (
-          <div className="mt-6 rounded-3xl bg-white p-6 shadow-sm">
-            <DataBadge origin={result.origin} />
-            <p className="mt-3 text-sm">Crop detected: <b>{result.crop}</b></p>
-            <p className="text-sm">Health: {result.health}</p>
-            <p className="text-sm">Possible disease: {result.disease}</p>
-            <p className="text-sm">Confidence: {Math.round(result.confidence * 100)}%</p>
-            <p className="mt-3 text-sm leading-relaxed">{result.action}</p>
-            <p className="mt-2 text-sm text-zinc-500">{result.preventive}</p>
+        {photo && (
+          <div className="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white p-2">
+            <img src={photo} alt="Crop sample" className="h-48 w-full rounded-xl object-cover" />
           </div>
         )}
 
-        {(chat || answer) && (
-          <div className="mt-4 rounded-3xl bg-[#e8f0e3] p-5 text-sm leading-relaxed">
-            {chat || answer}
+        {/* Image Signal / Color Spectrum Result */}
+        {result && (
+          <div className="mt-6 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <DataBadge origin={result.origin} />
+            <div className="mt-3 flex items-center justify-between">
+              <p className="text-base font-bold text-zinc-900">
+                Leaf Visual Scan: <span className="text-emerald-700">{result.crop}</span>
+              </p>
+              <span className="rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-emerald-800">
+                {Math.round(result.confidence * 100)}% Confidence
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-zinc-600">Health Index: {result.health}</p>
+            <p className="text-sm text-zinc-600">Observation: {result.disease}</p>
+            <div className="mt-3 rounded-xl bg-zinc-50 p-3 text-xs leading-relaxed text-zinc-800 border border-zinc-200">
+              <span className="font-bold text-emerald-800">Intervention: </span>
+              {result.action}
+            </div>
+            <p className="mt-2 text-xs text-zinc-500">{result.preventive}</p>
+          </div>
+        )}
+
+        {/* Real Grounded AI Advisory Output */}
+        {assistantResponse && (
+          <div className="mt-6 rounded-3xl border border-emerald-300 bg-white p-6 shadow-md">
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
+                {assistantResponse.tag}
+              </span>
+              <span className="text-xs font-bold text-emerald-700">
+                {assistantResponse.confidenceScore}% Agronomic Match
+              </span>
+            </div>
+
+            <h3 className="mt-3 text-base font-bold text-zinc-900">
+              {assistantResponse.crop} · {assistantResponse.district}
+            </h3>
+
+            <p className="mt-2 text-sm leading-relaxed text-zinc-700">
+              {assistantResponse.answer}
+            </p>
+
+            <div className="mt-4 rounded-2xl bg-[#e8f0e3] p-4 border border-emerald-200">
+              <div className="flex items-start gap-2">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-800 mt-0.5" />
+                <div>
+                  <p className="text-xs font-bold text-emerald-950">Recommended Farm Action</p>
+                  <p className="mt-0.5 text-xs text-emerald-900 leading-snug">{assistantResponse.actionItem}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 flex items-center justify-between border-t border-zinc-100 pt-3 text-[11px] text-zinc-500">
+              <span>Source: {assistantResponse.verifiedSource}</span>
+              <Link to="/farmer/advisory" className="font-semibold text-emerald-700 hover:underline">
+                View Full Season Advisory →
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {assistantError && (
+          <div className="mt-4 rounded-xl bg-rose-50 p-3 text-xs text-rose-700 border border-rose-200">
+            {assistantError}
           </div>
         )}
       </div>

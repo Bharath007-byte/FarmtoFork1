@@ -48,6 +48,7 @@ function serveHeroVideo(): Connect.NextHandleFunction {
 }
 
 export default defineConfig({
+  base: "./",
   plugins: [
     {
       name: "serve-hero-hd",

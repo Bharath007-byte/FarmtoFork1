@@ -11,5 +11,6 @@ export async function notify(
     data: { userId, type, title, message },
   });
   emitEvent("NOTIFICATION", row, `user:${userId}`);
+  emitEvent("NOTIFICATION", row);
   return row;
 }

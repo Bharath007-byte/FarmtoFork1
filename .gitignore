@@ -11,7 +11,11 @@ frontend/public/hero-hd.m4v
 
 # Local backups / temporary files
 frontend/src/App.tsx.save
-server/src/index.ts.admin-backup
-server/prisma/schema-before-society-system.prisma
 server/build
+*.admin-backup
+*-before-society-system.prisma
 server/check-db.ts
+server/storage
+frontend/dist
+.DS_Store
+*.DS_Store

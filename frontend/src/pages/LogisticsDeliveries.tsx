@@ -1,18 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 import {
-  ArrowLeft,
   ArrowRight,
-  CheckCircle2,
-  Clock3,
   MapPin,
   Package,
-  RefreshCw,
-  Route,
+  RotateCw,
+  Search,
   Truck,
 } from "lucide-react";
-import { api, ApiError } from "../services/api";
+import { LogisticsLayout } from "../layouts/LogisticsLayout";
+import { api, rupees } from "../services/api";
 
 type LogisticsProfile = {
   id: string;
@@ -34,16 +31,8 @@ type Job = {
   orderId: string | null;
   fulfillmentChannel?: "SOCIETY" | "DIRECT_FARMER";
   society?: {
-    id: string;
     name: string;
-    code: string;
-    address: string;
-    village: string | null;
-    district: string;
-    state: string;
-    pinCode: string;
-    lat: number | null;
-    lng: number | null;
+    city: string;
   } | null;
   farmer: {
     farmName: string;
@@ -53,115 +42,45 @@ type Job = {
   };
   order?: {
     address?: {
-      recipient?: string | null;
       line1: string;
       district: string;
       city: string;
       state: string;
       pinCode: string;
-      latitude: number | null;
-      longitude: number | null;
-      phone?: string | null;
     } | null;
   } | null;
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  CONFIRMED: "Confirmed",
-  PICKUP_SCHEDULED: "Pickup scheduled",
-  FARMER_READY: "Ready for pickup",
-  PICKED_UP: "Picked up",
-  IN_TRANSIT: "In transit",
-  OUT_FOR_DELIVERY: "Out for delivery",
+  CONFIRMED: "Job Accepted",
+  PICKUP_SCHEDULED: "Pickup Scheduled",
+  FARMER_READY: "Ready for Pickup",
+  PICKED_UP: "Cargo Picked Up",
+  IN_TRANSIT: "In Transit",
+  OUT_FOR_DELIVERY: "Out for Delivery",
   DELIVERED: "Delivered",
+  CANCELLED: "Cancelled",
 };
 
-function statusLabel(status: string) {
-  return STATUS_LABELS[status] || status.replaceAll("_", " ");
-}
-
-function formatDate(value: string | null | undefined) {
-  if (!value) return "—";
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "—";
-  }
-
-  return date.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function destination(job: Job) {
-  const address = job.order?.address;
-
-  if (!address) {
-    return "Customer address unavailable";
-  }
-
-  return [address.line1, address.city, address.district, address.state, address.pinCode]
-    .filter(Boolean)
-    .join(", ");
-}
-
-function pickupLabel(job: Job) {
-  if (job.fulfillmentChannel === "SOCIETY" && job.society) {
-    return job.society.name;
-  }
-
-  return job.farmer?.farmName || job.pickup || "Pickup location unavailable";
-}
-
-function locationAvailable(job: Job) {
-  const lat = job.order?.address?.latitude;
-  const lng = job.order?.address?.longitude;
-
-  return (
-    typeof lat === "number" &&
-    typeof lng === "number" &&
-    Number.isFinite(lat) &&
-    Number.isFinite(lng)
-  );
-}
-
 export function LogisticsDeliveries() {
-  const navigate = useNavigate();
-
   const [profile, setProfile] = useState<LogisticsProfile | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState("");
+  const [tab, setTab] = useState<"ACTIVE" | "COMPLETED">("ACTIVE");
+  const [search, setSearch] = useState("");
 
-  const load = useCallback(async (silent = false) => {
-    if (!silent) {
-      setLoading(true);
-    } else {
-      setRefreshing(true);
-    }
-
-    setError("");
-
+  const loadData = useCallback(async () => {
     try {
-      const [profileResponse, jobsResponse] = await Promise.all([
+      const [profRes, jobsRes] = await Promise.all([
         api<{ profile: LogisticsProfile }>("/api/logistics/profile"),
         api<{ jobs: Job[] }>("/api/logistics/jobs"),
       ]);
 
-      setProfile(profileResponse.profile);
-      setJobs(jobsResponse.jobs);
+      setProfile(profRes.profile);
+      setJobs(jobsRes.jobs || []);
     } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Unable to load your deliveries."
-      );
+      console.error("Failed to load deliveries:", err);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -169,397 +88,190 @@ export function LogisticsDeliveries() {
   }, []);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    void loadData();
+  }, [loadData]);
 
-  const myJobs = useMemo(
-    () =>
-      jobs.filter(
-        (job) =>
-          job.assignedUserId === profile?.id &&
-          job.status !== "CANCELLED"
-      ),
-    [jobs, profile?.id]
-  );
+  const handleRefresh = () => {
+    setRefreshing(true);
+    void loadData();
+  };
 
-  const activeJobs = useMemo(
-    () =>
-      myJobs.filter(
-        (job) => job.status !== "DELIVERED"
-      ),
-    [myJobs]
-  );
+  const myJobs = useMemo(() => {
+    return jobs.filter((j) => j.assignedUserId === profile?.id && j.status !== "CANCELLED");
+  }, [jobs, profile?.id]);
 
-  const completedJobs = useMemo(
-    () =>
-      myJobs.filter(
-        (job) => job.status === "DELIVERED"
-      ),
-    [myJobs]
-  );
+  const displayedJobs = useMemo(() => {
+    return myJobs
+      .filter((j) => (tab === "ACTIVE" ? j.status !== "DELIVERED" : j.status === "DELIVERED"))
+      .filter((j) => {
+        if (!search.trim()) return true;
+        const q = search.toLowerCase();
+        return (
+          j.farmer?.farmName?.toLowerCase().includes(q) ||
+          j.pickup?.toLowerCase().includes(q) ||
+          j.order?.address?.city?.toLowerCase().includes(q)
+        );
+      });
+  }, [myJobs, tab, search]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f5f7fa] text-[#182230]">
-        <main className="mx-auto max-w-[1400px] px-5 py-10 lg:px-8">
-          <div className="animate-pulse">
-            <div className="h-8 w-56 rounded-lg bg-white" />
-            <div className="mt-3 h-4 w-80 rounded-lg bg-white" />
-
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              {[1, 2, 3].map((item) => (
-                <div
-                  key={item}
-                  className="h-28 rounded-2xl bg-white"
-                />
-              ))}
-            </div>
-
-            <div className="mt-6 h-80 rounded-2xl bg-white" />
+      <LogisticsLayout>
+        <div className="p-8 animate-pulse space-y-4">
+          <div className="h-6 w-48 bg-slate-200 rounded" />
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-24 rounded-2xl bg-white border border-slate-200" />
+            ))}
           </div>
-        </main>
-      </div>
+        </div>
+      </LogisticsLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f7fa] text-[#182230]">
-      <main className="mx-auto max-w-[1400px] px-5 pb-16 pt-8 lg:px-8">
-        <header className="flex flex-col justify-between gap-5 border-b border-[#e4e8ee] pb-6 md:flex-row md:items-end">
-                  <button
-            type="button"
-            onClick={() => navigate("/logistics")}
-            className="mb-4 inline-flex w-fit items-center gap-2 rounded-xl border border-[#dce2e9] bg-white px-4 py-2.5 text-sm font-bold text-[#354255] shadow-sm transition hover:border-[#bfc8d4] hover:bg-[#fafbfc] md:absolute md:top-8"
-          >
-            <ArrowLeft size={16} />
-            Back to Dashboard
-          </button>
+    <LogisticsLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#657184]">
-              Logistics workspace
-            </p>
-
-            <h1 className="mt-2 text-3xl font-black tracking-tight">
-              My Deliveries
-            </h1>
-
-            <p className="mt-2 max-w-2xl text-sm font-medium text-[#687487]">
-              Manage deliveries assigned to you and open the live tracker for
-              active jobs.
+            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">My Assigned Deliveries</h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Live status, transit milestones, and historical delivery records.
             </p>
           </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+            >
+              <RotateCw size={13} className={refreshing ? "animate-spin" : ""} />
+              <span>Refresh</span>
+            </button>
+            <Link
+              to="/logistics/jobs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 text-xs font-semibold text-white hover:bg-slate-800 transition"
+            >
+              <Package size={14} />
+              <span>Claim New Freight</span>
+            </Link>
+          </div>
+        </div>
 
-          <button
-            type="button"
-            onClick={() => void load(true)}
-            disabled={refreshing}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#dce2e9] bg-white px-4 py-2.5 text-sm font-bold text-[#354255] shadow-sm transition hover:border-[#bfc8d4] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <RefreshCw
-              size={16}
-              className={refreshing ? "animate-spin" : ""}
+        {/* Tab Selection & Search */}
+        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+            <button
+              onClick={() => setTab("ACTIVE")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                tab === "ACTIVE" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Active Shipments ({myJobs.filter((j) => j.status !== "DELIVERED").length})
+            </button>
+            <button
+              onClick={() => setTab("COMPLETED")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                tab === "COMPLETED" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Completed ({myJobs.filter((j) => j.status === "DELIVERED").length})
+            </button>
+          </div>
+
+          <div className="relative flex-1 max-w-sm">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by farm or city..."
+              className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-slate-800"
             />
-            Refresh
-          </button>
-        </header>
-
-        {error && (
-          <div className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
-            {error}
           </div>
-        )}
+        </div>
 
-        <section className="mt-6 grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-[#e3e8ef] bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7b8797]">
-                  Active
-                </p>
-
-                <p className="mt-2 text-3xl font-black">
-                  {activeJobs.length}
-                </p>
-              </div>
-
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#eef5ff] text-[#3269a8]">
-                <Route size={19} />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-[#e3e8ef] bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7b8797]">
-                  Completed
-                </p>
-
-                <p className="mt-2 text-3xl font-black">
-                  {completedJobs.length}
-                </p>
-              </div>
-
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#edf8f0] text-[#32834c]">
-                <CheckCircle2 size={19} />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-[#e3e8ef] bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7b8797]">
-                  Vehicle
-                </p>
-
-                <p className="mt-2 text-lg font-black">
-                  {profile?.vehicleNumber || "Not registered"}
-                </p>
-              </div>
-
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#fff5e9] text-[#bd741f]">
-                <Truck size={19} />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-7">
-          <div className="mb-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.17em] text-[#7b8797]">
-              In progress
+        {/* Deliveries List */}
+        {displayedJobs.length === 0 ? (
+          <div className="p-12 text-center rounded-2xl bg-white border border-slate-200 shadow-xs">
+            <Truck size={36} className="mx-auto text-slate-300 mb-2" />
+            <h3 className="text-sm font-bold text-slate-800">
+              {tab === "ACTIVE" ? "No deliveries currently in progress" : "No completed deliveries found"}
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">
+              {tab === "ACTIVE"
+                ? "Visit the Available Jobs tab to claim open shipments from nearby farms."
+                : "Completed delivery records will appear here once delivered."}
             </p>
-
-            <h2 className="mt-1 text-xl font-black">
-              Active deliveries
-            </h2>
           </div>
+        ) : (
+          <div className="space-y-3">
+            {displayedJobs.map((job) => {
+              const isDelivered = job.status === "DELIVERED";
+              const isHeavy = job.quantity > 30 || job.vehicle.toLowerCase().includes("truck");
+              const payoutPaise = isHeavy ? 35000 + job.quantity * 150 : 6000 + job.quantity * 200;
 
-          {activeJobs.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[#cfd7e2] bg-white px-6 py-12 text-center">
-              <Package
-                size={28}
-                className="mx-auto text-[#8a95a5]"
-              />
-
-              <h3 className="mt-3 text-base font-black">
-                No active deliveries
-              </h3>
-
-              <p className="mx-auto mt-1 max-w-md text-sm font-medium text-[#737f90]">
-                You currently have no assigned delivery in progress.
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-4">
-              {activeJobs.map((job) => (
-                <article
+              return (
+                <div
                   key={job.id}
-                  className="rounded-2xl border border-[#e1e6ed] bg-white p-5 shadow-sm"
+                  className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 transition shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
-                  <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-[#eef5ff] px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-[#3269a8]">
-                          {statusLabel(job.status)}
-                        </span>
-
-                        <span className="rounded-full bg-[#f2f4f7] px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-[#657184]">
-                          {job.fulfillmentChannel === "SOCIETY"
-                            ? "Society"
-                            : "Direct farmer"}
-                        </span>
-                      </div>
-
-                      <h3 className="mt-3 text-lg font-black">
-                        {pickupLabel(job)}
-                      </h3>
-
-                      <div className="mt-3 grid gap-2 text-sm font-medium text-[#697586] md:grid-cols-2">
-                        <div className="flex items-start gap-2">
-                          <MapPin
-                            size={16}
-                            className="mt-0.5 shrink-0 text-[#657184]"
-                          />
-                          <span>
-                            <strong className="font-bold text-[#354255]">
-                              Pickup:
-                            </strong>{" "}
-                            {job.pickup || pickupLabel(job)}
-                          </span>
-                        </div>
-
-                        <div className="flex items-start gap-2">
-                          <Package
-                            size={16}
-                            className="mt-0.5 shrink-0 text-[#657184]"
-                          />
-                          <span>
-                            <strong className="font-bold text-[#354255]">
-                              Quantity:
-                            </strong>{" "}
-                            {job.quantity} kg
-                          </span>
-                        </div>
-
-                        <div className="flex items-start gap-2 md:col-span-2">
-                          <MapPin
-                            size={16}
-                            className="mt-0.5 shrink-0 text-[#657184]"
-                          />
-                          <span>
-                            <strong className="font-bold text-[#354255]">
-                              Customer:
-                            </strong>{" "}
-                            {destination(job)}
-                          </span>
-                        </div>
-                      </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded">
+                        SS-{job.id.slice(0, 8)}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                          isDelivered
+                            ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                            : "bg-blue-50 text-blue-800 border border-blue-200"
+                        }`}
+                      >
+                        {STATUS_LABELS[job.status] || job.status}
+                      </span>
+                      <span className="text-xs font-semibold text-slate-600">
+                        • {job.quantity} kg Cargo
+                      </span>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        navigate(`/logistics/tracker/${job.id}`)
-                      }
-                      className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#245ea8] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#1d4f8f]"
-                    >
-                      Open Live Tracker
-                      <ArrowRight size={16} />
-                    </button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-slate-600">
+                      <div className="flex items-start gap-1.5">
+                        <MapPin size={13} className="text-emerald-600 shrink-0 mt-0.5" />
+                        <span>
+                          <strong>Origin:</strong> {job.farmer?.farmName || "Farm"} ({job.pickup})
+                        </span>
+                      </div>
+                      <div className="flex items-start gap-1.5">
+                        <MapPin size={13} className="text-blue-600 shrink-0 mt-0.5" />
+                        <span>
+                          <strong>Drop:</strong> {job.order?.address?.city || "Retail Hub / Society"}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
 
-        <section className="mt-9">
-          <div className="mb-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.17em] text-[#7b8797]">
-              Delivery history
-            </p>
+                  <div className="flex items-center gap-4 shrink-0 justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
+                    <div className="text-right">
+                      <span className="text-[10px] text-slate-400 font-medium">Payout</span>
+                      <p className="font-black text-slate-900 text-sm">{rupees(payoutPaise)}</p>
+                    </div>
 
-            <h2 className="mt-1 text-xl font-black">
-              Completed deliveries
-            </h2>
+                    <Link
+                      to={`/logistics/tracker/${job.id}`}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow-xs"
+                    >
+                      <span>Track & Update</span>
+                      <ArrowRight size={13} />
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-
-          {completedJobs.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[#cfd7e2] bg-white px-6 py-12 text-center">
-              <Clock3
-                size={28}
-                className="mx-auto text-[#8a95a5]"
-              />
-
-              <h3 className="mt-3 text-base font-black">
-                No completed deliveries yet
-              </h3>
-
-              <p className="mx-auto mt-1 max-w-md text-sm font-medium text-[#737f90]">
-                Delivered jobs will appear here automatically.
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-hidden rounded-2xl border border-[#e1e6ed] bg-white shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[850px] text-left">
-                  <thead className="border-b border-[#e8ecf1] bg-[#fafbfc]">
-                    <tr className="text-[10px] font-black uppercase tracking-[0.14em] text-[#7b8797]">
-                      <th className="px-5 py-4">Delivery</th>
-                      <th className="px-5 py-4">Pickup</th>
-                      <th className="px-5 py-4">Customer</th>
-                      <th className="px-5 py-4">Quantity</th>
-                      <th className="px-5 py-4">Delivered</th>
-                      <th className="px-5 py-4" />
-                    </tr>
-                  </thead>
-
-                  <tbody className="divide-y divide-[#edf0f4]">
-                    {completedJobs.map((job) => (
-                      <tr
-                        key={job.id}
-                        className="transition hover:bg-[#fafbfc]"
-                      >
-                        <td className="px-5 py-5">
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#edf8f0] text-[#32834c]">
-                              <CheckCircle2 size={17} />
-                            </div>
-
-                            <div>
-                              <p className="text-sm font-black">
-                                #{job.id.slice(-8).toUpperCase()}
-                              </p>
-
-                              <p className="mt-0.5 text-xs font-medium text-[#7a8594]">
-                                Delivered
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td className="px-5 py-5 text-sm font-semibold text-[#4e5a6b]">
-                          {pickupLabel(job)}
-                        </td>
-
-                        <td className="max-w-[260px] px-5 py-5">
-                          <p className="text-sm font-semibold text-[#4e5a6b]">
-                            {job.order?.address?.recipient ||
-                              "Customer"}
-                          </p>
-
-                          <p className="mt-1 text-xs font-medium leading-5 text-[#7a8594]">
-                            {destination(job)}
-                          </p>
-
-                          {locationAvailable(job) ? (
-                            <p className="mt-1 text-[10px] font-bold text-[#32834c]">
-                              Customer GPS available
-                            </p>
-                          ) : (
-                            <p className="mt-1 text-[10px] font-bold text-[#9a6d28]">
-                              Customer map location unavailable
-                            </p>
-                          )}
-                        </td>
-
-                        <td className="px-5 py-5 text-sm font-bold text-[#354255]">
-                          {job.quantity} kg
-                        </td>
-
-                        <td className="px-5 py-5 text-sm font-semibold text-[#687487]">
-                          {formatDate(
-                            (job as Job & {
-                              deliveredAt?: string | null;
-                            }).deliveredAt
-                          )}
-                        </td>
-
-                        <td className="px-5 py-5 text-right">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              navigate(
-                                `/logistics/tracker/${job.id}`
-                              )
-                            }
-                            className="inline-flex items-center gap-1.5 text-xs font-black text-[#245ea8] hover:underline"
-                          >
-                            View
-                            <ArrowRight size={14} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </section>
-      </main>
-    </div>
+        )}
+      </div>
+    </LogisticsLayout>
   );
 }

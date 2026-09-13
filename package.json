@@ -6,6 +6,9 @@
     "dev:web": "npm run dev --prefix frontend",
     "db:seed": "npm run db:seed --prefix server",
     "test:server": "npm test --prefix server",
-    "build:web": "npm run build --prefix frontend"
+    "build:web": "npm run build --prefix frontend",
+    "build:server": "npm run build --prefix server",
+    "build": "npm run build:web && npm run build:server",
+    "start": "npm start --prefix server"
   }
 }

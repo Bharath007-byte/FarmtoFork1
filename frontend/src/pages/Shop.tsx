@@ -187,8 +187,28 @@ export function CartPage() {
 
   useEffect(() => {
     if (!user) {
-      setError("Sign in to view your cart and place an order.");
-      setItems([]);
+      try {
+        const guest = JSON.parse(localStorage.getItem("f2f-guest-cart") || "{}");
+        const productIds = Object.keys(guest);
+        if (productIds.length === 0) {
+          setItems([]);
+          return;
+        }
+        api<{ products: any[] }>("/api/products").then((d) => {
+          const productMap = new Map(d.products.map((p) => [p.id, p]));
+          const guestItems: CartItem[] = productIds
+            .filter((id) => productMap.has(id))
+            .map((id) => ({
+              id,
+              qty: guest[id],
+              product: productMap.get(id),
+            }));
+          setItems(guestItems);
+          setError("");
+        }).catch(() => setItems([]));
+      } catch {
+        setItems([]);
+      }
       return;
     }
 
@@ -215,12 +235,12 @@ export function CartPage() {
   ) => {
     setError("");
 
-    const minimum = line.product.minQty || 0.25;
+    const minimum = line.product.minQty || 0.1;
     const available =
       line.product.inventory?.available ?? 0;
 
     /*
-     * Marketplace quantities use 250 g steps.
+     * Marketplace quantities support 100g (0.1), 250g (0.25) and standard kg steps.
      * The backend continues receiving kg values.
      */
     const normalizedQty =
@@ -458,13 +478,22 @@ export function CartPage() {
                       line.product.inventory?.available ?? 0;
 
                     const minimum =
-                      line.product.minQty || 0.25;
+                      line.product.minQty || 0.1;
 
-                    const canIncrease =
-                      line.qty + 0.25 <= available;
+                    const nextDecQty =
+                      line.qty > 0.25
+                        ? Math.round((line.qty - 0.25) * 100) / 100
+                        : line.qty > 0.1
+                          ? 0.1
+                          : minimum;
 
-                    const canDecrease =
-                      line.qty - 0.25 >= minimum;
+                    const nextIncQty =
+                      line.qty < 0.25
+                        ? 0.25
+                        : Math.round((line.qty + 0.25) * 100) / 100;
+
+                    const canDecrease = line.qty > minimum;
+                    const canIncrease = nextIncQty <= available;
 
                     const busy =
                       updatingId === line.id;
@@ -533,13 +562,7 @@ export function CartPage() {
                                     !canDecrease || busy
                                   }
                                   onClick={() =>
-                                    updateQuantity(
-                                      line,
-                                      Math.round(
-                                        (line.qty - 0.25) *
-                                          100
-                                      ) / 100
-                                    )
+                                    updateQuantity(line, nextDecQty)
                                   }
                                   className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-bold text-[#075B42] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-30"
                                   aria-label={`Decrease ${line.product.name}`}
@@ -560,13 +583,7 @@ export function CartPage() {
                                     !canIncrease || busy
                                   }
                                   onClick={() =>
-                                    updateQuantity(
-                                      line,
-                                      Math.round(
-                                        (line.qty + 0.25) *
-                                          100
-                                      ) / 100
-                                    )
+                                    updateQuantity(line, nextIncQty)
                                   }
                                   className="flex h-9 w-9 items-center justify-center rounded-full text-lg font-bold text-[#075B42] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-30"
                                   aria-label={`Increase ${line.product.name}`}
@@ -741,7 +758,13 @@ export function CartPage() {
 
                 <button
                   type="button"
-                  onClick={() => navigate("/checkout")}
+                  onClick={() => {
+                    if (!user) {
+                      navigate("/login?next=/checkout");
+                    } else {
+                      navigate("/checkout");
+                    }
+                  }}
                   className="mt-6 flex w-full items-center justify-between rounded-2xl bg-[#16823F] px-5 py-4 text-sm font-bold text-white shadow-sm transition hover:bg-[#075B42] hover:shadow-md"
                 >
                   <span>

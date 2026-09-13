@@ -39,8 +39,8 @@ export function AccountMenu({ light = false }: { light?: boolean }) {
         type="button"
         aria-label="Account menu"
         onClick={() => setOpen((v) => !v)}
-        className={`flex h-10 w-10 items-center justify-center overflow-hidden rounded-full ring-2 ${
-          light ? "ring-white/70 bg-white/20 text-white" : "ring-emerald-100 bg-[#e8f0e3] text-[#2f7a4a]"
+        className={`flex h-11 w-11 items-center justify-center overflow-hidden rounded-full ring-2 shadow-sm transition hover:scale-105 ${
+          light ? "ring-white/80 bg-white/20 text-white" : "ring-emerald-200 bg-[#e8f0e3] text-[#2f7a4a]"
         }`}
       >
         {photo ? (

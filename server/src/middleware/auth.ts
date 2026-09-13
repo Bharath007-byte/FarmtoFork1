@@ -105,6 +105,35 @@ export async function auth(
   }
 }
 
+export async function optionalAuth(
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) {
+  const header = req.headers.authorization;
+  const token = header?.startsWith("Bearer ") ? header.slice(7).trim() : "";
+
+  if (!token) {
+    return next();
+  }
+
+  try {
+    const payload = jwt.verify(token, env.jwtSecret) as { id?: string };
+    if (payload.id) {
+      const user = await prisma.user.findUnique({
+        where: { id: payload.id },
+        select: { id: true, role: true, email: true, name: true },
+      });
+      if (user) {
+        req.user = { id: user.id, role: user.role, email: user.email, name: user.name };
+      }
+    }
+  } catch {
+    // Ignore invalid tokens for optional auth
+  }
+  next();
+}
+
 export function requireRole(...roles: Role[]) {
   return (
     req: Request,

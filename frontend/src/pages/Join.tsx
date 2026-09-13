@@ -32,7 +32,7 @@ export function Join() {
             text="Households and bulk buyers shop unique produce types."
           />
           <Door
-            to="/register/logistics"
+            to="/logistics/register"
             n="3"
             icon={<Truck />}
             title="Logistics"
@@ -40,7 +40,7 @@ export function Join() {
           />
         </div>
         <p className="mt-10 text-sm text-zinc-500">
-          Already on farm2fork?{" "}
+          Already have a Samruddhi Setu account?{" "}
           <Link to="/login" className="font-semibold text-[#2f7a4a]">
             Sign in
           </Link>

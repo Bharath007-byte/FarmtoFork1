@@ -17,10 +17,25 @@ import { FarmerDashboard, FarmerFeature } from "./pages/FarmerDashboard";
 import { FarmerProduce } from "./pages/FarmerProduce";
 import { SellProduce } from "./pages/SellProduce";
 import { AiAdvisory } from "./pages/AiAdvisory";
+import { KrishiAiStudio } from "./pages/farmer/KrishiAiStudio";
 import { LogisticsDashboard } from "./pages/LogisticsDashboard";
 import { LogisticsDeliveries } from "./pages/LogisticsDeliveries";
 import { LogisticsJobs } from "./pages/LogisticsJobs";
 import { LogisticsTracker } from "./pages/LogisticsTracker";
+import { LogisticsEarnings } from "./pages/logistics/LogisticsEarnings";
+import { LogisticsFleet } from "./pages/logistics/LogisticsFleet";
+import { LogisticsVehicle } from "./pages/logistics/LogisticsVehicle";
+import { LogisticsProfile } from "./pages/logistics/LogisticsProfile";
+import { LogisticsSupport } from "./pages/logistics/LogisticsSupport";
+import { LogisticsGuard } from "./components/LogisticsGuard";
+import { LogisticsRegisterStep1 } from "./pages/logistics/LogisticsRegisterStep1";
+import { LogisticsRegisterStep2 } from "./pages/logistics/LogisticsRegisterStep2";
+import { LogisticsRegisterStep3 } from "./pages/logistics/LogisticsRegisterStep3";
+import { LogisticsRegisterStep4 } from "./pages/logistics/LogisticsRegisterStep4";
+import { LogisticsRegisterStep5 } from "./pages/logistics/LogisticsRegisterStep5";
+import { LogisticsRegisterStep6 } from "./pages/logistics/LogisticsRegisterStep6";
+import { LogisticsPortal } from "./pages/LogisticsPortal";
+
 import { Orders } from "./pages/Orders";
 import { OrderDetails } from "./pages/OrderDetails";
 import { OrderTracking } from "./pages/OrderTracking";
@@ -32,11 +47,11 @@ import {
   FarmerProductInfo,
   FarmerProfilePage,
   InventoryPage,
-  LogisticsPage,
   MarketPage,
   NotificationsPage,
   PredictionsPage,
 } from "./features/farmer/FarmerDesk";
+import { SocietyBulkDesk } from "./pages/SocietyBulkDesk";
 import { AdminLayout } from "./layouts/AdminLayout";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminSocieties } from "./pages/admin/AdminSocieties";
@@ -81,22 +96,9 @@ export default function App() {
               <Route path="/register/:role" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route
-  path="/shop"
-  element={
-    <ProtectedRoute role="consumer">
-      <Shop />
-    </ProtectedRoute>
-  }
-/>
-              <Route
-  path="/shop/:id"
-  element={
-    <ProtectedRoute role="consumer">
-      <ProductPage />
-    </ProtectedRoute>
-  }
-/>
+              {/* Open Marketplace (Guests can browse & add to cart) */}
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/shop/:id" element={<ProductPage />} />
               <Route path="/cart" element={<CartPage />} />
               <Route
                 path="/checkout"
@@ -149,6 +151,7 @@ export default function App() {
               >
                 <Route index element={<Navigate to="dashboard" replace />} />
                 <Route path="dashboard" element={<FarmerDashboard />} />
+                <Route path="krishi-ai" element={<KrishiAiStudio />} />
                 <Route path="sell" element={<SellProduce />} />
                 <Route path="produce" element={<FarmerProduce />} />
                 <Route path="products/:id" element={<FarmerProductInfo />} />
@@ -157,7 +160,8 @@ export default function App() {
                 <Route path="earnings" element={<EarningsPage />} />
                 <Route path="market" element={<MarketPage />} />
                 <Route path="predictions" element={<PredictionsPage />} />
-                <Route path="logistics" element={<LogisticsPage />} />
+                <Route path="logistics" element={<SocietyBulkDesk />} />
+                <Route path="cooperative" element={<SocietyBulkDesk />} />
                 <Route path="collaborations" element={<CollabPage />} />
                 <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="profile" element={<FarmerProfilePage />} />
@@ -210,10 +214,65 @@ export default function App() {
                 }
               />
               <Route
+                path="/farmer/digital-twin"
+                element={
+                  <ProtectedRoute role={["farmer", "admin"]}>
+                    <DigitalTwin />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Logistics Portal & Multi-Step Onboarding */}
+              <Route path="/logistics/portal" element={<LogisticsPortal />} />
+              <Route path="/logistics/register" element={<LogisticsRegisterStep1 />} />
+              <Route
+                path="/logistics/register/documents"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsRegisterStep2 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/logistics/register/verification"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsRegisterStep3 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/logistics/register/status"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsRegisterStep4 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/logistics/register/vehicle"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsRegisterStep5 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/logistics/register/approval"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsRegisterStep6 />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Protected Logistics Operations (Unlocked upon approval) */}
+              <Route
                 path="/logistics"
                 element={
                   <ProtectedRoute role="logistics">
-                    <LogisticsDashboard />
+                    <LogisticsGuard>
+                      <LogisticsDashboard />
+                    </LogisticsGuard>
                   </ProtectedRoute>
                 }
               />
@@ -222,7 +281,9 @@ export default function App() {
                 path="/logistics/deliveries"
                 element={
                   <ProtectedRoute role="logistics">
-                    <LogisticsDeliveries />
+                    <LogisticsGuard>
+                      <LogisticsDeliveries />
+                    </LogisticsGuard>
                   </ProtectedRoute>
                 }
               />
@@ -231,7 +292,9 @@ export default function App() {
                 path="/logistics/jobs"
                 element={
                   <ProtectedRoute role="logistics">
-                    <LogisticsJobs />
+                    <LogisticsGuard>
+                      <LogisticsJobs />
+                    </LogisticsGuard>
                   </ProtectedRoute>
                 }
               />
@@ -240,10 +303,68 @@ export default function App() {
                 path="/logistics/tracker/:jobId"
                 element={
                   <ProtectedRoute role="logistics">
-                    <LogisticsTracker />
+                    <LogisticsGuard>
+                      <LogisticsTracker />
+                    </LogisticsGuard>
                   </ProtectedRoute>
                 }
               />
+
+              <Route
+                path="/logistics/earnings"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsGuard>
+                      <LogisticsEarnings />
+                    </LogisticsGuard>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/logistics/fleet"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsGuard>
+                      <LogisticsFleet />
+                    </LogisticsGuard>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/logistics/vehicle"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsGuard>
+                      <LogisticsVehicle />
+                    </LogisticsGuard>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/logistics/profile"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsGuard>
+                      <LogisticsProfile />
+                    </LogisticsGuard>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/logistics/support"
+                element={
+                  <ProtectedRoute role="logistics">
+                    <LogisticsGuard>
+                      <LogisticsSupport />
+                    </LogisticsGuard>
+                  </ProtectedRoute>
+                }
+              />
+
 
               <Route
   path="/admin"

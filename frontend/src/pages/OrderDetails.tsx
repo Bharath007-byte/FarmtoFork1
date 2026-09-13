@@ -642,10 +642,10 @@ export function OrderDetails() {
 
                         <Link
                           to={`/orders/${order.id}/track`}
-                          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#315a78] px-4 py-2.5 text-xs font-black text-white transition hover:bg-[#264963]"
+                          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#315a78] px-4 py-2.5 text-xs font-black text-white shadow-xs transition hover:bg-[#264963]"
                         >
                           <MapPin size={14} />
-                          Track
+                          Live GPS Map & Route
                         </Link>
                       </div>
 
@@ -676,6 +676,29 @@ export function OrderDetails() {
                           )}
                         />
                       </div>
+
+                      {/* Mini Live GPS Map if coordinates available */}
+                      {booking.currentLat && booking.currentLng && (
+                        <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
+                          <div className="flex items-center justify-between text-xs font-bold text-emerald-800 mb-2">
+                            <span className="flex items-center gap-1.5">
+                              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                              Live Courier Telemetry Active
+                            </span>
+                            <Link
+                              to={`/orders/${order.id}/track`}
+                              className="text-emerald-700 hover:underline flex items-center gap-1 text-[11px]"
+                            >
+                              Expand Map ↗
+                            </Link>
+                          </div>
+                          <iframe
+                            title="Courier Live Position"
+                            className="h-32 w-full rounded-lg border-0"
+                            src={`https://www.openstreetmap.org/export/embed.html?bbox=${booking.currentLng - 0.015}%2C${booking.currentLat - 0.015}%2C${booking.currentLng + 0.015}%2C${booking.currentLat + 0.015}&layer=mapnik&marker=${booking.currentLat}%2C${booking.currentLng}`}
+                          />
+                        </div>
+                      )}
 
                       {/* FARMER / SOCIETY */}
                       {booking.society && (

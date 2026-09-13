@@ -419,7 +419,12 @@ export function Marketplace() {
       const storedToken = localStorage.getItem("f2f-token");
     
       if (!storedToken) {
-        setCart({});
+        try {
+          const guest = JSON.parse(localStorage.getItem("f2f-guest-cart") || "{}");
+          setCart(guest);
+        } catch {
+          setCart({});
+        }
         return;
       }
     
@@ -678,22 +683,32 @@ export function Marketplace() {
     selectedQuantity?: number,
   ) {
     const storedToken = localStorage.getItem("f2f-token");
-
-    if (!storedToken) {
-      setCartMessage(
-        "Please log in before adding products to your cart.",
-      );
-      return;
-    }
-
     const currentQuantity = cart[productId] || 0;
 
-    // Product-card + button increases by 250 g.
-    // Product-modal selection can explicitly set 250 g, 500 g or 1 kg.
-    const nextQuantity =
-      selectedQuantity !== undefined
-        ? selectedQuantity
-        : currentQuantity + 0.25;
+    // Next quantity calculation:
+    // If explicit selectedQuantity passed (e.g. from modal: 0.1, 0.25, 0.5, 1, or bulk), use it.
+    // If clicking "+" from 0: start at 0.25 kg (250 g).
+    // If clicking "+" from 0.1 kg (100 g): advance to 0.25 kg.
+    // Otherwise increment by 0.25 kg.
+    let nextQuantity: number;
+    if (selectedQuantity !== undefined) {
+      nextQuantity = selectedQuantity;
+    } else if (currentQuantity === 0) {
+      nextQuantity = 0.25;
+    } else if (currentQuantity < 0.25) {
+      nextQuantity = 0.25;
+    } else {
+      nextQuantity = Math.round((currentQuantity + 0.25) * 100) / 100;
+    }
+
+    if (!storedToken) {
+      setCart((current) => {
+        const updated = { ...current, [productId]: nextQuantity };
+        localStorage.setItem("f2f-guest-cart", JSON.stringify(updated));
+        return updated;
+      });
+      return;
+    }
 
     try {
       setCartMessage("");
@@ -719,13 +734,7 @@ export function Marketplace() {
       );
 
       if (error instanceof ApiError) {
-        if (error.status === 401) {
-          setCartMessage(
-            "Please log in before adding products to your cart.",
-          );
-        } else {
-          setCartMessage(error.message);
-        }
+        setCartMessage(error.message);
       } else {
         setCartMessage(
           "Unable to update your cart.",
@@ -736,22 +745,32 @@ export function Marketplace() {
 
   async function removeFromCart(productId: string) {
     const storedToken = localStorage.getItem("f2f-token");
-  
-    if (!storedToken) {
-      setCartMessage("Please log in to manage your cart.");
-      return;
-    }
-  
     const currentQuantity = cart[productId] || 0;
   
     if (currentQuantity <= 0) {
       return;
     }
   
-    const nextQuantity = Math.max(
-      0,
-      currentQuantity - 0.25,
-    );
+    // If 0.25 or less (e.g. 0.1 or 0.25), remove item.
+    // Otherwise subtract 0.25 kg.
+    let nextQuantity = 0;
+    if (currentQuantity > 0.25) {
+      nextQuantity = Math.round((currentQuantity - 0.25) * 100) / 100;
+    }
+
+    if (!storedToken) {
+      setCart((current) => {
+        const updated = { ...current };
+        if (nextQuantity <= 0) {
+          delete updated[productId];
+        } else {
+          updated[productId] = nextQuantity;
+        }
+        localStorage.setItem("f2f-guest-cart", JSON.stringify(updated));
+        return updated;
+      });
+      return;
+    }
   
     try {
       setCartMessage("");
@@ -1620,6 +1639,29 @@ function CategoryTile({
 /* PRODUCT CARD                                           */
 /* ====================================================== */
 
+function formatQuantityBadge(qty: number, unit = "kg"): string {
+  const norm = (unit || "kg").toLowerCase();
+  if (norm === "kg" || norm === "kilogram" || norm === "kilograms") {
+    if (qty < 1) {
+      return `${Math.round(qty * 1000)}g`;
+    }
+    if (Number.isInteger(qty)) {
+      return `${qty}kg`;
+    }
+    return `${qty.toFixed(2).replace(/0+$/, "").replace(/\.$/, "")}kg`;
+  }
+  if (norm === "l" || norm === "litre" || norm === "liter" || norm === "litres") {
+    if (qty < 1) {
+      return `${Math.round(qty * 1000)}ml`;
+    }
+    if (Number.isInteger(qty)) {
+      return `${qty}L`;
+    }
+    return `${qty.toFixed(2).replace(/0+$/, "").replace(/\.$/, "")}L`;
+  }
+  return `${qty} ${unit}`;
+}
+
 function ProductCard({
   product,
   quantity,
@@ -1646,7 +1688,7 @@ function ProductCard({
     >
       {/* IMAGE */}
 
-      <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#f3e8d7]">
+      <div className="relative flex aspect-square w-full shrink-0 items-center justify-center overflow-hidden bg-white p-4">
         <img
           src={product.imageUrl}
           alt={product.name}
@@ -1655,7 +1697,7 @@ function ProductCard({
             event.currentTarget.src =
               FALLBACK_IMAGE;
           }}
-          className="absolute inset-0 h-full w-full object-contain object-center p-5"
+          className="h-full w-full object-contain object-center transition duration-300 group-hover:scale-105"
         />
 
         {/* Organic */}
@@ -1803,8 +1845,8 @@ function ProductCard({
                   <Minus className="h-4 w-4" />
                 </button>
 
-                <span className="min-w-8 text-center text-xs font-black">
-                  {quantity}
+                <span className="min-w-10 px-1 text-center text-xs font-black">
+                  {formatQuantityBadge(quantity, product.unit)}
                 </span>
 
                 <button
@@ -1850,6 +1892,7 @@ function ProductModal({
 
   const [selectedWeight, setSelectedWeight] =
     useState(
+      quantity === 0.1 ||
       quantity === 0.25 ||
       quantity === 0.5 ||
       quantity === 1
@@ -1870,6 +1913,7 @@ function ProductModal({
 
   useEffect(() => {
     if (
+      quantity === 0.1 ||
       quantity === 0.25 ||
       quantity === 0.5 ||
       quantity === 1
@@ -1897,6 +1941,10 @@ function ProductModal({
   const weightOptions = isLiquid
     ? [
         {
+          label: "100 ml",
+          value: 0.1,
+        },
+        {
           label: "250 ml",
           value: 0.25,
         },
@@ -1910,6 +1958,10 @@ function ProductModal({
         },
       ]
     : [
+        {
+          label: "100 g",
+          value: 0.1,
+        },
         {
           label: "250 g",
           value: 0.25,
@@ -1931,6 +1983,9 @@ function ProductModal({
         : "Bulk Order";
     }
 
+    if (selectedWeight === 0.1) {
+      return isLiquid ? "100 ml" : "100 g";
+    }
     if (selectedWeight === 0.25) {
       return isLiquid ? "250 ml" : "250 g";
     }
@@ -1993,7 +2048,7 @@ function ProductModal({
 
         <div className="grid gap-8 p-5 md:grid-cols-2 md:p-8">
           <div>
-            <div className="relative overflow-hidden rounded-[24px] bg-[#f3e8d7]">
+            <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-[24px] border border-slate-100 bg-white p-6 sm:p-8">
               <img
                 src={product.imageUrl}
                 alt={product.name}
@@ -2001,7 +2056,7 @@ function ProductModal({
                   event.currentTarget.src =
                     FALLBACK_IMAGE;
                 }}
-                className="aspect-square w-full object-cover"
+                className="h-full w-full object-contain object-center"
               />
 
               {product.organic && (
@@ -2143,7 +2198,7 @@ function ProductModal({
                 </span>
               </div>
 
-              <div className="mt-3 grid grid-cols-3 gap-2.5">
+              <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {weightOptions.map((option) => {
                   const optionAvailable =
                     product.available >= option.value;

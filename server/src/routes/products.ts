@@ -6,6 +6,7 @@ import { prisma } from "../db.js";
 import { auth, requireRole } from "../middleware/auth.js";
 import { emitEvent } from "../socket.js";
 import { notify } from "../lib/notify.js";
+import { verifyProduceName, verifyProduceImage } from "../lib/produceVerifier.js";
 
 const uploadDir = path.join(process.cwd(), "uploads");
 fs.mkdirSync(uploadDir, { recursive: true });
@@ -108,6 +109,31 @@ productRouter.post("/", auth, requireRole("FARMER"), upload.single("image"), asy
   if (!name || !categoryId || !unit || price == null || quantity == null) {
     return res.status(422).json({ error: "Missing product fields", code: 422 });
   }
+
+  // 1. Verify crop name
+  const nameCheck = verifyProduceName(String(name));
+  if (!nameCheck.isValid) {
+    if (req.file?.path && fs.existsSync(req.file.path)) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch {}
+    }
+    return res.status(422).json({ error: nameCheck.reason, code: 422 });
+  }
+
+  // 2. Verify crop image if uploaded
+  if (req.file) {
+    const imgCheck = verifyProduceImage(req.file, String(name));
+    if (!imgCheck.isValid) {
+      if (req.file?.path && fs.existsSync(req.file.path)) {
+        try {
+          fs.unlinkSync(req.file.path);
+        } catch {}
+      }
+      return res.status(422).json({ error: imgCheck.reason, code: 422 });
+    }
+  }
+
   const pricePaise = Math.round(Number(price) * 100);
   const qty = Number(quantity);
   const product = await prisma.$transaction(async (tx) => {
@@ -123,7 +149,7 @@ productRouter.post("/", auth, requireRole("FARMER"), upload.single("image"), asy
         organic: organic === "true" || organic === true,
         harvestDate: harvestDate ? new Date(harvestDate) : null,
         availableFrom: availableFrom ? new Date(availableFrom) : null,
-        minQty: minQty ? Number(minQty) : 1,
+        minQty: minQty ? Number(minQty) : 0.1,
         maxQty: maxQty ? Number(maxQty) : null,
         imageUrl: req.file ? `/uploads/${req.file.filename}` : null,
       },

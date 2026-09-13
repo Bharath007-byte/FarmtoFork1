@@ -9,13 +9,13 @@ export default function About() {
           {/* Left Side Info */}
           <div className="space-y-6">
             <span className="text-emerald-400 font-semibold text-xs tracking-widest uppercase bg-emerald-950/60 border border-emerald-800/40 px-3 py-1 rounded-md inline-block">
-              ABOUT FARM2FORK
+              ABOUT SAMRUDDHI SETU (समृद्धि सेतु)
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
               Bridging the Gap Between Field & Fork
             </h2>
             <p className="text-slate-300 text-base leading-relaxed">
-              Inspired by the rapid accessibility of modern quick-commerce and the authentic pricing of local Rythu Bazaars, Farm2Fork connects farmers directly with consumers and bulk commercial buyers.
+              Inspired by the rapid accessibility of modern quick-commerce and the authentic pricing of local Rythu Bazaars, Samruddhi Setu connects farmers directly with consumers and bulk commercial buyers.
             </p>
             <p className="text-slate-400 text-sm leading-relaxed">
               We leverage smart logistics routes, automated grading, and direct distribution to eliminate high commissions, ensure zero produce wasted, and get fresh crops delivered at peak quality.

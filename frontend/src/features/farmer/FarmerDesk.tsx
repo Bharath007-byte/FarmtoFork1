@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bell, CheckCheck, Sparkles } from "lucide-react";
 import { api, ApiError, rupees } from "../../services/api";
 import { useRealtime } from "../../hooks/useRealtime";
 
@@ -487,30 +488,128 @@ export function CollabPage() {
 }
 
 export function NotificationsPage() {
-  const [rows, setRows] = useState<{ id: string; title: string; message: string; createdAt: string }[]>(
-    []
-  );
+  const [rows, setRows] = useState<
+    { id: string; title: string; message: string; read: boolean; createdAt: string }[]
+  >([]);
+
   const load = () =>
-    api<{ notifications: typeof rows }>("/api/notifications").then((d) => setRows(d.notifications));
+    api<{ notifications: typeof rows }>("/api/notifications").then((d) => setRows(d.notifications || []));
+
   useEffect(() => {
     load();
   }, []);
+
   useRealtime(
-    ["ORDER_CREATED", "COLLABORATION_REQUESTED", "PAYMENT_CONFIRMED", "LOGISTICS_BOOKED"],
+    [
+      "NOTIFICATION",
+      "NEW_ORDER",
+      "ORDER_CREATED",
+      "COLLABORATION_REQUESTED",
+      "PAYMENT_CONFIRMED",
+      "LOGISTICS_BOOKED",
+      "LOGISTICS_STATUS_CHANGED",
+      "SOCIETY_SUPPLY",
+    ],
     load
   );
+
+  const markAsRead = async (id: string) => {
+    try {
+      await api(`/api/notifications/${id}/read`, { method: "PATCH" });
+      setRows((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    } catch {
+      // ignore
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      await api("/api/notifications/mark-all-read", { method: "PATCH" });
+      setRows((prev) => prev.map((n) => ({ ...n, read: true })));
+    } catch {
+      // ignore
+    }
+  };
+
+  const unreadCount = rows.filter((r) => !r.read).length;
+
+  const formatTime = (iso: string) => {
+    try {
+      const d = new Date(iso);
+      const diffMs = Date.now() - d.getTime();
+      const diffMin = Math.floor(diffMs / 60000);
+      if (diffMin < 1) return "Just now";
+      if (diffMin < 60) return `${diffMin}m ago`;
+      const diffHr = Math.floor(diffMin / 60);
+      if (diffHr < 24) return `${diffHr}h ago`;
+      return d.toLocaleDateString("en-IN", { month: "short", day: "numeric" });
+    } catch {
+      return "";
+    }
+  };
+
   return (
-    <div>
-      <h1 className="font-serif text-3xl">Notifications</h1>
-      {rows.length === 0 && <p className="mt-6 text-zinc-500">No notifications yet.</p>}
-      <ul className="mt-6 space-y-2">
-        {rows.map((n) => (
-          <li key={n.id} className="rounded-xl bg-white px-4 py-3">
-            <p className="font-semibold">{n.title}</p>
-            <p className="text-sm text-zinc-500">{n.message}</p>
-          </li>
-        ))}
-      </ul>
+    <div className="max-w-4xl">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800">
+            <Bell className="h-5 w-5" />
+          </div>
+          <div>
+            <h1 className="font-serif text-2xl font-bold text-zinc-900">Farmer Notifications</h1>
+            <p className="text-xs text-zinc-500">Live order bookings, cooperative society pooling & logistics alerts</p>
+          </div>
+        </div>
+        {unreadCount > 0 && (
+          <button
+            type="button"
+            onClick={markAllAsRead}
+            className="flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition shadow-sm"
+          >
+            <CheckCheck className="h-4 w-4" />
+            Mark all read ({unreadCount})
+          </button>
+        )}
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="mt-8 rounded-2xl border border-dashed border-zinc-200 bg-white p-12 text-center text-zinc-400">
+          <Sparkles className="mx-auto mb-2 h-8 w-8 text-zinc-300" />
+          <p className="text-sm font-medium text-zinc-600">No notifications yet</p>
+          <p className="mt-1 text-xs text-zinc-400">
+            Incoming orders from consumers and cooperative societies will notify you here in real time.
+          </p>
+        </div>
+      ) : (
+        <ul className="mt-6 space-y-3">
+          {rows.map((n) => (
+            <li
+              key={n.id}
+              onClick={() => !n.read && markAsRead(n.id)}
+              className={`relative cursor-pointer rounded-2xl border p-4 transition hover:shadow-sm ${
+                !n.read
+                  ? "border-emerald-200 bg-emerald-50/40"
+                  : "border-zinc-200 bg-white"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-2.5">
+                  {!n.read && (
+                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-600 ring-2 ring-emerald-100" />
+                  )}
+                  <div>
+                    <p className="font-semibold text-zinc-900 text-sm">{n.title}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-zinc-600">{n.message}</p>
+                  </div>
+                </div>
+                <span className="shrink-0 text-[11px] font-medium text-zinc-400">
+                  {formatTime(n.createdAt)}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

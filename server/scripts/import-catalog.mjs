@@ -412,7 +412,7 @@ async function main() {
 
           active: true,
 
-          minQty: 1,
+          minQty: 0.1,
 
           maxQty:
             packageQuantity,
@@ -443,7 +443,7 @@ async function main() {
 
           active: true,
 
-          minQty: 1,
+          minQty: 0.1,
 
           maxQty:
             packageQuantity,

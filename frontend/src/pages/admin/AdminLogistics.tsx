@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Activity,
   AlertCircle,
@@ -9,8 +10,11 @@ import {
   RefreshCw,
   Truck,
   UserRound,
+  ShieldCheck,
 } from "lucide-react";
 import { api } from "../../services/api";
+import { AdminLogisticsVerification } from "./AdminLogisticsVerification";
+
 
 type LogisticsJob = {
   id: string;
@@ -157,6 +161,11 @@ export function AdminLogistics() {
   const [filter, setFilter] = useState("ALL");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") === "verifications" ? "verifications" : "operations";
+  const setActiveTab = (tab: "operations" | "verifications") => {
+    setSearchParams(tab === "verifications" ? { tab: "verifications" } : {});
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -281,16 +290,49 @@ export function AdminLogistics() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <div>
-          <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-600">
-            Operations
-          </div>
+      {/* Top Tab Switcher */}
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
+        <button
+          type="button"
+          onClick={() => setActiveTab("operations")}
+          className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
+            activeTab === "operations"
+              ? "bg-indigo-600 text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
+        >
+          Delivery Operations & Dispatch
+        </button>
 
-          <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-950">
-            Logistics control
-          </h1>
+        <button
+          type="button"
+          onClick={() => setActiveTab("verifications")}
+          className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition ${
+            activeTab === "verifications"
+              ? "bg-indigo-600 text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
+        >
+          <ShieldCheck size={15} />
+          Worker Verifications & Approvals
+        </button>
+      </div>
+
+      {activeTab === "verifications" ? (
+        <AdminLogisticsVerification />
+      ) : (
+        <>
+          {/* Header */}
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-600">
+                Operations
+              </div>
+
+              <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-950">
+                Logistics control
+              </h1>
+
 
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
             Monitor real pickup and delivery jobs, assigned workers,
@@ -548,9 +590,12 @@ export function AdminLogistics() {
           )}
         </section>
       </div>
-    </div>
-  );
+      </>
+    )}
+  </div>
+);
 }
+
 
 function FilterButton({
   active,

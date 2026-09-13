@@ -7,16 +7,34 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Sparkles,
   Sprout,
   Truck,
   Wallet,
 } from "lucide-react";
 import { api } from "../../services/api";
 import { useApp } from "../../context/AppState";
+import { SamruddhiSetuLogo } from "../../components/SamruddhiSetuLogo";
+import { FarmerVoiceAssistant } from "../../components/FarmerVoiceAssistant";
+import { useI18n, type AppLang } from "../../i18n";
+
+const navTranslations: Record<string, Record<AppLang, string>> = {
+  Home: { en: "Home", te: "హోమ్", hi: "होम", kn: "ಮುಖಪುಟ" },
+  "Krishi AI Doctor": { en: "Krishi AI Doctor", te: "కృషి AI డాక్టర్", hi: "कृषि एआई डॉक्टर", kn: "ಕೃಷಿ AI ವೈದ್ಯ" },
+  "Sell & AI Scan": { en: "Sell & AI Scan", te: "అమ్మకం & AI స్కానర్", hi: "बेचें एवं एआई स्कैन", kn: "ಮಾರಾಟ & AI ಸ್ಕ್ಯಾನ್" },
+  "My products": { en: "My products", te: "నా ఉత్పత్తులు", hi: "मेरे उत्पाद", kn: "ನನ್ನ ಉತ್ಪನ್ನಗಳು" },
+  Orders: { en: "Orders", te: "ఆర్డర్లు", hi: "ऑर्डर", kn: "ಆರ್ಡರ್‌ಗಳು" },
+  Earnings: { en: "Earnings", te: "ఆదాయం", hi: "कमाई", kn: "ಆದಾಯ" },
+  Pickup: { en: "Pickup", te: "రవాణా / పికప్", hi: "पिकअप", kn: "ಪಿಕಪ್" },
+  Alerts: { en: "Alerts", te: "హెచ్చరికలు", hi: "सूचनाएं", kn: "ಎಚ್ಚರಿಕೆಗಳು" },
+  "AI Doctor": { en: "AI Doctor", te: "AI డాక్టర్", hi: "एआई डॉक्टर", kn: "AI ವೈದ್ಯ" },
+  Logout: { en: "Logout", te: "లాగౌట్", hi: "लॉग आउट", kn: "ಲಾಗೌಟ್" },
+};
 
 const links = [
   { to: "/farmer/dashboard", label: "Home", icon: LayoutDashboard },
-  { to: "/farmer/sell", label: "Sell", icon: Camera },
+  { to: "/farmer/krishi-ai", label: "Krishi AI Doctor", icon: Sparkles, badge: "AI Doctor", highlight: true },
+  { to: "/farmer/sell", label: "Sell & AI Scan", icon: Camera },
   { to: "/farmer/produce", label: "My products", icon: Boxes },
   { to: "/farmer/orders", label: "Orders", icon: Boxes },
   { to: "/farmer/earnings", label: "Earnings", icon: Wallet },
@@ -26,6 +44,7 @@ const links = [
 
 export function FarmerShell() {
   const { user, logout } = useApp();
+  const { lang } = useI18n();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [profile, setProfile] = useState<{
@@ -51,7 +70,13 @@ export function FarmerShell() {
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex items-center gap-3 border-b border-zinc-100 px-4 py-5">
+        <div className="border-b border-zinc-100 px-4 py-4">
+          <Link to="/">
+            <SamruddhiSetuLogo size="sm" />
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-3 border-b border-zinc-100 px-4 py-4">
           {photo ? (
             <img src={photo} alt="" className="h-11 w-11 rounded-full object-cover" />
           ) : (
@@ -69,19 +94,32 @@ export function FarmerShell() {
         <nav className="space-y-0.5 p-3 text-sm">
           {links.map((l) => {
             const Icon = l.icon;
+            const localizedLabel = navTranslations[l.label]?.[lang] || l.label;
+            const localizedBadge = l.badge ? (navTranslations[l.badge]?.[lang] || l.badge) : null;
             return (
               <NavLink
                 key={l.to}
                 to={l.to}
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center gap-2 rounded-xl px-3 py-2.5 ${
-                    isActive ? "bg-[#2f7a4a] text-white" : "text-zinc-700 hover:bg-zinc-50"
+                  `flex items-center justify-between rounded-xl px-3 py-2.5 transition ${
+                    isActive
+                      ? "bg-[#2f7a4a] text-white shadow-sm"
+                      : l.highlight
+                      ? "bg-emerald-50/80 text-[#1b4332] font-semibold border border-emerald-200/70 hover:bg-emerald-100"
+                      : "text-zinc-700 hover:bg-zinc-50"
                   }`
                 }
               >
-                <Icon className="h-4 w-4" />
-                {l.label}
+                <div className="flex items-center gap-2">
+                  <Icon className={`h-4 w-4 ${l.highlight ? "text-emerald-700" : ""}`} />
+                  <span>{localizedLabel}</span>
+                </div>
+                {localizedBadge && (
+                  <span className="rounded-md bg-amber-400/90 px-1.5 py-0.5 text-[10px] font-black text-[#1c2b22] uppercase tracking-wider shadow-xs">
+                    {localizedBadge}
+                  </span>
+                )}
               </NavLink>
             );
           })}
@@ -91,10 +129,10 @@ export function FarmerShell() {
               logout();
               navigate("/");
             }}
-            className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-zinc-500 hover:bg-zinc-50"
+            className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-zinc-500 hover:bg-zinc-50 cursor-pointer"
           >
             <LogOut className="h-4 w-4" />
-            Logout
+            {navTranslations.Logout?.[lang] || "Logout"}
           </button>
         </nav>
       </aside>
@@ -103,8 +141,8 @@ export function FarmerShell() {
           <button type="button" onClick={() => setOpen(true)} aria-label="Open menu">
             <Menu />
           </button>
-          <Link to="/" className="text-sm font-bold">
-            farm2fork
+          <Link to="/">
+            <SamruddhiSetuLogo size="sm" />
           </Link>
           <span className="w-8" />
         </header>
@@ -115,6 +153,9 @@ export function FarmerShell() {
           <Outlet />
         </div>
       </div>
+
+      {/* Floating Kisan Voice Assistant available across all farmer portal tabs */}
+      <FarmerVoiceAssistant embedded={false} />
     </div>
   );
 }

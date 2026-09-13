@@ -1,8 +1,13 @@
-import { Router, type Request } from "express";
+import { Router } from "express";
 import { prisma } from "../db.js";
 import { auth, requireRole } from "../middleware/auth.js";
+import { emitEvent } from "../socket.js";
+import { notify } from "../lib/notify.js";
+import { ensureUpcomingDeliverySlots } from "../lib/deliverySlots.js";
+import { LogisticsStatus, FulfillmentChannel } from "@prisma/client";
 
 export const societyRouter = Router();
+
 function getSocietyId(req: { params: { id?: string | string[] } }): string {
   const id = req.params.id;
 
@@ -17,9 +22,9 @@ function getSocietyId(req: { params: { id?: string | string[] } }): string {
  * GET /api/societies
  *
  * Returns active cooperative societies.
- * Used by the admin dashboard and society directory.
+ * Used by admin dashboard, society directory, and farmer bulk pooling desk.
  */
-societyRouter.get("/", auth, requireRole("ADMIN"), async (_req, res) => {
+societyRouter.get("/", auth, requireRole("ADMIN", "FARMER", "CONSUMER"), async (_req, res) => {
   try {
     const societies = await prisma.cooperativeSociety.findMany({
       where: {
@@ -46,6 +51,76 @@ societyRouter.get("/", auth, requireRole("ADMIN"), async (_req, res) => {
     res.status(500).json({
       error: "Failed to load cooperative societies",
     });
+  }
+});
+
+/**
+ * GET /api/societies/my-supplies
+ *
+ * Returns bulk supply submissions made by the logged-in farmer.
+ */
+societyRouter.get("/my-supplies", auth, requireRole("FARMER"), async (req, res) => {
+  try {
+    const farmer = await prisma.farmerProfile.findUnique({
+      where: { userId: req.user!.id },
+    });
+
+    if (!farmer) {
+      return res.status(404).json({ error: "Farmer profile not found", code: 404 });
+    }
+
+    const supplies = await prisma.societySupply.findMany({
+      where: { farmerId: farmer.id },
+      include: {
+        society: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            district: true,
+            state: true,
+            pinCode: true,
+          },
+        },
+        product: {
+          select: {
+            id: true,
+            name: true,
+            variety: true,
+            unit: true,
+            pricePaise: true,
+            imageUrl: true,
+          },
+        },
+      },
+      orderBy: { receivedAt: "desc" },
+    });
+
+    const bookings = await prisma.logisticsBooking.findMany({
+      where: {
+        farmerId: farmer.id,
+        fulfillmentChannel: FulfillmentChannel.SOCIETY,
+      },
+      include: {
+        society: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            district: true,
+            state: true,
+            pinCode: true,
+          },
+        },
+        slot: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json({ supplies, bookings });
+  } catch (error) {
+    console.error("GET /societies/my-supplies", error);
+    res.status(500).json({ error: "Failed to load farmer supplies", code: 500 });
   }
 });
 
@@ -343,31 +418,37 @@ societyRouter.get(
 /**
  * POST /api/societies/:id/supplies
  *
- * ADMIN only: receive real farmer supply into a society.
- * Creates a SocietySupply ledger row and atomically increases
- * SocietyInventory.available for the product.
+ * Farmer or Admin: submit bulk produce supply to cooperative society.
+ * - Auto-enrols farmer into cooperative society membership
+ * - Atomically increments SocietyInventory
+ * - Automatically schedules a high-payload truck pickup if requested / >= 50kg
  */
 societyRouter.post(
   "/:id/supplies",
   auth,
-  requireRole("ADMIN"),
+  requireRole("ADMIN", "FARMER"),
   async (req, res) => {
     try {
       const societyId = getSocietyId(req);
-      const farmerId = String(req.body?.farmerId || "").trim();
-      const productId = String(req.body?.productId || "").trim();
+      let farmerId = String(req.body?.farmerId || "").trim();
+      let productId = String(req.body?.productId || "").trim();
       const quantity = Number(req.body?.quantity);
+      const requestTruckPickup = req.body?.requestTruckPickup !== false;
+
+      // If user is farmer, automatically resolve farmerProfile
+      if (req.user!.role === "FARMER") {
+        const myProfile = await prisma.farmerProfile.findUnique({
+          where: { userId: req.user!.id },
+        });
+        if (!myProfile) {
+          return res.status(404).json({ error: "Farmer profile not found", code: 404 });
+        }
+        farmerId = myProfile.id;
+      }
 
       if (!farmerId) {
         return res.status(422).json({
           error: "farmerId is required",
-          code: 422,
-        });
-      }
-
-      if (!productId) {
-        return res.status(422).json({
-          error: "productId is required",
           code: 422,
         });
       }
@@ -381,10 +462,6 @@ societyRouter.post(
 
       const society = await prisma.cooperativeSociety.findUnique({
         where: { id: societyId },
-        select: {
-          id: true,
-          active: true,
-        },
       });
 
       if (!society) {
@@ -403,7 +480,7 @@ societyRouter.post(
 
       const farmer = await prisma.farmerProfile.findUnique({
         where: { id: farmerId },
-        select: { id: true },
+        include: { user: true },
       });
 
       if (!farmer) {
@@ -413,59 +490,53 @@ societyRouter.post(
         });
       }
 
-      const product = await prisma.product.findUnique({
-        where: { id: productId },
-        select: {
-          id: true,
-          farmerId: true,
-          active: true,
-          unit: true,
-          name: true,
-        },
-      });
-
-      if (!product) {
-        return res.status(404).json({
-          error: "Product not found",
-          code: 404,
-        });
-      }
-
-      if (!product.active) {
-        return res.status(409).json({
-          error: "Product is not active",
-          code: 409,
-        });
-      }
-
-      if (product.farmerId !== farmerId) {
-        return res.status(409).json({
-          error: "Product does not belong to the selected farmer",
-          code: 409,
-        });
-      }
-
-      if (product.unit.toLowerCase() !== "kg") {
-        return res.status(422).json({
-          error: "Only kg products can be received into society inventory",
-          code: 422,
-        });
-      }
-
-      const membership = await prisma.societyFarmer.findFirst({
+      // Auto-enroll farmer in society if not yet enrolled
+      await prisma.societyFarmer.upsert({
         where: {
+          societyId_farmerId: {
+            societyId,
+            farmerId,
+          },
+        },
+        create: {
           societyId,
           farmerId,
           active: true,
         },
-        select: { id: true },
+        update: {
+          active: true,
+        },
       });
 
-      if (!membership) {
-        return res.status(409).json({
-          error: "Farmer is not an active member of this society",
-          code: 409,
+      // Product resolution or creation
+      let product = productId ? await prisma.product.findUnique({ where: { id: productId } }) : null;
+
+      if (!product) {
+        const cropName = String(req.body?.productName || "Fresh Farm Produce").trim();
+        const variety = String(req.body?.variety || "Cooperative Grade A").trim();
+        const categoryName = String(req.body?.category || "Vegetables").trim();
+
+        let category = await prisma.productCategory.findFirst({
+          where: { name: { contains: categoryName, mode: "insensitive" } },
         });
+
+        if (!category) {
+          category = await prisma.productCategory.findFirst();
+        }
+
+        product = await prisma.product.create({
+          data: {
+            farmerId,
+            categoryId: category!.id,
+            name: cropName,
+            variety,
+            unit: "kg",
+            pricePaise: Number(req.body?.pricePaise) || 3000,
+            imageUrl: req.body?.imageUrl || "/images/categories/vegetables.png",
+            active: true,
+          },
+        });
+        productId = product.id;
       }
 
       const result = await prisma.$transaction(async (tx) => {
@@ -494,6 +565,7 @@ societyRouter.post(
                 name: true,
                 variety: true,
                 unit: true,
+                pricePaise: true,
               },
             },
           },
@@ -536,7 +608,87 @@ societyRouter.post(
         return { supply, inventory };
       });
 
-      res.status(201).json(result);
+      let booking = null;
+
+      // Schedule automated truck transport if requested or quantity >= 50kg
+      if (requestTruckPickup || quantity >= 50) {
+        await ensureUpcomingDeliverySlots(prisma);
+
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        let slot = await prisma.deliverySlot.findFirst({
+          where: { date: { gte: now } },
+          orderBy: [{ date: "asc" }, { startMin: "asc" }],
+        });
+
+        if (!slot) {
+          slot = await prisma.deliverySlot.create({
+            data: {
+              date: now,
+              startMin: 540,
+              endMin: 660,
+              capacity: 50,
+              booked: 0,
+            },
+          });
+        }
+
+        booking = await prisma.logisticsBooking.create({
+          data: {
+            farmerId,
+            userId: req.user!.id,
+            societyId,
+            slotId: slot.id,
+            pickup: farmer.location || `${farmer.farmName}, ${farmer.district} (PIN ${farmer.pinCode})`,
+            quantity,
+            vehicle: quantity > 30 ? "LARGE_TRUCK" : "BIKE",
+            status: LogisticsStatus.CONFIRMED,
+            fulfillmentChannel: FulfillmentChannel.SOCIETY,
+          },
+          include: {
+            society: true,
+            slot: true,
+          },
+        });
+
+        emitEvent("LOGISTICS_BOOKED", { id: booking.id, societyId, quantity });
+      }
+
+      emitEvent("INVENTORY_UPDATED", { societyId, productId, quantity });
+
+      // Notify Farmer about society supply confirmation
+      if (farmer.userId) {
+        const estEarnings = Math.round((quantity * (result.supply.product.pricePaise || 0)) / 100);
+        await notify(
+          farmer.userId,
+          "SOCIETY_SUPPLY",
+          "Society Supply Confirmed 🏛️",
+          `Successfully deposited ${quantity} ${result.supply.product.unit} of ${result.supply.product.name} with ${society.name}.${estEarnings > 0 ? ` Estimated payout: ₹${estEarnings.toLocaleString("en-IN")}.` : ""}`
+        );
+      }
+
+      // If transport booking was created, notify logistics workers
+      if (booking) {
+        const logisticsUsers = await prisma.user.findMany({
+          where: { role: "LOGISTICS" },
+          select: { id: true },
+        });
+        const pickupLoc = booking.pickup ? booking.pickup.slice(0, 35) : "Farm Gate";
+        for (const u of logisticsUsers) {
+          await notify(
+            u.id,
+            "LOGISTICS_BOOKED",
+            "New Bulk Society Transport 🚛",
+            `Bulk supply (~${Math.round(quantity)} kg) ready for pickup from ${pickupLoc} to ${society.name}. Tap to claim.`
+          );
+        }
+      }
+
+      res.status(201).json({
+        ...result,
+        booking,
+      });
     } catch (error) {
       console.error("POST /societies/:id/supplies", error);
       res.status(500).json({
