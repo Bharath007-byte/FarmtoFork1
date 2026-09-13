@@ -31,8 +31,7 @@ export function Landing() {
           preload="auto"
           className="absolute inset-0 h-[115%] w-full scale-110 object-cover object-center"
         >
-          <source src="/hero-hd.mp4" type="video/mp4" />
-          <source src="/upscaled-video.mov" type="video/quicktime" />
+          <source src={`${import.meta.env.BASE_URL}hero-hd.mp4`} type="video/mp4" />
         </video>
 
         <div className="pointer-events-none absolute inset-0 bg-black/15" />

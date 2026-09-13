@@ -6,7 +6,6 @@ server/uploads
 server/dist
 frontend/public/hero.mov
 frontend/public/upscaled-video.mov
-frontend/public/hero-hd.mp4
 frontend/public/hero-hd.m4v
 
 # Local backups / temporary files
