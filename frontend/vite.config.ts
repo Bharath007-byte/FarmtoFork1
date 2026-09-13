@@ -48,7 +48,7 @@ function serveHeroVideo(): Connect.NextHandleFunction {
 }
 
 export default defineConfig({
-  base: "./",
+  base: "/FarmtoFork1/",
   plugins: [
     {
       name: "serve-hero-hd",
