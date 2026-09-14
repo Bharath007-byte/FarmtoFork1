@@ -216,8 +216,8 @@ export function KrishiAiStudio() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-[#1b4332]">
-                <Sprout className="h-3.5 w-3.5 text-emerald-700" />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 text-xs font-semibold text-zinc-900">
+                <Sprout className="h-3.5 w-3.5 text-emerald-800" />
                 {t.krishiAiAgronomist}
               </span>
               <span className="text-xs text-stone-400">·</span>

@@ -116,8 +116,8 @@ export function AiAdvisory() {
 
       <div className="mt-4 flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-[#1b4332]">
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 text-xs font-semibold text-zinc-900">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-800" />
             ICAR & State Agronomy Intelligence
           </span>
           <h1 className="mt-2 font-serif text-3xl font-bold text-zinc-900 md:text-4xl">

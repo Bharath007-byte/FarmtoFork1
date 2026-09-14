@@ -1721,8 +1721,8 @@ function ProductCard({
         {/* Verified */}
 
         {product.verified && (
-          <span className="absolute bottom-3 left-3 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1.5 text-[9px] font-black text-[#16823f] shadow-sm">
-            <ShieldCheck className="h-3 w-3" />
+          <span className="absolute bottom-3 left-3 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-semibold text-zinc-900 shadow-sm border border-zinc-200/80">
+            <ShieldCheck className="h-3 w-3 text-emerald-700" />
             Verified Farmer
           </span>
         )}
@@ -2041,8 +2041,8 @@ function ProductModal({
             </span>
 
             {product.verified && (
-              <span className="flex items-center gap-1 text-[9px] font-black text-[#16823f]">
-                <ShieldCheck className="h-3.5 w-3.5" />
+              <span className="flex items-center gap-1 text-xs font-semibold text-zinc-900">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
                 Verified Farmer
               </span>
             )}

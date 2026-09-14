@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Bell,
   Boxes,
@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  RefreshCw,
   Sprout,
   Stethoscope,
   Truck,
@@ -47,6 +48,8 @@ export function FarmerShell() {
   const { lang } = useI18n();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const [profile, setProfile] = useState<{
     name: string;
     photoUrl?: string | null;
@@ -58,6 +61,32 @@ export function FarmerShell() {
       .then((d) => setProfile(d.user))
       .catch(() => setProfile(null));
   }, []);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploadingPhoto(true);
+      const fd = new FormData();
+      fd.append("photo", file);
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/farmers/me/photo`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: fd,
+      });
+      if (!res.ok) throw new Error("Failed to upload photo");
+      const data = await res.json();
+      if (data.photoUrl) {
+        setProfile((prev) => (prev ? { ...prev, photoUrl: data.photoUrl } : prev));
+      }
+    } catch (err) {
+      console.error("Photo upload error:", err);
+      alert("Unable to upload photo. Please choose a JPG or PNG file under 5MB.");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   const photo = profile?.photoUrl
     ? `${import.meta.env.VITE_API_URL || ""}${profile.photoUrl}`
@@ -77,18 +106,47 @@ export function FarmerShell() {
         </div>
 
         <div className="flex items-center gap-3 border-b border-zinc-100 px-4 py-4">
-          {photo ? (
-            <img src={photo} alt="" className="h-11 w-11 rounded-full object-cover" />
-          ) : (
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#e8f0e3] text-[#2f7a4a]">
-              <Sprout className="h-5 w-5" />
-            </span>
-          )}
-          <div className="min-w-0">
-            <p className="truncate text-sm font-bold">{profile?.name || user?.name}</p>
+          <label
+            title="Click to add or change profile photo"
+            className="group relative flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full overflow-hidden border-2 border-emerald-200 shadow-xs hover:border-[#1b4332] transition bg-zinc-50"
+          >
+            <input
+              type="file"
+              ref={photoInputRef}
+              accept="image/*"
+              className="hidden"
+              disabled={uploadingPhoto}
+              onChange={handlePhotoUpload}
+            />
+            {uploadingPhoto ? (
+              <div className="flex h-full w-full items-center justify-center bg-zinc-100">
+                <RefreshCw className="h-5 w-5 animate-spin text-[#1b4332]" />
+              </div>
+            ) : photo ? (
+              <img src={photo} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <span className="flex h-full w-full items-center justify-center bg-[#e8f0e3] text-[#1b4332]">
+                <Sprout className="h-5 w-5" />
+              </span>
+            )}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition">
+              <Camera className="h-4 w-4 text-white" />
+            </div>
+          </label>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-bold text-zinc-900">{profile?.name || user?.name}</p>
             <p className="truncate text-xs text-zinc-500">
               {profile?.farmer?.farmName || "Your farm"}
             </p>
+            <button
+              type="button"
+              onClick={() => photoInputRef.current?.click()}
+              disabled={uploadingPhoto}
+              className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 hover:underline cursor-pointer disabled:opacity-50"
+            >
+              <Camera className="h-3 w-3" />
+              {uploadingPhoto ? "Uploading..." : photo ? "Change photo" : "Add photo"}
+            </button>
           </div>
         </div>
         <nav className="space-y-0.5 p-3 text-sm">

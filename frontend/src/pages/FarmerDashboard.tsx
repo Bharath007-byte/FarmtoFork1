@@ -79,8 +79,8 @@ export function FarmerDashboard() {
       <div className="flex flex-col justify-between gap-4 rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-xs sm:flex-row sm:items-center">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100/80 px-2.5 py-0.5 text-xs font-bold text-[#2f7a4a]">
-              <Sprout className="h-3.5 w-3.5" />
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 text-xs font-semibold text-zinc-900">
+              <Sprout className="h-3.5 w-3.5 text-emerald-800" />
               Verified Farmer
             </span>
             <span className="text-xs text-zinc-400">·</span>

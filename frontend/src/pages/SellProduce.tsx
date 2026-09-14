@@ -232,8 +232,8 @@ export function SellProduce() {
       <div className="mb-8 overflow-hidden rounded-3xl border border-emerald-200/90 bg-[#f4f8f4] p-6 shadow-xs">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/90 px-3 py-1 text-xs font-bold text-[#1b4332] border border-emerald-300/60">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700" /> Produce Quality Inspection & Grading
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 text-xs font-semibold text-zinc-900">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-800" /> Produce Quality Inspection & Grading
             </span>
             <h2 className="mt-2 text-lg font-bold text-zinc-900">
               Instant Grade A / B / C Quality Verification

@@ -384,7 +384,7 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-serif text-base font-bold text-zinc-900">{t("voiceAssistant")}</h3>
-                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+                <span className="rounded-full bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 text-[10px] font-semibold text-zinc-900">
                   Live Voice
                 </span>
               </div>

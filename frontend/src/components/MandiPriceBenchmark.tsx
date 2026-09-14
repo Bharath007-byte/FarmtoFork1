@@ -153,8 +153,8 @@ export function MandiPriceBenchmark() {
       <div className="flex flex-col gap-4 border-b border-stone-100 pb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/90 px-3 py-1 text-xs font-bold text-[#1b4332]">
-              <TrendingUp className="h-3.5 w-3.5 text-emerald-700" />
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 text-xs font-semibold text-zinc-900">
+              <TrendingUp className="h-3.5 w-3.5 text-emerald-800" />
               {lang === "te" ? "APMC మార్కెట్ విశ్లేషణ" : lang === "hi" ? "एपीएमसी मंडी भाव विश्लेषण" : lang === "kn" ? "APMC ಮಾರುಕಟ್ಟೆ ವಿಶ್ಲೇಷಣೆ" : "Agmarknet APMC Market Benchmark"}
             </span>
             <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-[11px] font-semibold text-stone-600">
