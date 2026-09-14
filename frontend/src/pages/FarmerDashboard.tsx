@@ -76,23 +76,23 @@ export function FarmerDashboard() {
   return (
     <div className="mx-auto max-w-5xl space-y-7 pb-16">
       {/* 1. Header Banner */}
-      <div className="flex flex-col justify-between gap-4 rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-xs sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-6 rounded-3xl border border-zinc-200/70 bg-white p-6 sm:p-7 shadow-xs sm:flex-row sm:items-center">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 text-xs font-semibold text-zinc-900">
-              <Sprout className="h-3.5 w-3.5 text-emerald-800" />
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="inline-flex items-center gap-1.5 font-semibold text-zinc-900">
+              <Sprout className="h-3.5 w-3.5 text-zinc-800 shrink-0" />
               Verified Farmer
             </span>
-            <span className="text-xs text-zinc-400">·</span>
-            <span className="text-xs font-semibold text-zinc-500">
+            <span className="text-zinc-300 select-none">·</span>
+            <span className="font-normal text-zinc-500">
               Samruddhi Setu Network
             </span>
           </div>
 
-          <h1 className="mt-2 font-serif text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">
+          <h1 className="mt-3 font-serif text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">
             Namaste{user?.name ? `, ${user.name}` : ""}
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-zinc-500">
             Welcome to your digital farm desk. Live harvest rates, consumer orders, and logistics updates.
           </p>
         </div>
@@ -100,23 +100,23 @@ export function FarmerDashboard() {
         <div className="flex shrink-0 flex-wrap items-center gap-2.5">
           <Link
             to="/farmer/krishi-ai"
-            className="flex items-center gap-2 rounded-2xl border border-emerald-300/80 bg-[#eef7f0] px-4 py-3 text-sm font-bold text-[#1b4332] shadow-xs transition hover:bg-[#e2f2e5]"
+            className="flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-3 text-sm font-semibold text-zinc-800 shadow-xs transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
           >
-            <Stethoscope className="h-4 w-4 text-[#1b4332]" />
+            <Stethoscope className="h-4 w-4 text-zinc-600" />
             Krishi Crop Doctor & Planner
           </Link>
 
           <Link
             to="/farmer/twin"
-            className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm font-bold text-stone-800 shadow-xs transition hover:bg-stone-100"
+            className="flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-3 text-sm font-semibold text-zinc-800 shadow-xs transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
           >
-            <Activity className="h-4 w-4 text-[#1b4332]" />
+            <Activity className="h-4 w-4 text-zinc-600" />
             Farm Field Simulator
           </Link>
 
           <Link
             to="/farmer/sell"
-            className="flex items-center gap-2 rounded-2xl bg-[#1b4332] px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-[#26633c]"
+            className="flex items-center gap-2 rounded-2xl bg-[#1b4332] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#245e38]"
           >
             <Camera className="h-4 w-4" />
             Sell Crop
