@@ -7,12 +7,13 @@ import {
   Truck,
   Wallet,
   ArrowRight,
-  Sparkles,
   TrendingUp,
   Sprout,
-  Bot,
+  Stethoscope,
   Layers,
   Building2,
+  CheckCircle2,
+  MessageSquare,
 } from "lucide-react";
 import { useApp } from "../context/AppState";
 import { api, ApiError, rupees } from "../services/api";
@@ -99,23 +100,23 @@ export function FarmerDashboard() {
         <div className="flex shrink-0 flex-wrap items-center gap-2.5">
           <Link
             to="/farmer/krishi-ai"
-            className="flex items-center gap-2 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-950 shadow-xs transition hover:bg-amber-100"
+            className="flex items-center gap-2 rounded-2xl border border-emerald-300/80 bg-[#eef7f0] px-4 py-3 text-sm font-bold text-[#1b4332] shadow-xs transition hover:bg-[#e2f2e5]"
           >
-            <Sparkles className="h-4 w-4 text-amber-600" />
-            Krishi AI Doctor & Planner
+            <Stethoscope className="h-4 w-4 text-[#1b4332]" />
+            Krishi Crop Doctor & Planner
           </Link>
 
           <Link
             to="/farmer/twin"
-            className="flex items-center gap-2 rounded-2xl border border-sky-300 bg-sky-50 px-4 py-3 text-sm font-bold text-sky-900 shadow-xs transition hover:bg-sky-100"
+            className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm font-bold text-stone-800 shadow-xs transition hover:bg-stone-100"
           >
-            <Activity className="h-4 w-4 text-sky-600" />
-            Digital Twin AI
+            <Activity className="h-4 w-4 text-[#1b4332]" />
+            Farm Field Simulator
           </Link>
 
           <Link
             to="/farmer/sell"
-            className="flex items-center gap-2 rounded-2xl bg-[#2f7a4a] px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-[#26633c]"
+            className="flex items-center gap-2 rounded-2xl bg-[#1b4332] px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-[#26633c]"
           >
             <Camera className="h-4 w-4" />
             Sell Crop
@@ -126,20 +127,20 @@ export function FarmerDashboard() {
       {loading && <p className="text-sm font-medium text-zinc-500">Loading farm numbers…</p>}
       {error && <p className="text-sm text-rose-600">{error}</p>}
 
-      {/* 2. Primary Hero Card: Sell Produce with AI Quality Scan */}
-      <div className="relative overflow-hidden rounded-3xl border border-[#2f7a4a]/20 bg-gradient-to-br from-[#1b4332] to-[#2d6a4f] p-6 text-white shadow-lg sm:p-8">
+      {/* 2. Primary Hero Card: Sell Produce with Quality Grading */}
+      <div className="relative overflow-hidden rounded-3xl border border-emerald-800/40 bg-gradient-to-br from-[#1b4332] via-[#245e38] to-[#1e4a30] p-6 text-white shadow-lg sm:p-8">
         <div className="relative z-10 max-w-2xl">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-200 backdrop-blur-md">
-            <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-            AI Produce Scanner & Quality Grading
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-100 border border-emerald-400/30 backdrop-blur-md">
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
+            Harvest Quality & Mandi Grade Verification
           </span>
 
           <h2 className="mt-4 font-serif text-2xl font-bold leading-tight sm:text-3xl">
-            Sell Produce & Get Instant Quality Grade A/B/C
+            Sell Produce & Get Fair APMC Mandi Grade A/B/C
           </h2>
 
           <p className="mt-2.5 text-sm leading-relaxed text-emerald-50/90 sm:text-base">
-            Snap a photo of your freshly harvested crops. Our camera scanner checks surface quality, freshness, and suggests fair APMC mandi prices before listing.
+            Upload a photo of your freshly harvested crops. Our camera scanner checks surface quality, freshness, and suggests fair APMC mandi prices before listing.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -147,7 +148,7 @@ export function FarmerDashboard() {
               to="/farmer/sell"
               className="flex items-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-sm font-bold text-[#1b4332] shadow-md transition hover:bg-emerald-50"
             >
-              <Camera className="h-4 w-4 text-[#2f7a4a]" />
+              <Camera className="h-4 w-4 text-[#1b4332]" />
               Scan & Sell Now
               <ArrowRight className="h-4 w-4" />
             </Link>
@@ -177,28 +178,28 @@ export function FarmerDashboard() {
             label="Today's Sales"
             value={rupees(stats.todaySalesPaise)}
             hint="Gross orders received today"
-            icon={<TrendingUp className="h-5 w-5 text-emerald-600" />}
+            icon={<TrendingUp className="h-5 w-5 text-[#1b4332]" />}
             color="emerald"
           />
           <MetricTile
             label="Total Earnings"
             value={rupees(stats.totalEarningsPaise)}
             hint="Net earnings settled to bank"
-            icon={<Wallet className="h-5 w-5 text-amber-600" />}
+            icon={<Wallet className="h-5 w-5 text-amber-700" />}
             color="amber"
           />
           <MetricTile
             label="Pending Orders"
             value={String(stats.pendingOrders)}
             hint="Orders waiting for pickup"
-            icon={<Package className="h-5 w-5 text-blue-600" />}
+            icon={<Package className="h-5 w-5 text-[#2d6a4f]" />}
             color="blue"
           />
           <MetricTile
             label="Active Inventory"
             value={`${stats.availableInventory} kg`}
             hint={`${stats.activeProducts} crops active in catalog`}
-            icon={<Layers className="h-5 w-5 text-purple-600" />}
+            icon={<Layers className="h-5 w-5 text-[#1b4332]" />}
             color="purple"
           />
         </div>
@@ -266,37 +267,37 @@ export function FarmerDashboard() {
         <div className="grid gap-3.5 sm:grid-cols-3">
           <ToolCard
             to="/farmer/krishi-ai"
-            icon={<Sparkles className="h-5 w-5 text-amber-600" />}
-            title="Krishi AI Doctor & Planner"
+            icon={<Stethoscope className="h-5 w-5 text-[#1b4332]" />}
+            title="Krishi Crop Doctor & Planner"
             desc="Leaf disease diagnosis, organic cures, sowing windows & 10-50 acre plan"
           />
           <ToolCard
             to="/farmer/produce"
-            icon={<Package className="h-5 w-5 text-[#2f7a4a]" />}
+            icon={<Package className="h-5 w-5 text-[#1b4332]" />}
             title="My Produce Catalog"
             desc="Update prices, varieties, and stock quantity"
           />
           <ToolCard
             to="/farmer/orders"
-            icon={<Truck className="h-5 w-5 text-blue-600" />}
+            icon={<Truck className="h-5 w-5 text-[#2d6a4f]" />}
             title="Orders & Logistics"
             desc="Track pickup trucks and delivery progress"
           />
           <ToolCard
             to="/farmer/earnings"
-            icon={<Wallet className="h-5 w-5 text-amber-600" />}
+            icon={<Wallet className="h-5 w-5 text-amber-700" />}
             title="Earnings & Payouts"
             desc="Settled balances and payment breakdown"
           />
           <ToolCard
             to="/farmer/advisory"
-            icon={<Bot className="h-5 w-5 text-emerald-600" />}
-            title="Kisan AI Advisor"
+            icon={<MessageSquare className="h-5 w-5 text-[#1b4332]" />}
+            title="Kisan Farm Advisory"
             desc="Crop care, weather alerts, and soil nutrition"
           />
           <ToolCard
             to="/farmer/cooperative"
-            icon={<Building2 className="h-5 w-5 text-emerald-700" />}
+            icon={<Building2 className="h-5 w-5 text-[#1b4332]" />}
             title="Cooperative Society Hubs"
             desc="Devanahalli, Yelahanka, and Tirupati bulk supply"
           />

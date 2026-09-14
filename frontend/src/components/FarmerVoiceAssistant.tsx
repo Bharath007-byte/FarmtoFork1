@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Mic, MicOff, Volume2, VolumeX, Send, X, Bot } from "lucide-react";
+import { Mic, MicOff, Volume2, VolumeX, Send, X } from "lucide-react";
 import { useI18n, type AppLang } from "../i18n";
 
 interface Message {
@@ -324,7 +324,7 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
               type="button"
               onClick={toggleListening}
               className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white shadow-xs transition ${
-                isListening ? "animate-pulse bg-rose-600" : "bg-[#2f7a4a] hover:bg-[#26633c]"
+                isListening ? "animate-pulse bg-emerald-700" : "bg-[#1b4332] hover:bg-[#245e38]"
               }`}
               title={isListening ? "Listening... click to stop" : "Click to speak"}
             >
@@ -332,7 +332,7 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
             </button>
             <div>
               <div className="flex items-center gap-1.5">
-                <p className="text-xs font-bold text-zinc-900">Kisan Voice Assistant</p>
+                <p className="text-xs font-bold text-zinc-900">Kisan Voice Sahayak</p>
                 <span className="rounded bg-emerald-100 px-1.5 py-0.2 text-[9px] font-bold text-emerald-800 uppercase">
                   {lang}
                 </span>
@@ -348,7 +348,7 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
               <button
                 type="button"
                 onClick={stopSpeaking}
-                className="flex items-center gap-1 rounded-lg bg-amber-100 px-2 py-1 text-[11px] font-bold text-amber-900 hover:bg-amber-200"
+                className="flex items-center gap-1 rounded-lg bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-900 hover:bg-emerald-200"
               >
                 <VolumeX className="h-3 w-3" />
                 Mute
@@ -370,14 +370,14 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
     return (
       <div className="overflow-hidden rounded-3xl border border-zinc-200/90 bg-white shadow-sm">
         {/* Assistant Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 bg-[#f7faf7] px-6 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 bg-[#f4f7f4] px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-[#2f7a4a] text-white shadow-sm">
-              <Bot className="h-5 w-5" />
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-[#1b4332] text-white shadow-sm">
+              <Mic className="h-5 w-5" />
               {isListening && (
                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-rose-500"></span>
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-600"></span>
                 </span>
               )}
             </div>
@@ -545,34 +545,34 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-full bg-[#2f7a4a] px-4 py-3 text-white shadow-2xl hover:bg-[#26633c] transition-transform hover:scale-105 active:scale-95"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-full bg-[#1b4332] px-4 py-3 text-white shadow-2xl hover:bg-[#245e38] transition-transform hover:scale-105 active:scale-95"
       >
         <div className="relative">
           <Mic className="h-5 w-5" />
           {isSpeaking && (
             <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-300 opacity-75"></span>
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-amber-400"></span>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-75"></span>
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
             </span>
           )}
         </div>
-        <span className="text-xs font-bold tracking-wide">Kisan Voice AI</span>
+        <span className="text-xs font-bold tracking-wide">Kisan Voice Sahayak</span>
       </button>
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-3 backdrop-blur-xs">
           <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-zinc-100 bg-[#f7faf7] px-5 py-4">
+            <div className="flex items-center justify-between border-b border-zinc-100 bg-[#f4f7f4] px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#2f7a4a] text-white">
-                  <Bot className="h-5 w-5" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1b4332] text-white">
+                  <Mic className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="font-serif text-base font-bold text-zinc-900">
                     {t("voiceAssistant")}
                   </h3>
                   <p className="text-[11px] text-zinc-500">
-                    Samruddhi Setu Multilingual Kisan AI
+                    Samruddhi Setu Kisan Sahayak
                   </p>
                 </div>
               </div>

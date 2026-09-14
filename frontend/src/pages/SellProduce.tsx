@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Camera,
   Upload,
-  Sparkles,
+  CheckCircle2,
   ShieldCheck,
   AlertCircle,
   TrendingUp,
@@ -228,18 +228,18 @@ export function SellProduce() {
         {marketHint && <p className="mt-2 text-xs font-semibold text-emerald-700">{marketHint}</p>}
       </div>
 
-      {/* AI Produce Quality Scanner Banner (Slide 4 Feature) */}
-      <div className="mb-8 overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50/70 via-white to-amber-50/40 p-6 shadow-sm">
+      {/* Produce Quality Verification & Grading Banner */}
+      <div className="mb-8 overflow-hidden rounded-3xl border border-emerald-200/90 bg-[#f4f8f4] p-6 shadow-xs">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
-              <Sparkles className="h-3.5 w-3.5" /> AI Produce Scanner & Grading
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/90 px-3 py-1 text-xs font-bold text-[#1b4332] border border-emerald-300/60">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700" /> Produce Quality Inspection & Grading
             </span>
             <h2 className="mt-2 text-lg font-bold text-zinc-900">
               Instant Grade A / B / C Quality Verification
             </h2>
             <p className="mt-1 text-xs text-zinc-600">
-              Snap a live camera photo of your crop. AI inspects freshness, skin uniformity, and benchmarks live APMC Mandi prices.
+              Snap a live camera photo of your crop. Camera scan checks freshness, skin uniformity, and benchmarks live APMC Mandi prices.
             </p>
           </div>
 
@@ -247,7 +247,7 @@ export function SellProduce() {
             <button
               type="button"
               onClick={() => setCameraOpen(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#2f7a4a] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#26633c]"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#1b4332] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#245e38]"
             >
               <Camera className="h-4 w-4" />
               Live Camera
@@ -609,7 +609,7 @@ export function SellProduce() {
           <button
             type="submit"
             disabled={busy}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#2f7a4a] py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-[#26633c] disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#1b4332] py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-[#245e38] disabled:opacity-50 cursor-pointer"
           >
             {busy ? (
               <>

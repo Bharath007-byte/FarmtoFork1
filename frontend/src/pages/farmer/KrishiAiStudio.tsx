@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import {
   Camera,
-  Sparkles,
   CheckCircle2,
   Calendar,
   Layers,
   Droplets,
   RefreshCw,
-  Zap,
+  Sprout,
   Globe,
   AlertTriangle,
+  Search,
 } from "lucide-react";
 import { api } from "../../services/api";
 import { useI18n, SUPPORTED_LANGUAGES } from "../../i18n";
@@ -217,7 +217,7 @@ export function KrishiAiStudio() {
           <div>
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-[#1b4332]">
-                <Zap className="h-3.5 w-3.5 text-emerald-700 fill-emerald-700" />
+                <Sprout className="h-3.5 w-3.5 text-emerald-700" />
                 {t.krishiAiAgronomist}
               </span>
               <span className="text-xs text-stone-400">·</span>
@@ -239,7 +239,7 @@ export function KrishiAiStudio() {
                 onClick={() => setLang(l.code)}
                 className={`rounded-xl px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
                   lang === l.code
-                    ? "bg-[#2f7a4a] text-white shadow-xs"
+                    ? "bg-[#1b4332] text-white shadow-xs"
                     : "text-stone-600 hover:text-stone-900"
                 }`}
               >
@@ -255,7 +255,7 @@ export function KrishiAiStudio() {
             onClick={() => setActiveTab("planner")}
             className={`flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition cursor-pointer ${
               activeTab === "planner"
-                ? "bg-[#1c2b22] text-white shadow-sm"
+                ? "bg-[#1b4332] text-white shadow-sm"
                 : "bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200/70"
             }`}
           >
@@ -267,7 +267,7 @@ export function KrishiAiStudio() {
             onClick={() => setActiveTab("doctor")}
             className={`flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition cursor-pointer ${
               activeTab === "doctor"
-                ? "bg-[#1c2b22] text-white shadow-sm"
+                ? "bg-[#1b4332] text-white shadow-sm"
                 : "bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200/70"
             }`}
           >
@@ -282,7 +282,7 @@ export function KrishiAiStudio() {
             }}
             className={`flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs sm:text-sm font-bold transition cursor-pointer ${
               activeTab === "calendar"
-                ? "bg-[#1c2b22] text-white shadow-sm"
+                ? "bg-[#1b4332] text-white shadow-sm"
                 : "bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200/70"
             }`}
           >
@@ -738,7 +738,7 @@ export function KrishiAiStudio() {
                 <button
                   onClick={() => runDiagnosis()}
                   disabled={diagnosing || isWrongImage}
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#2f7a4a] px-6 py-2.5 text-xs font-bold text-white transition hover:bg-[#25633c] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#1b4332] px-6 py-2.5 text-xs font-bold text-white transition hover:bg-[#245e38] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {diagnosing ? (
                     <>
@@ -747,7 +747,7 @@ export function KrishiAiStudio() {
                     </>
                   ) : (
                     <>
-                      <Sparkles className="h-3.5 w-3.5" />
+                      <Search className="h-3.5 w-3.5" />
                       {t.diagnoseBtn}
                     </>
                   )}

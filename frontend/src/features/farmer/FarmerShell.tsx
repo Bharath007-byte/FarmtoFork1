@@ -7,8 +7,8 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
-  Sparkles,
   Sprout,
+  Stethoscope,
   Truck,
   Wallet,
 } from "lucide-react";
@@ -20,21 +20,21 @@ import { useI18n, type AppLang } from "../../i18n";
 
 const navTranslations: Record<string, Record<AppLang, string>> = {
   Home: { en: "Home", te: "హోమ్", hi: "होम", kn: "ಮುಖಪುಟ" },
-  "Krishi AI Doctor": { en: "Krishi AI Doctor", te: "కృషి AI డాక్టర్", hi: "कृषि एआई डॉक्टर", kn: "ಕೃಷಿ AI ವೈದ್ಯ" },
-  "Sell & AI Scan": { en: "Sell & AI Scan", te: "అమ్మకం & AI స్కానర్", hi: "बेचें एवं एआई स्कैन", kn: "ಮಾರಾಟ & AI ಸ್ಕ್ಯಾನ್" },
+  "Krishi Doctor": { en: "Krishi Doctor", te: "కృషి డాక్టర్", hi: "कृषि डॉक्टर", kn: "ಕೃಷಿ ವೈದ್ಯ" },
+  "Sell Produce": { en: "Sell Produce", te: "పంట అమ్మకం", hi: "उपज बेचें", kn: "ಬೆಳೆ ಮಾರಾಟ" },
   "My products": { en: "My products", te: "నా ఉత్పత్తులు", hi: "मेरे उत्पाद", kn: "ನನ್ನ ಉತ್ಪನ್ನಗಳು" },
   Orders: { en: "Orders", te: "ఆర్డర్లు", hi: "ऑर्डर", kn: "ಆರ್ಡರ್‌ಗಳು" },
   Earnings: { en: "Earnings", te: "ఆదాయం", hi: "कमाई", kn: "ಆದಾಯ" },
   Pickup: { en: "Pickup", te: "రవాణా / పికప్", hi: "पिकअप", kn: "ಪಿಕಪ್" },
   Alerts: { en: "Alerts", te: "హెచ్చరికలు", hi: "सूचनाएं", kn: "ಎಚ್ಚರಿಕೆಗಳು" },
-  "AI Doctor": { en: "AI Doctor", te: "AI డాక్టర్", hi: "एआई डॉक्टर", kn: "AI ವೈದ್ಯ" },
+  Doctor: { en: "Doctor", te: "డాక్టర్", hi: "डॉक्टर", kn: "ವೈದ್ಯ" },
   Logout: { en: "Logout", te: "లాగౌట్", hi: "लॉग आउट", kn: "ಲಾಗೌಟ್" },
 };
 
 const links = [
   { to: "/farmer/dashboard", label: "Home", icon: LayoutDashboard },
-  { to: "/farmer/krishi-ai", label: "Krishi AI Doctor", icon: Sparkles, badge: "AI Doctor", highlight: true },
-  { to: "/farmer/sell", label: "Sell & AI Scan", icon: Camera },
+  { to: "/farmer/krishi-ai", label: "Krishi Doctor", icon: Stethoscope, badge: "Doctor", highlight: true },
+  { to: "/farmer/sell", label: "Sell Produce", icon: Camera },
   { to: "/farmer/produce", label: "My products", icon: Boxes },
   { to: "/farmer/orders", label: "Orders", icon: Boxes },
   { to: "/farmer/earnings", label: "Earnings", icon: Wallet },
@@ -104,19 +104,19 @@ export function FarmerShell() {
                 className={({ isActive }) =>
                   `flex items-center justify-between rounded-xl px-3 py-2.5 transition ${
                     isActive
-                      ? "bg-[#2f7a4a] text-white shadow-sm"
+                      ? "bg-[#1b4332] text-white shadow-sm"
                       : l.highlight
-                      ? "bg-emerald-50/80 text-[#1b4332] font-semibold border border-emerald-200/70 hover:bg-emerald-100"
-                      : "text-zinc-700 hover:bg-zinc-50"
+                      ? "bg-[#eaf5ee] text-[#1b4332] font-semibold border border-emerald-300/60 hover:bg-[#dcf0e2]"
+                      : "text-zinc-700 hover:bg-emerald-50/50"
                   }`
                 }
               >
                 <div className="flex items-center gap-2">
-                  <Icon className={`h-4 w-4 ${l.highlight ? "text-emerald-700" : ""}`} />
+                  <Icon className={`h-4 w-4 ${l.highlight ? "text-[#1b4332]" : ""}`} />
                   <span>{localizedLabel}</span>
                 </div>
                 {localizedBadge && (
-                  <span className="rounded-md bg-amber-400/90 px-1.5 py-0.5 text-[10px] font-black text-[#1c2b22] uppercase tracking-wider shadow-xs">
+                  <span className="rounded-md bg-[#1b4332] px-2 py-0.5 text-[10px] font-bold text-emerald-100 shadow-xs">
                     {localizedBadge}
                   </span>
                 )}
@@ -129,14 +129,14 @@ export function FarmerShell() {
               logout();
               navigate("/");
             }}
-            className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-zinc-500 hover:bg-zinc-50 cursor-pointer"
+            className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-zinc-500 hover:bg-emerald-50/40 cursor-pointer"
           >
             <LogOut className="h-4 w-4" />
             {navTranslations.Logout?.[lang] || "Logout"}
           </button>
         </nav>
       </aside>
-      <div className="flex-1 bg-[#f7faf7]">
+      <div className="flex-1 bg-[#f4f7f4]">
         <header className="flex items-center justify-between border-b border-zinc-100 bg-white px-4 py-3 md:hidden">
           <button type="button" onClick={() => setOpen(true)} aria-label="Open menu">
             <Menu />

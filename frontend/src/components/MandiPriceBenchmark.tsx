@@ -3,11 +3,9 @@ import {
   TrendingUp,
   TrendingDown,
   Calendar,
-  Sparkles,
   MapPin,
   RefreshCw,
   AlertCircle,
-  Zap,
 } from "lucide-react";
 import { api } from "../services/api";
 import { useI18n, type AppLang } from "../i18n";
@@ -156,15 +154,15 @@ export function MandiPriceBenchmark() {
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/90 px-3 py-1 text-xs font-bold text-[#1b4332]">
-              <Zap className="h-3.5 w-3.5 text-emerald-600 fill-emerald-600" />
-              {lang === "te" ? "APMC మార్కెట్ AI విశ్లేషణ" : lang === "hi" ? "एपीएमसी मंडी एआई विश्लेषण" : lang === "kn" ? "APMC ಮಾರುಕಟ್ಟೆ AI ವಿಶ್ಲೇಷಣೆ" : "Agmarknet APMC AI Benchmark"}
+              <TrendingUp className="h-3.5 w-3.5 text-emerald-700" />
+              {lang === "te" ? "APMC మార్కెట్ విశ్లేషణ" : lang === "hi" ? "एपीएमसी मंडी भाव विश्लेषण" : lang === "kn" ? "APMC ಮಾರುಕಟ್ಟೆ ವಿಶ್ಲೇಷಣೆ" : "Agmarknet APMC Market Benchmark"}
             </span>
             <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-[11px] font-semibold text-stone-600">
               {lang === "te" ? "ప్రభుత్వ మార్కెట్ ధరల సమాచారం" : lang === "hi" ? "सरकारी मंडी लाइव डेटा" : lang === "kn" ? "ಸರ್ಕಾರಿ ಮಂಡಿ ದರ ಮಾಹಿತಿ" : "Government APMC Modal Feed"}
             </span>
           </div>
           <h2 className="mt-2.5 font-serif text-2xl sm:text-3xl font-bold text-[#1c2b22]">
-            {lang === "te" ? "మార్కెట్ ధరల అంచనా & AI భవిష్యవాణి" : lang === "hi" ? "मंडी भाव विश्लेषण एवं एआई पूर्वानुमान" : lang === "kn" ? "ಮಂಡಿ ದರ ವಿಶ್ಲೇಷಣೆ ಮತ್ತು AI ಮುನ್ಸೂಚನೆ" : "Mandi Price Benchmark & AI Forecast"}
+            {lang === "te" ? "మార్కెట్ ధరల అంచనా & భవిష్యవాణి" : lang === "hi" ? "मंडी भाव विश्लेषण एवं मूल्य पूर्वानुमान" : lang === "kn" ? "ಮಂಡಿ ದರ ವಿಶ್ಲೇಷಣೆ ಮತ್ತು ಮುನ್ಸೂಚನೆ" : "Mandi Price Benchmark & Price Forecast"}
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-stone-500">
             {lang === "te"
@@ -413,10 +411,10 @@ export function MandiPriceBenchmark() {
           {/* 5. AI Decision Recommendation & Sell Window Card */}
           <div className="mt-6 grid gap-4 sm:grid-cols-12">
             {/* Recommendation Box */}
-            <div className="rounded-2xl border border-emerald-200/90 bg-emerald-50/70 p-5 sm:col-span-8">
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-900">
-                <Sparkles className="h-4 w-4 text-emerald-700" />
-                <span>AI Agronomist Sell Window Decision</span>
+            <div className="rounded-2xl border border-emerald-200/90 bg-[#eef7f0] p-5 sm:col-span-8">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#1b4332]">
+                <Calendar className="h-4 w-4 text-emerald-700" />
+                <span>Harvest & Mandi Sell Window Recommendation</span>
               </div>
               <h3 className="mt-2 text-base font-bold text-emerald-950">
                 {data.recommendation}

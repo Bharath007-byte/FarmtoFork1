@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import {
   CloudSun,
   LineChart,
-  Sparkles,
+  Layers,
+  Camera,
   Stethoscope,
   ShieldCheck,
   RefreshCw,
@@ -99,7 +100,7 @@ export function AiAdvisory() {
       case "mandi_harvest":
         return <LineChart className="h-5 w-5" />;
       case "nutrition_soil":
-        return <Sparkles className="h-5 w-5" />;
+        return <Layers className="h-5 w-5" />;
       case "pest_disease":
         return <Stethoscope className="h-5 w-5" />;
       default:
@@ -109,13 +110,13 @@ export function AiAdvisory() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
-      <Link to="/farmer/dashboard" className="text-sm font-semibold text-[#2f7a4a] hover:underline">
+      <Link to="/farmer/dashboard" className="text-sm font-semibold text-[#1b4332] hover:underline">
         ← Back to Farmer Dashboard
       </Link>
 
       <div className="mt-4 flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-[#1b4332]">
             <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
             ICAR & State Agronomy Intelligence
           </span>
@@ -129,10 +130,10 @@ export function AiAdvisory() {
 
         <Link
           to="/farmer/farmai"
-          className="inline-flex items-center gap-2 rounded-xl bg-[#2f7a4a] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#26633c]"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#1b4332] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#245e38]"
         >
-          <Sparkles className="h-4 w-4" />
-          Open FarmAI Photo & Voice Assistant →
+          <Camera className="h-4 w-4" />
+          Open Farm Assistant & Scanner →
         </Link>
       </div>
 

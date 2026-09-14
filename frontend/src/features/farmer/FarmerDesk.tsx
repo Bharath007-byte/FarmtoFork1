@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Bell, CheckCheck, Sparkles } from "lucide-react";
+import { Bell, CheckCheck } from "lucide-react";
 import { api, ApiError, rupees } from "../../services/api";
 import { useRealtime } from "../../hooks/useRealtime";
 
@@ -289,9 +289,9 @@ export function PredictionsPage() {
   }, []);
   return (
     <div>
-      <h1 className="font-serif text-3xl">AI predictions</h1>
+      <h1 className="font-serif text-3xl font-bold text-[#1c2b22]">Market Price Forecasts</h1>
       <p className="mt-2 text-sm text-zinc-500">
-        OLS on stored PriceHistory. The model does not invent missing mandi prices.
+        Statistical trends based on Agmarknet historical mandi arrivals. The model does not invent missing mandi prices.
       </p>
       {error && <p className="mt-4 text-rose-600">{error}</p>}
       {result && result.ok === false && (
@@ -574,7 +574,7 @@ export function NotificationsPage() {
 
       {rows.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-dashed border-zinc-200 bg-white p-12 text-center text-zinc-400">
-          <Sparkles className="mx-auto mb-2 h-8 w-8 text-zinc-300" />
+          <Bell className="mx-auto mb-2 h-8 w-8 text-emerald-600/40" />
           <p className="text-sm font-medium text-zinc-600">No notifications yet</p>
           <p className="mt-1 text-xs text-zinc-400">
             Incoming orders from consumers and cooperative societies will notify you here in real time.
