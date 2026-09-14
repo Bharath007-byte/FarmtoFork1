@@ -13,7 +13,9 @@ import {
   ShieldCheck,
   CheckCircle2,
   RefreshCw,
+  AlertTriangle,
 } from "lucide-react";
+import { validateProduceImage } from "../utils/produceVerifier";
 
 interface AgriAssistantResponse {
   success: boolean;
@@ -39,8 +41,18 @@ export function FarmAI() {
   const [assistantResponse, setAssistantResponse] = useState<AgriAssistantResponse | null>(null);
   const [assistantError, setAssistantError] = useState("");
 
-  const onFile = (file?: File) => {
+  const onFile = async (file?: File) => {
     if (!file) return;
+
+    setAssistantError("");
+    const check = await validateProduceImage(file, "en", "leaf");
+    if (!check.isValid) {
+      setPhoto("");
+      setResult(null);
+      setAssistantError(check.error || "Non-crop photo detected. Please upload an image of a real agricultural crop or leaf.");
+      return;
+    }
+
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
@@ -277,8 +289,9 @@ export function FarmAI() {
         )}
 
         {assistantError && (
-          <div className="mt-4 rounded-xl bg-rose-50 p-3 text-xs text-rose-700 border border-rose-200">
-            {assistantError}
+          <div className="mt-4 rounded-xl bg-rose-50 p-3 text-xs text-rose-700 border border-rose-200 flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-rose-600 mt-0.5" />
+            <span>{assistantError}</span>
           </div>
         )}
       </div>

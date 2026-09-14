@@ -331,7 +331,32 @@ export const CULTIVATION_CALENDARS: Record<
  */
 krishiAiRouter.post("/diagnose", async (req, res) => {
   try {
-    const { crop, imageSignals, symptomsDescription } = req.body || {};
+    const { crop, imageSignals, symptomsDescription, imageVerification } = req.body || {};
+
+    // 1. Reject if image was identified as non-crop (human, animal, screen, object)
+    if (imageVerification && imageVerification.isValid === false) {
+      return res.status(422).json({
+        success: false,
+        error:
+          imageVerification.error ||
+          "Non-agricultural image detected. Human portraits, selfies, pets, or domestic objects cannot be diagnosed. Please upload a clear photo of an agricultural plant or infected leaf.",
+        detectedType: imageVerification.detectedType || "INVALID_IMAGE",
+      });
+    }
+
+    // 2. Reject if symptoms describe obvious non-produce subjects
+    const desc = (symptomsDescription || "").toLowerCase().trim();
+    const nonAgriWords = ["selfie", "human", "person", "face", "portrait", "dog", "cat", "car", "bike", "phone", "laptop", "man", "woman", "boy", "girl"];
+    for (const w of nonAgriWords) {
+      if (new RegExp(`\\b${w}\\b`, "i").test(desc)) {
+        return res.status(422).json({
+          success: false,
+          error: `Non-agricultural subject detected ("${w}"). Krishi AI Doctor only analyzes plant pathology and agricultural crop diseases.`,
+          detectedType: "NON_AGRI_INPUT",
+        });
+      }
+    }
+
     const cropKey = (crop || "tomato").toLowerCase().trim();
 
     const matchedCropKey =
@@ -342,7 +367,6 @@ krishiAiRouter.post("/diagnose", async (req, res) => {
 
     // Evaluate signals or text
     let selectedDisease: DiseaseRecord;
-    const desc = (symptomsDescription || "").toLowerCase();
 
     if (desc.includes("curl") || desc.includes("whitefly") || desc.includes("yellow")) {
       selectedDisease = diseaseList.find((d) => d.id.includes("curl")) || diseaseList[0];

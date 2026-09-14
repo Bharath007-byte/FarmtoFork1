@@ -9,9 +9,11 @@ import {
   RefreshCw,
   Zap,
   Globe,
+  AlertTriangle,
 } from "lucide-react";
 import { api } from "../../services/api";
 import { useI18n, SUPPORTED_LANGUAGES } from "../../i18n";
+import { validateProduceImage } from "../../utils/produceVerifier";
 import {
   KRISHI_TRANSLATIONS,
   translateParcel,
@@ -98,6 +100,8 @@ export function KrishiAiStudio() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [diagnosing, setDiagnosing] = useState(false);
   const [diagnosis, setDiagnosis] = useState<DiagnosisResult | null>(null);
+  const [doctorError, setDoctorError] = useState<string>("");
+  const [isWrongImage, setIsWrongImage] = useState<boolean>(false);
 
   // --- TAB 2: CULTIVATION CALENDAR STATE ---
   const [calendarCrop, setCalendarCrop] = useState("tomato");
@@ -119,30 +123,61 @@ export function KrishiAiStudio() {
     generateFarmPlan(5, "Tomato", "Red Sandy Loam", "Borewell with Solar Drip");
   }, []);
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    setDoctorError("");
+    setIsWrongImage(false);
+
+    // Validate if image is real agricultural plant/leaf
+    const check = await validateProduceImage(file, lang, "leaf");
+    if (!check.isValid) {
+      setPhotoPreview(null);
+      setDiagnosis(null);
+      setIsWrongImage(true);
+      setDoctorError(check.error || "Non-crop image detected. Please upload an agricultural crop or leaf photo.");
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
       setPhotoPreview(String(reader.result));
-      runDiagnosis("High-resolution leaf scan uploaded");
+      setIsWrongImage(false);
+      setDoctorError("");
+      runDiagnosis("High-resolution leaf scan uploaded", check);
     };
     reader.readAsDataURL(file);
   };
 
-  const runDiagnosis = (customQuery?: string) => {
+  const runDiagnosis = (customQuery?: string, verifiedStatus?: any) => {
+    if (isWrongImage) {
+      return;
+    }
     setDiagnosing(true);
-    api<{ success: boolean; diagnosis: DiagnosisResult }>("/api/krishi-ai/diagnose", {
+    setDoctorError("");
+    api<{ success: boolean; diagnosis?: DiagnosisResult; error?: string }>("/api/krishi-ai/diagnose", {
       method: "POST",
       body: JSON.stringify({
         crop: doctorCrop,
         symptomsDescription: customQuery || symptomsText || "Early blight spots on leaves",
+        imageVerification: verifiedStatus || { isValid: true },
       }),
     })
       .then((res) => {
-        if (res.success) setDiagnosis(res.diagnosis);
+        if (res.success && res.diagnosis) {
+          setDiagnosis(res.diagnosis);
+          setIsWrongImage(false);
+        } else if (res.error) {
+          setDiagnosis(null);
+          setIsWrongImage(true);
+          setDoctorError(res.error);
+        }
       })
-      .catch((err) => console.error("Diagnosis error:", err))
+      .catch((err) => {
+        console.error("Diagnosis error:", err);
+        setDoctorError("Diagnosis failed. Please verify crop photo and try again.");
+      })
       .finally(() => setDiagnosing(false));
   };
 
@@ -624,6 +659,19 @@ export function KrishiAiStudio() {
                   )}
                 </div>
 
+                {/* Rejection Alert Banner */}
+                {doctorError && (
+                  <div className="mt-3 rounded-2xl border border-rose-200 bg-rose-50/90 p-3.5 text-xs text-rose-800 shadow-xs flex items-start gap-2.5">
+                    <AlertTriangle className="h-4 w-4 shrink-0 text-rose-600 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-rose-900 leading-snug">{doctorError}</p>
+                      <p className="mt-1 text-[11px] text-rose-700 leading-normal">
+                        To maintain agricultural accuracy, human faces, pets, vehicles, screens, and domestic items are strictly blocked.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Demo samples */}
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   <span className="text-[10px] font-bold text-stone-400 self-center">{t.samplesLabel}</span>
@@ -637,7 +685,9 @@ export function KrishiAiStudio() {
                       onClick={() => {
                         setDoctorCrop(sample.crop);
                         setSymptomsText(sample.query);
-                        runDiagnosis(sample.query);
+                        setDoctorError("");
+                        setIsWrongImage(false);
+                        runDiagnosis(sample.query, { isValid: true });
                       }}
                       className="rounded-lg bg-stone-100 px-2.5 py-1 text-[10px] font-semibold text-stone-700 hover:bg-emerald-100 hover:text-emerald-800 transition cursor-pointer"
                     >
@@ -657,7 +707,7 @@ export function KrishiAiStudio() {
                     value={doctorCrop}
                     onChange={(e) => {
                       setDoctorCrop(e.target.value);
-                      runDiagnosis();
+                      if (!isWrongImage) runDiagnosis();
                     }}
                     className="w-full rounded-2xl border border-stone-300 bg-white px-3.5 py-2.5 text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
@@ -675,7 +725,10 @@ export function KrishiAiStudio() {
                   </label>
                   <textarea
                     value={symptomsText}
-                    onChange={(e) => setSymptomsText(e.target.value)}
+                    onChange={(e) => {
+                      setSymptomsText(e.target.value);
+                      if (doctorError) setDoctorError("");
+                    }}
                     placeholder={t.symptomsPlaceholder}
                     rows={2}
                     className="w-full rounded-2xl border border-stone-300 bg-white p-3 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -684,8 +737,8 @@ export function KrishiAiStudio() {
 
                 <button
                   onClick={() => runDiagnosis()}
-                  disabled={diagnosing}
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#2f7a4a] px-6 py-2.5 text-xs font-bold text-white transition hover:bg-[#25633c] cursor-pointer disabled:opacity-50"
+                  disabled={diagnosing || isWrongImage}
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#2f7a4a] px-6 py-2.5 text-xs font-bold text-white transition hover:bg-[#25633c] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {diagnosing ? (
                     <>
@@ -703,8 +756,38 @@ export function KrishiAiStudio() {
             </div>
           </div>
 
+          {/* Rejection / Warning Notice when image is not agricultural */}
+          {doctorError && (
+            <div className="rounded-3xl border border-rose-200 bg-rose-50/80 p-6 sm:p-7 shadow-xs">
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-600 text-white shadow-sm">
+                  <AlertTriangle className="h-6 w-6" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700">
+                    Scan Rejected · Non-Agricultural Image
+                  </span>
+                  <h2 className="mt-1 font-serif text-xl sm:text-2xl font-bold text-rose-950">
+                    {doctorError}
+                  </h2>
+                  <p className="mt-2 text-xs text-rose-800 leading-relaxed max-w-2xl">
+                    Krishi AI Doctor's neural model strictly evaluates foliar plant pathology, crop blights, and agricultural leaf symptoms. Selfies, human portraits, household pets, vehicles, and electronics are blocked from diagnosis.
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-rose-900 border border-rose-200">
+                      Step 1: Capture clear, centered photo of crop leaf
+                    </span>
+                    <span className="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-rose-900 border border-rose-200">
+                      Step 2: Ensure daylight or bright natural illumination
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Diagnosis Results */}
-          {diagnosis && (
+          {!doctorError && diagnosis && (
             <div className="space-y-4">
               <div className="rounded-3xl border border-emerald-300/80 bg-white p-6 shadow-xs">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-stone-100 pb-3">
