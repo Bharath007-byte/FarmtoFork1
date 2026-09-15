@@ -168,6 +168,13 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
     };
   }, []);
 
+  // Listen for global open event from header / dashboard buttons
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener("open-kisan-ai", handleOpen);
+    return () => window.removeEventListener("open-kisan-ai", handleOpen);
+  }, []);
+
   // Initial welcome message per language
   useEffect(() => {
     const welcomes: Record<AppLang, string> = {

@@ -1,9 +1,24 @@
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Bell, CheckCheck } from "lucide-react";
-import { api, ApiError, rupees } from "../../services/api";
+import {
+  Bell,
+  CheckCheck,
+  UserCircle,
+  MapPin,
+  Droplets,
+  LandPlot,
+  Award,
+  Phone,
+  CreditCard,
+  Check,
+  UploadCloud,
+  Camera,
+  Sprout,
+} from "lucide-react";
+import { api, ApiError, rupees, mediaUrl } from "../../services/api";
 import { useRealtime } from "../../hooks/useRealtime";
+import { useApp } from "../../context/AppState";
 
 export function InventoryPage() {
   const [rows, setRows] = useState<
@@ -770,56 +785,571 @@ export function FarmerOrdersPage() {
 }
 
 export function FarmerProfilePage() {
-  const [name, setName] = useState("");
+  const { user } = useApp();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [profilePhoto, setProfilePhoto] = useState<string>(user?.photoUrl || "");
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [farmerName, setFarmerName] = useState(user?.name || "");
+  const [phone, setPhone] = useState(user?.phone || "");
+  const [email, setEmail] = useState(user?.email || "");
   const [farmName, setFarmName] = useState("");
-  const [msg, setMsg] = useState("");
+  const [location, setLocation] = useState("");
+  const [district, setDistrict] = useState("Tirupati");
+  const [stateName, setStateName] = useState("Andhra Pradesh");
+  const [pinCode, setPinCode] = useState("");
+
+  // Detailed agronomic & land inputs from farmer:
+  const [landSizeAcres, setLandSizeAcres] = useState("5.0");
+  const [soilType, setSoilType] = useState("Red Sandy Loam");
+  const [irrigationSource, setIrrigationSource] = useState("Borewell + Drip Irrigation");
+  const [farmingType, setFarmingType] = useState("100% Certified Organic");
+  const [experienceYears, setExperienceYears] = useState("12 Years");
+  const [mandiRegNo, setMandiRegNo] = useState("APMC-TPT-2024-8891");
+  const [primaryCrops, setPrimaryCrops] = useState("Tomatoes, Banganapalli Mangoes, Methi, Chilli, Ragi");
+  const [payoutUpi, setPayoutUpi] = useState("farmer@okhdfcbank");
+  const [storageFacility, setStorageFacility] = useState("On-farm ventilated shed");
+  const [bio, setBio] = useState("");
+
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
+
   useEffect(() => {
     api<{
-      user: { name: string; farmer?: { farmName: string } };
-    }>("/api/farmers/me").then((d) => {
-      setName(d.user.name);
-      setFarmName(d.user.farmer?.farmName || "");
-    });
+      user: {
+        name: string;
+        phone?: string;
+        email?: string;
+        photoUrl?: string;
+        farmer?: {
+          farmName?: string;
+          location?: string;
+          district?: string;
+          state?: string;
+          pinCode?: string;
+          details?: string;
+        };
+      };
+    }>("/api/farmers/me")
+      .then((d) => {
+        if (d?.user) {
+          if (d.user.name) setFarmerName(d.user.name);
+          if (d.user.phone) setPhone(d.user.phone);
+          if (d.user.email) setEmail(d.user.email);
+          if (d.user.photoUrl) setProfilePhoto(d.user.photoUrl);
+          if (d.user.farmer) {
+            const f = d.user.farmer;
+            if (f.farmName) setFarmName(f.farmName);
+            if (f.location) setLocation(f.location);
+            if (f.district) setDistrict(f.district);
+            if (f.state) setStateName(f.state);
+            if (f.pinCode) setPinCode(f.pinCode);
+            if (f.details) {
+              try {
+                const extra = JSON.parse(f.details);
+                if (extra.landSizeAcres) setLandSizeAcres(extra.landSizeAcres);
+                if (extra.soilType) setSoilType(extra.soilType);
+                if (extra.irrigationSource) setIrrigationSource(extra.irrigationSource);
+                if (extra.farmingType) setFarmingType(extra.farmingType);
+                if (extra.experienceYears) setExperienceYears(extra.experienceYears);
+                if (extra.mandiRegNo) setMandiRegNo(extra.mandiRegNo);
+                if (extra.primaryCrops) setPrimaryCrops(extra.primaryCrops);
+                if (extra.payoutUpi) setPayoutUpi(extra.payoutUpi);
+                if (extra.storageFacility) setStorageFacility(extra.storageFacility);
+                if (extra.bio) setBio(extra.bio);
+              } catch {
+                setBio(f.details);
+              }
+            }
+          }
+        }
+      })
+      .catch(() => {});
   }, []);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Instant local preview
+    const previewUrl = URL.createObjectURL(file);
+    setProfilePhoto(previewUrl);
+
+    try {
+      setPhotoUploading(true);
+      const fd = new FormData();
+      fd.append("photo", file);
+      const res = await api<{ photoUrl: string }>("/api/farmers/me/photo", {
+        method: "POST",
+        body: fd,
+      });
+      if (res?.photoUrl) {
+        setProfilePhoto(res.photoUrl);
+        try {
+          const session = JSON.parse(localStorage.getItem("f2f-session") || "null");
+          if (session) {
+            session.photoUrl = res.photoUrl;
+            localStorage.setItem("f2f-session", JSON.stringify(session));
+          }
+        } catch {}
+      }
+      setSaveMessage("Profile photo updated successfully!");
+      setTimeout(() => setSaveMessage(""), 4000);
+    } catch (err) {
+      console.error("Photo upload error:", err);
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = reader.result as string;
+        setProfilePhoto(base64);
+        await api("/api/farmers/me", {
+          method: "PUT",
+          body: JSON.stringify({ photoUrl: base64 }),
+        }).catch(() => {});
+        setSaveMessage("Profile photo updated!");
+        setTimeout(() => setSaveMessage(""), 4000);
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
+
+  const handleSaveProfile = async (e: FormEvent) => {
+    e.preventDefault();
+    setSavingProfile(true);
+    setSaveMessage("");
+    try {
+      const detailsPayload = JSON.stringify({
+        landSizeAcres,
+        soilType,
+        irrigationSource,
+        farmingType,
+        experienceYears,
+        mandiRegNo,
+        primaryCrops,
+        payoutUpi,
+        storageFacility,
+        bio,
+      });
+
+      await api("/api/farmers/me", {
+        method: "PUT",
+        body: JSON.stringify({
+          name: farmerName,
+          phone,
+          farmName,
+          location,
+          district,
+          state: stateName,
+          pinCode,
+          photoUrl: profilePhoto,
+          details: detailsPayload,
+        }),
+      });
+
+      setSaveMessage("Farm profile and land records saved successfully!");
+      setTimeout(() => setSaveMessage(""), 4000);
+    } catch (err: any) {
+      console.error(err);
+      setSaveMessage(err?.message || "Failed to save profile. Please check connection.");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
   return (
-    <div>
-      <h1 className="font-serif text-3xl">Profile</h1>
-      <form
-        className="mt-6 space-y-3"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          await api("/api/farmers/me", {
-            method: "PUT",
-            body: JSON.stringify({ name, farmName }),
-          });
-          setMsg("Saved");
-        }}
-      >
-        <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-xl bg-white px-3 py-2" />
-        <input
-          value={farmName}
-          onChange={(e) => setFarmName(e.target.value)}
-          className="w-full rounded-xl bg-white px-3 py-2"
-        />
-        <label className="block text-sm">
-          Profile photo
-          <input
-            type="file"
-            accept="image/*"
-            className="mt-1 block"
-            onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              const fd = new FormData();
-              fd.append("photo", file);
-              await api("/api/farmers/me/photo", { method: "POST", body: fd });
-              setMsg("Photo uploaded");
-            }}
-          />
-        </label>
-        <button className="rounded-xl bg-[#2f7a4a] px-4 py-2 text-sm font-bold text-white">Save</button>
-      </form>
-      {msg && <p className="mt-2 text-sm">{msg}</p>}
+    <div className="mx-auto max-w-4xl space-y-7 pb-16">
+      {/* Top Header Card */}
+      <div className="rounded-3xl border border-zinc-200/80 bg-white p-6 sm:p-8 shadow-xs">
+        <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
+          <div className="flex items-start gap-5">
+            {/* Avatar & Photo Picker */}
+            <div className="relative group shrink-0">
+              <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl overflow-hidden border-2 border-emerald-600/30 bg-emerald-50 flex items-center justify-center shadow-xs">
+                {profilePhoto ? (
+                  <img
+                    src={mediaUrl(profilePhoto)}
+                    alt={farmerName || "Farmer Photo"}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-emerald-800">
+                    <Sprout className="h-10 w-10 text-emerald-700" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800/80 mt-1">Kisaan</span>
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                title="Change Photo"
+                className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-xl bg-[#1b4332] text-white shadow transition hover:bg-[#245e38] hover:scale-105"
+              >
+                {photoUploading ? (
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border border-white border-t-transparent" />
+                ) : (
+                  <Camera className="h-3.5 w-3.5" />
+                )}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoUpload}
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800 border border-emerald-200">
+                  <UserCircle className="h-3.5 w-3.5 text-emerald-700" />
+                  Verified Kisaan Profile
+                </span>
+                <span className="text-zinc-300">·</span>
+                <span className="text-xs text-zinc-500 font-medium">Digital Landholding & Payouts</span>
+              </div>
+              <h1 className="mt-2 font-serif text-3xl font-bold tracking-tight text-zinc-900">
+                Farmer Profile & Land Records
+              </h1>
+              <p className="mt-1 text-sm text-zinc-500 leading-relaxed">
+                Maintain your farm landholding, soil type, irrigation source, and APMC/PM-KISAN details for direct society contracts and logistics dispatch.
+              </p>
+            </div>
+          </div>
+
+          <div className="shrink-0">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2 text-xs font-semibold text-zinc-800 transition hover:bg-zinc-100 hover:border-zinc-300"
+            >
+              <UploadCloud className="h-4 w-4 text-emerald-700" />
+              {profilePhoto ? "Change Photo" : "Upload Profile Photo"}
+            </button>
+            <p className="mt-1 text-[11px] text-zinc-400 text-center sm:text-left">JPG, PNG up to 5MB</p>
+          </div>
+        </div>
+
+        {/* Feedback Alert */}
+        {saveMessage && (
+          <div className={`mt-5 flex items-center gap-2 rounded-2xl p-4 text-xs font-bold ${
+            saveMessage.includes("success") || saveMessage.includes("updated")
+              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+              : "bg-rose-50 text-rose-800 border border-rose-200"
+          }`}>
+            <Check className="h-4 w-4 shrink-0 text-emerald-600" />
+            <span>{saveMessage}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSaveProfile} className="mt-8 space-y-6">
+          {/* Group 1: Personal & Contact Details */}
+          <div>
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100/70 text-emerald-800 text-xs font-bold">1</div>
+              <h3 className="text-sm font-bold text-zinc-900">Personal & Kisaan Contact Details</h3>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Farmer Full Name *</label>
+                <div className="relative">
+                  <UserCircle className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                  <input
+                    required
+                    type="text"
+                    value={farmerName}
+                    onChange={(e) => setFarmerName(e.target.value)}
+                    placeholder="e.g. Ramesh Naidu"
+                    className="w-full rounded-2xl border border-zinc-200 bg-white pl-10 pr-3.5 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Phone / WhatsApp Number *</label>
+                <div className="relative">
+                  <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                  <input
+                    required
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="e.g. +91 98480 12345"
+                    className="w-full rounded-2xl border border-zinc-200 bg-white pl-10 pr-3.5 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Account Email (Verified)</label>
+                <input
+                  disabled
+                  type="email"
+                  value={email || user?.email || "farmer@samruddhisetu.in"}
+                  className="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-500 cursor-not-allowed"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Group 2: Farm Location & Region */}
+          <div className="border-t border-zinc-100 pt-5">
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100/70 text-emerald-800 text-xs font-bold">2</div>
+              <h3 className="text-sm font-bold text-zinc-900">Farm Location & District Hub</h3>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Farm / Estate Name *</label>
+                <input
+                  required
+                  type="text"
+                  value={farmName}
+                  onChange={(e) => setFarmName(e.target.value)}
+                  placeholder="e.g. Sri Venkateswara Agro Farm"
+                  className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Village / Mandal / Panchayat</label>
+                <div className="relative">
+                  <MapPin className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                  <input
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="e.g. Chandragiri / Devanahalli Rural"
+                    className="w-full rounded-2xl border border-zinc-200 bg-white pl-10 pr-3.5 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">District / APMC Region *</label>
+                <select
+                  value={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                  className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                >
+                  <option value="Tirupati">Tirupati (తిరుపతి APMC)</option>
+                  <option value="Devanahalli">Devanahalli (ದೇವನಹಳ್ಳಿ Hub)</option>
+                  <option value="Chittoor">Chittoor (చిత్తూరు)</option>
+                  <option value="Bengaluru Rural">Bengaluru Rural (ಬೆಂಗಳೂರು ಗ್ರಾಮಾಂತರ)</option>
+                  <option value="Kolar">Kolar (ಕೋಲಾರ APMC)</option>
+                  <option value="Anantapur">Anantapur (అనంతపురం)</option>
+                  <option value="Yelahanka">Yelahanka Cluster</option>
+                  <option value="Kadapa">YSR Kadapa (కడప)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">State</label>
+                <input
+                  type="text"
+                  value={stateName}
+                  onChange={(e) => setStateName(e.target.value)}
+                  placeholder="e.g. Andhra Pradesh / Karnataka"
+                  className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">PIN Code</label>
+                <input
+                  type="text"
+                  maxLength={6}
+                  value={pinCode}
+                  onChange={(e) => setPinCode(e.target.value)}
+                  placeholder="e.g. 517501"
+                  className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Mandi / PM-KISAN Reg No</label>
+                <div className="relative">
+                  <Award className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                  <input
+                    type="text"
+                    value={mandiRegNo}
+                    onChange={(e) => setMandiRegNo(e.target.value)}
+                    placeholder="e.g. APMC-TPT-2024-8891"
+                    className="w-full rounded-2xl border border-zinc-200 bg-white pl-10 pr-3.5 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Group 3: Agricultural, Soil & Agronomic Data */}
+          <div className="border-t border-zinc-100 pt-5">
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100/70 text-emerald-800 text-xs font-bold">3</div>
+              <h3 className="text-sm font-bold text-zinc-900">Agronomic, Land Size & Cultivation Inputs</h3>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Total Landholding Area</label>
+                <div className="relative">
+                  <LandPlot className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                  <input
+                    type="text"
+                    value={landSizeAcres}
+                    onChange={(e) => setLandSizeAcres(e.target.value)}
+                    placeholder="e.g. 5.5 Acres / 2 Hectares"
+                    className="w-full rounded-2xl border border-zinc-200 bg-white pl-10 pr-3.5 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Soil Type (నేల రకం)</label>
+                <select
+                  value={soilType}
+                  onChange={(e) => setSoilType(e.target.value)}
+                  className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                >
+                  <option value="Red Sandy Loam">Red Sandy Loam (ఎర్ర నేలలు / ಕೆಂಪು ಮಣ್ಣು)</option>
+                  <option value="Black Cotton Soil">Black Cotton Soil (నల్లరేగడి నేలలు / ಕಪ್ಪು ಮಣ್ಣು)</option>
+                  <option value="Alluvial Soil">Alluvial Soil (ఒండ్రు నేలలు)</option>
+                  <option value="Clay Loam">Clay Loam (జిగురు నేలలు)</option>
+                  <option value="Laterite / Red Gravelly">Laterite / Red Gravelly Soil</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Primary Irrigation Source</label>
+                <div className="relative">
+                  <Droplets className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                  <select
+                    value={irrigationSource}
+                    onChange={(e) => setIrrigationSource(e.target.value)}
+                    className="w-full rounded-2xl border border-zinc-200 bg-white pl-10 pr-3.5 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                  >
+                    <option value="Borewell + Drip Irrigation">Solar / Electric Borewell + Drip Irrigation</option>
+                    <option value="Canal / River Lift">Canal Water / River Lift</option>
+                    <option value="Open Farm Pond / Tank">Open Farm Pond / Rainwater Harvesting Tank</option>
+                    <option value="Sprinkler System">Sprinkler Network</option>
+                    <option value="Rainfed / Dryland">Rainfed / Dryland (వర్షాధార)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Farming Practice & Certification</label>
+                <select
+                  value={farmingType}
+                  onChange={(e) => setFarmingType(e.target.value)}
+                  className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                >
+                  <option value="100% Certified Organic">100% Certified Organic (NPOP / Jaivik Bharat)</option>
+                  <option value="ZBNF Natural Farming">ZBNF / Natural Farming (సుభాష్ పాలేకర్ ప్రాకృతిక వ్యవసాయం)</option>
+                  <option value="Regenerative Agroforestry">Regenerative Agroforestry</option>
+                  <option value="Integrated Pest Management">Integrated Pest Management (IPM)</option>
+                  <option value="Conventional Farming">Conventional Good Agricultural Practices</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Farming Experience</label>
+                <input
+                  type="text"
+                  value={experienceYears}
+                  onChange={(e) => setExperienceYears(e.target.value)}
+                  placeholder="e.g. 15 Years"
+                  className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Post-Harvest Storage Facility</label>
+                <select
+                  value={storageFacility}
+                  onChange={(e) => setStorageFacility(e.target.value)}
+                  className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                >
+                  <option value="On-farm ventilated shed">On-farm ventilated shade shed</option>
+                  <option value="Local APMC Packhouse">Local APMC Packhouse / Sorting Yard</option>
+                  <option value="Cold Storage nearby">Cold Storage facility within 10 km</option>
+                  <option value="Covered Drying Yard">Covered drying yard for grains</option>
+                </select>
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Primary Crops Grown (ముఖ్యమైన పంటలు)</label>
+                <input
+                  type="text"
+                  value={primaryCrops}
+                  onChange={(e) => setPrimaryCrops(e.target.value)}
+                  placeholder="e.g. Tomatoes, Banganapalli Mangoes, Chilli, Fresh Kasuri Methi, Foxtail Millet, Ragi"
+                  className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold text-zinc-700">Direct Payout UPI ID (Escrow T+1)</label>
+                <div className="relative">
+                  <CreditCard className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+                  <input
+                    type="text"
+                    value={payoutUpi}
+                    onChange={(e) => setPayoutUpi(e.target.value)}
+                    placeholder="e.g. farmer@okhdfcbank"
+                    className="w-full rounded-2xl border border-zinc-200 bg-white pl-10 pr-3.5 py-3 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50 font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Group 4: Farm Story & Cultivation Notes */}
+          <div className="border-t border-zinc-100 pt-5">
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100/70 text-emerald-800 text-xs font-bold">4</div>
+              <h3 className="text-sm font-bold text-zinc-900">Farm Story & Cultivation Notes for Buyers</h3>
+            </div>
+            <div>
+              <textarea
+                rows={3}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Share your natural cultivation methods, manure usage (Jeevamrutham/Cow dung compost), harvest frequency, and direct society supply capabilities..."
+                className="w-full rounded-2xl border border-zinc-200 bg-white p-4 text-sm text-zinc-900 outline-none transition focus:border-emerald-600 focus:ring-3 focus:ring-emerald-50 resize-y"
+              />
+              <p className="mt-1.5 text-[11px] text-zinc-400">
+                This note appears on your verified produce listings and helps apartment buyers trust your chemical-free methods.
+              </p>
+            </div>
+          </div>
+
+          {/* Save Button */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-zinc-100">
+            <p className="text-xs text-zinc-400">
+              Changes sync directly with Samruddhi Setu APMC logistics & society desks.
+            </p>
+
+            <button
+              type="submit"
+              disabled={savingProfile}
+              className="inline-flex items-center gap-2 rounded-2xl bg-[#1b4332] px-8 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-[#245e38] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {savingProfile ? (
+                <>
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  Saving Details…
+                </>
+              ) : (
+                <>
+                  <Check className="h-4 w-4" />
+                  Save Farm Profile & Land Records
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import {
   Minimize2,
   Maximize2,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 type Message = {
   id: string;
@@ -120,6 +120,14 @@ function generateResponse(query: string): { text: string; link?: { text: string;
 }
 
 export function FloatingChatbot() {
+  const location = useLocation();
+
+  // On farmer portal, farmers use their dedicated AI Kisan Voice Assistant.
+  // Hide generic consumer chatbot to prevent bottom-right congestion.
+  if (location.pathname.startsWith("/farmer")) {
+    return null;
+  }
+
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [input, setInput] = useState("");
