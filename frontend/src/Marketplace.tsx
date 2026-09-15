@@ -700,13 +700,22 @@ export function Marketplace() {
         ? data.products.map(mapProduct)
         : [];
 
-      // Cleanly deduplicate items like Banganapalli Mango
-      const seenProductKeys = new Set<string>();
+      // Strictly filter out misplaced / duplicate items requested for deletion:
+      // 1. Banganapalli Mangoes (duplicate of Banganapalli Mango)
+      // 2. Organic Salem Turmeric
+      // 3. Fresh Kasuri Methi
+      // 4. Foxtail Millet (Kangni)
+      const DELETED_PRODUCT_PATTERNS = [
+        "banganapalli mangoes",
+        "organic salem turmeric",
+        "fresh kasuri methi",
+        "foxtail millet",
+      ];
+
       const nextProducts = rawProducts.filter((p: Product) => {
-        const cleanName = p.name.toLowerCase().replace(/s\b/g, "").trim();
-        if (cleanName.includes("banganapalli mango")) {
-          if (seenProductKeys.has("banganapalli-mango")) return false;
-          seenProductKeys.add("banganapalli-mango");
+        const cleanName = p.name.toLowerCase().trim();
+        if (DELETED_PRODUCT_PATTERNS.some((pat) => cleanName.includes(pat))) {
+          return false;
         }
         return true;
       });

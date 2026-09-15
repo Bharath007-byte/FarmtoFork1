@@ -51,6 +51,25 @@ async function main() {
     await prisma.product.delete({ where: { id: p.id } }).catch(() => {});
   }
 
+  // Purge the 4 misplaced / duplicate products
+  const toDeleteProds = await prisma.product.findMany({
+    where: {
+      OR: [
+        { name: { contains: "Banganapalli Mangoes", mode: "insensitive" } },
+        { name: { contains: "Organic Salem Turmeric", mode: "insensitive" } },
+        { name: { contains: "Fresh Kasuri Methi", mode: "insensitive" } },
+        { name: { contains: "Foxtail Millet", mode: "insensitive" } },
+      ],
+    },
+    select: { id: true },
+  });
+  for (const dp of toDeleteProds) {
+    await prisma.orderItem.deleteMany({ where: { productId: dp.id } }).catch(() => {});
+    await prisma.productPriceLog.deleteMany({ where: { productId: dp.id } }).catch(() => {});
+    await prisma.inventory.deleteMany({ where: { productId: dp.id } }).catch(() => {});
+    await prisma.product.delete({ where: { id: dp.id } }).catch(() => {});
+  }
+
   // 2. Clean dummy catalog users
   const dummyUsers = await prisma.user.findMany({
     where: {

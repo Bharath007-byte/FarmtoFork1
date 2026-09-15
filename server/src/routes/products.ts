@@ -37,6 +37,12 @@ productRouter.get("/", async (req, res) => {
   const sort = String(req.query.sort || "newest");
   const where = {
     active: true,
+    NOT: [
+      { name: { contains: "Banganapalli Mangoes", mode: "insensitive" as const } },
+      { name: { contains: "Organic Salem Turmeric", mode: "insensitive" as const } },
+      { name: { contains: "Fresh Kasuri Methi", mode: "insensitive" as const } },
+      { name: { contains: "Foxtail Millet", mode: "insensitive" as const } },
+    ],
     ...(category ? { category: { slug: category } } : {}),
     ...(organic ? { organic: true } : {}),
     ...(q

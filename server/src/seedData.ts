@@ -277,19 +277,27 @@ export async function autoSeedIfEmpty() {
       ],
       Charan: [
         { name: "Guntur Red Dry Chillies", variety: "Sanam Hot S4", category: "spices", priceRupees: 210, img: "/products/whole-red-chillies.webp", available: 200, sold: 140 },
-        { name: "Organic Salem Turmeric", variety: "High Curcumin Grade", category: "spices", priceRupees: 180, img: "/products/turmeric.webp", available: 250, sold: 105 },
-        { name: "Foxtail Millet (Kangni)", variety: "Dehusked Natural", category: "millets", priceRupees: 78, img: "/products/millet.webp", available: 300, sold: 85 },
       ],
       Dileep: [
         { name: "Snowball Cauliflower", variety: "Compact White", category: "vegetables", priceRupees: 35, img: "/products/cauliflower.webp", available: 190, sold: 80 },
         { name: "Organic Bitter Gourd", variety: "Dark Green Spiny", category: "vegetables", priceRupees: 38, img: "/products/bitter-gourd.webp", available: 140, sold: 55 },
-        { name: "Fresh Kasuri Methi", variety: "Tender Green Leaves", category: "leafy vegetables", priceRupees: 22, img: "/products/methi.webp", available: 110, sold: 65 },
       ],
       Yaswant: [
-        { name: "Banganapalli Mangoes", variety: "Naturally Ripened", category: "fruits", priceRupees: 95, img: "/products/mango.webp", available: 350, sold: 180 },
         { name: "Robusta Farm Bananas", variety: "Yellow Table Grade", category: "fruits", priceRupees: 32, img: "/products/banana.webp", available: 260, sold: 120 },
       ],
     };
+
+    // Explicitly delete the 4 misplaced / duplicate products from the database
+    await prisma.product.deleteMany({
+      where: {
+        OR: [
+          { name: { contains: "Banganapalli Mangoes", mode: "insensitive" } },
+          { name: { contains: "Organic Salem Turmeric", mode: "insensitive" } },
+          { name: { contains: "Fresh Kasuri Methi", mode: "insensitive" } },
+          { name: { contains: "Foxtail Millet", mode: "insensitive" } },
+        ],
+      },
+    }).catch(() => {});
 
     for (const farmer of teacherFarmers) {
       const u = await prisma.user.upsert({
