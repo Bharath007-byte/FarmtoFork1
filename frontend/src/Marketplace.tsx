@@ -418,7 +418,6 @@ function resolveAccurateCategory(
     n.includes("palak") ||
     n.includes("spinach") ||
     n.includes("methi") ||
-    n.includes("kasuri") ||
     n.includes("amaranth") ||
     n.includes("coriander leaves") ||
     n.includes("mint") ||
@@ -434,9 +433,7 @@ function resolveAccurateCategory(
     n.includes("millet") ||
     n.includes("bajra") ||
     n.includes("ragi") ||
-    n.includes("jowar") ||
-    n.includes("kangni") ||
-    n.includes("foxtail")
+    n.includes("jowar")
   ) {
     return { slug: "millets", name: "Millets" };
   }
@@ -817,6 +814,18 @@ export function Marketplace() {
       .toLowerCase();
 
     const filtered = products.filter((product) => {
+      const pName = (product.name || "").toLowerCase().trim();
+      if (
+        pName.includes("kasuri methi") ||
+        pName.includes("foxtail millet") ||
+        pName.includes("kangni") ||
+        pName.includes("salem turmeric") ||
+        pName === "banganapalli mangoes" ||
+        pName.startsWith("banganapalli mangoes")
+      ) {
+        return false;
+      }
+
       const categoryMatch =
         selectedCategory === "all" ||
         product.categorySlug === selectedCategory;

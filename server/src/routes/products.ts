@@ -31,6 +31,9 @@ productRouter.get("/mine", auth, requireRole("FARMER"), async (req, res) => {
 });
 
 productRouter.get("/", async (req, res) => {
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
   const q = String(req.query.q || "");
   const category = String(req.query.category || "");
   const organic = req.query.organic === "true";
@@ -40,8 +43,11 @@ productRouter.get("/", async (req, res) => {
     NOT: [
       { name: { contains: "Banganapalli Mangoes", mode: "insensitive" as const } },
       { name: { contains: "Organic Salem Turmeric", mode: "insensitive" as const } },
+      { name: { contains: "Salem Turmeric", mode: "insensitive" as const } },
       { name: { contains: "Fresh Kasuri Methi", mode: "insensitive" as const } },
+      { name: { contains: "Kasuri Methi", mode: "insensitive" as const } },
       { name: { contains: "Foxtail Millet", mode: "insensitive" as const } },
+      { name: { contains: "Kangni", mode: "insensitive" as const } },
     ],
     ...(category ? { category: { slug: category } } : {}),
     ...(organic ? { organic: true } : {}),
