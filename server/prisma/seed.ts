@@ -134,16 +134,18 @@ async function main() {
     },
   });
 
-  await prisma.user.upsert({
-    where: { email: "admin@farm2fork.demo" },
-    update: {},
-    create: {
-      email: "admin@farm2fork.demo",
-      name: "SIH Admin",
-      role: "ADMIN",
-      passwordHash: await bcrypt.hash("AdminDemo@123", 12),
-    },
-  });
+  for (const admEmail of ["admin@farm2fork.demo", "admin@samruddhisetu.in", "admin@samruddhsetu.in"]) {
+    await prisma.user.upsert({
+      where: { email: admEmail },
+      update: { role: "ADMIN" },
+      create: {
+        email: admEmail,
+        name: "Samruddhi Setu Admin",
+        role: "ADMIN",
+        passwordHash: await bcrypt.hash("AdminDemo@123", 12),
+      },
+    });
+  }
 
   await prisma.user.upsert({
     where: { email: "logistics@farm2fork.demo" },

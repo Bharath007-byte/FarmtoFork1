@@ -116,6 +116,26 @@ const SOCIETIES = [
 
 export async function autoSeedIfEmpty() {
   try {
+    // Ensure all valid admin accounts exist at every boot
+    const defaultAdminPass = await bcrypt.hash("AdminDemo@123", 10);
+    const adminEmails = [
+      "admin@farm2fork.demo",
+      "admin@samruddhisetu.in",
+      "admin@samruddhsetu.in",
+    ];
+    for (const admEmail of adminEmails) {
+      await prisma.user.upsert({
+        where: { email: admEmail },
+        update: { role: "ADMIN" },
+        create: {
+          email: admEmail,
+          name: "Samruddhi Setu Admin",
+          role: "ADMIN",
+          passwordHash: defaultAdminPass,
+        },
+      });
+    }
+
     const prodCount = await prisma.product.count();
     if (prodCount >= 150) {
       console.log(`[AutoSeed] Database already has ${prodCount} products. Seeding up to date.`);
@@ -136,7 +156,6 @@ export async function autoSeedIfEmpty() {
     // 2. Demo passwords precomputed with 10 salt rounds for high startup speed
     const defaultFarmerPass = await bcrypt.hash("FarmDemo@123", 10);
     const defaultConsumerPass = await bcrypt.hash("ShopDemo@123", 10);
-    const defaultAdminPass = await bcrypt.hash("AdminDemo@123", 10);
     const defaultFleetPass = await bcrypt.hash("FleetDemo@123", 10);
 
     // 3. Core demo users
