@@ -68,7 +68,23 @@ app.use(
 
 app.use(express.json({ limit: "2mb" }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-app.use(rateLimit({ windowMs: 60_000, max: 120 }));
+app.use(
+  rateLimit({
+    windowMs: 60_000,
+    max: 5000,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => {
+      const ip = req.ip || req.socket.remoteAddress || "";
+      return (
+        ip === "127.0.0.1" ||
+        ip === "::1" ||
+        ip.includes("localhost") ||
+        process.env.NODE_ENV !== "production"
+      );
+    },
+  })
+);
 
 app.get("/api/health", async (_req, res) => {
   let database = "down";

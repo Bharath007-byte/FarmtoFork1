@@ -38,6 +38,11 @@ const navigation: AdminNavItem[] = [
     icon: Building2,
   },
   {
+    label: "Community Requests",
+    path: "/admin/community-requests",
+    icon: Users,
+  },
+  {
     label: "Farmers",
     path: "/admin/farmers",
     icon: Users,

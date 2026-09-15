@@ -347,6 +347,7 @@ export default function App() {
 >
     <Route index element={<AdminDashboard />} />
 <Route path="societies" element={<AdminSocieties />} />
+<Route path="community-requests" element={<AdminSocieties defaultTab="requests" />} />
 <Route path="logistics" element={<AdminLogistics />} />
 <Route path="payments" element={<AdminPayments />} />
 <Route
