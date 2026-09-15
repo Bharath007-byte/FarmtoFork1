@@ -23,13 +23,14 @@ farmerRouter.get("/me", auth, requireRole("FARMER", "ADMIN"), async (req, res) =
 farmerRouter.put("/me", auth, requireRole("FARMER"), async (req, res) => {
   const farmer = await prisma.farmerProfile.findUnique({ where: { userId: req.user!.id } });
   if (!farmer) return res.status(404).json({ error: "Farmer profile missing", code: 404 });
-  const { farmName, location, district, state, pinCode, details, name, phone } = req.body || {};
+  const { farmName, location, district, state, pinCode, details, name, phone, photoUrl } = req.body || {};
   const [user] = await prisma.$transaction([
     prisma.user.update({
       where: { id: req.user!.id },
       data: {
         name: name || undefined,
         phone: phone || undefined,
+        photoUrl: photoUrl || undefined,
       },
     }),
     prisma.farmerProfile.update({

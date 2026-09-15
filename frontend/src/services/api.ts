@@ -38,7 +38,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 export function mediaUrl(path: string | null | undefined) {
   if (!path) return "";
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("data:")) return path;
   const clean = path.startsWith("/") ? path.slice(1) : path;
   const apiBase = import.meta.env.VITE_API_URL || "";
   if (apiBase) {

@@ -194,31 +194,6 @@ export function Login() {
             </Link>
           </p>
         )}
-
-        {isAdminLogin && (
-          <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-700">Administrator Credentials:</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail("admin@samruddhisetu.in");
-                  setPassword("AdminDemo@123");
-                }}
-                className="text-xs font-semibold text-blue-600 hover:text-blue-800 underline"
-              >
-                1-Click Auto Fill
-              </button>
-            </div>
-            <div className="text-xs font-mono bg-white p-2.5 rounded-lg border border-slate-200 text-slate-700 space-y-1">
-              <div><span className="text-slate-400 select-none">Email: </span>admin@samruddhisetu.in</div>
-              <div><span className="text-slate-400 select-none">Password: </span>AdminDemo@123</div>
-            </div>
-            <p className="text-[11px] leading-4 text-slate-500">
-              Also supported: <code className="text-slate-700">admin@farm2fork.demo</code>.
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
