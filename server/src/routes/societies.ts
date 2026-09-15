@@ -55,6 +55,264 @@ societyRouter.get("/", auth, requireRole("ADMIN", "FARMER", "CONSUMER"), async (
 });
 
 /**
+ * GET /api/societies/my-memberships
+ *
+ * Returns farmer's membership status for all cooperative societies.
+ */
+societyRouter.get("/my-memberships", auth, requireRole("FARMER"), async (req, res) => {
+  try {
+    const farmer = await prisma.farmerProfile.findUnique({
+      where: { userId: req.user!.id },
+    });
+
+    if (!farmer) {
+      return res.status(404).json({ error: "Farmer profile not found", code: 404 });
+    }
+
+    const memberships = await prisma.societyFarmer.findMany({
+      where: { farmerId: farmer.id },
+      include: {
+        society: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            district: true,
+            state: true,
+          },
+        },
+      },
+    });
+
+    res.json({ memberships });
+  } catch (error) {
+    console.error("GET /societies/my-memberships", error);
+    res.status(500).json({ error: "Failed to load memberships", code: 500 });
+  }
+});
+
+/**
+ * POST /api/societies/:id/join
+ *
+ * Farmer submits a join request for a cooperative society community.
+ */
+societyRouter.post("/:id/join", auth, requireRole("FARMER"), async (req, res) => {
+  try {
+    const societyId = getSocietyId(req);
+    const farmer = await prisma.farmerProfile.findUnique({
+      where: { userId: req.user!.id },
+      include: { user: true },
+    });
+
+    if (!farmer) {
+      return res.status(404).json({ error: "Farmer profile not found", code: 404 });
+    }
+
+    const society = await prisma.cooperativeSociety.findUnique({
+      where: { id: societyId },
+    });
+
+    if (!society) {
+      return res.status(404).json({ error: "Cooperative society not found", code: 404 });
+    }
+
+    const membership = await prisma.societyFarmer.upsert({
+      where: {
+        societyId_farmerId: {
+          societyId,
+          farmerId: farmer.id,
+        },
+      },
+      update: {
+        status: "PENDING",
+      },
+      create: {
+        societyId,
+        farmerId: farmer.id,
+        status: "PENDING",
+        active: false,
+      },
+    });
+
+    emitEvent("SOCIETY_JOIN_REQUESTED", {
+      societyId,
+      farmerId: farmer.id,
+      farmerName: farmer.user.name,
+      societyName: society.name,
+    });
+
+    // Notify Admins
+    const admins = await prisma.user.findMany({ where: { role: "ADMIN" } });
+    for (const admin of admins) {
+      await notify(
+        admin.id,
+        "SOCIETY_JOIN_REQUEST",
+        "New Farmer Community Request 🌾",
+        `${farmer.user.name} (${farmer.farmName}, ${farmer.district}) requested to join ${society.name}. Review in Admin Portal.`
+      );
+    }
+
+    res.status(200).json({
+      ok: true,
+      message: "Join request submitted. Pending administrator approval.",
+      membership,
+    });
+  } catch (error) {
+    console.error("POST /societies/:id/join", error);
+    res.status(500).json({ error: "Failed to submit join request", code: 500 });
+  }
+});
+
+/**
+ * GET /api/societies/admin/requests
+ *
+ * Admin fetches all pending farmer requests to join cooperative communities.
+ */
+societyRouter.get("/admin/requests", auth, requireRole("ADMIN"), async (_req, res) => {
+  try {
+    const requests = await prisma.societyFarmer.findMany({
+      where: {
+        status: "PENDING",
+      },
+      include: {
+        society: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            district: true,
+            state: true,
+            pinCode: true,
+          },
+        },
+        farmer: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+                photoUrl: true,
+              },
+            },
+            products: {
+              where: { active: true },
+              select: { id: true, name: true, unit: true },
+            },
+          },
+        },
+      },
+      orderBy: {
+        joinedAt: "desc",
+      },
+    });
+
+    res.json({ requests });
+  } catch (error) {
+    console.error("GET /societies/admin/requests", error);
+    res.status(500).json({ error: "Failed to load society requests", code: 500 });
+  }
+});
+
+/**
+ * POST /api/societies/admin/requests/:id/accept
+ *
+ * Admin accepts farmer's join request.
+ */
+societyRouter.post("/admin/requests/:id/accept", auth, requireRole("ADMIN"), async (req, res) => {
+  try {
+    const requestId = String(req.params.id);
+    const existing = await prisma.societyFarmer.findUnique({
+      where: { id: requestId },
+      include: {
+        farmer: { include: { user: true } },
+        society: true,
+      },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ error: "Join request not found", code: 404 });
+    }
+
+    const updated = await prisma.societyFarmer.update({
+      where: { id: requestId },
+      data: {
+        status: "APPROVED",
+        active: true,
+      },
+    });
+
+    emitEvent("SOCIETY_MEMBER_UPDATED", {
+      requestId,
+      status: "APPROVED",
+      farmerId: existing.farmerId,
+      societyId: existing.societyId,
+    });
+
+    await notify(
+      existing.farmer.userId,
+      "SOCIETY_APPROVED",
+      "Community Membership Approved! 🏛️",
+      `Congratulations! Your request to join ${existing.society.name} has been approved by the administration. You can now pool bulk produce and access collective transport.`
+    );
+
+    res.json({ ok: true, member: updated });
+  } catch (error) {
+    console.error("POST /admin/requests/:id/accept", error);
+    res.status(500).json({ error: "Failed to accept society request", code: 500 });
+  }
+});
+
+/**
+ * POST /api/societies/admin/requests/:id/reject
+ *
+ * Admin declines farmer's join request.
+ */
+societyRouter.post("/admin/requests/:id/reject", auth, requireRole("ADMIN"), async (req, res) => {
+  try {
+    const requestId = String(req.params.id);
+    const existing = await prisma.societyFarmer.findUnique({
+      where: { id: requestId },
+      include: {
+        farmer: { include: { user: true } },
+        society: true,
+      },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ error: "Join request not found", code: 404 });
+    }
+
+    const updated = await prisma.societyFarmer.update({
+      where: { id: requestId },
+      data: {
+        status: "REJECTED",
+        active: false,
+      },
+    });
+
+    emitEvent("SOCIETY_MEMBER_UPDATED", {
+      requestId,
+      status: "REJECTED",
+      farmerId: existing.farmerId,
+    });
+
+    await notify(
+      existing.farmer.userId,
+      "SOCIETY_REJECTED",
+      "Community Request Update",
+      `Your request to join ${existing.society.name} was not approved at this time. Please contact support or your local district coordinator.`
+    );
+
+    res.json({ ok: true, member: updated });
+  } catch (error) {
+    console.error("POST /admin/requests/:id/reject", error);
+    res.status(500).json({ error: "Failed to decline society request", code: 500 });
+  }
+});
+
+/**
  * GET /api/societies/my-supplies
  *
  * Returns bulk supply submissions made by the logged-in farmer.

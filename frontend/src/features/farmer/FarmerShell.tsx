@@ -2,54 +2,56 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import {
   Bell,
-  Boxes,
-  Camera,
+  ChevronDown,
+  Globe,
   LayoutDashboard,
+  Lightbulb,
   LogOut,
   Menu,
   RefreshCw,
+  Search,
   Sprout,
-  Stethoscope,
-  Truck,
+  User,
+  Users,
   Wallet,
+  X,
 } from "lucide-react";
 import { api } from "../../services/api";
 import { useApp } from "../../context/AppState";
 import { SamruddhiSetuLogo } from "../../components/SamruddhiSetuLogo";
 import { FarmerVoiceAssistant } from "../../components/FarmerVoiceAssistant";
-import { useI18n, type AppLang } from "../../i18n";
+import { useI18n, SUPPORTED_LANGUAGES, type AppLang } from "../../i18n";
 
 const navTranslations: Record<string, Record<AppLang, string>> = {
-  Home: { en: "Home", te: "హోమ్", hi: "होम", kn: "ಮುಖಪುಟ" },
-  "Krishi Doctor": { en: "Krishi Doctor", te: "కృషి డాక్టర్", hi: "कृषि डॉक्टर", kn: "ಕೃಷಿ ವೈದ್ಯ" },
-  "Sell Produce": { en: "Sell Produce", te: "పంట అమ్మకం", hi: "उपज बेचें", kn: "ಬೆಳೆ ಮಾರಾಟ" },
-  "My products": { en: "My products", te: "నా ఉత్పత్తులు", hi: "मेरे उत्पाद", kn: "ನನ್ನ ಉತ್ಪನ್ನಗಳು" },
-  Orders: { en: "Orders", te: "ఆర్డర్లు", hi: "ऑर्डर", kn: "ಆರ್ಡರ್‌ಗಳು" },
-  Earnings: { en: "Earnings", te: "ఆదాయం", hi: "कमाई", kn: "ಆದಾಯ" },
-  Pickup: { en: "Pickup", te: "రవాణా / పికప్", hi: "पिकअप", kn: "ಪಿಕಪ್" },
-  Alerts: { en: "Alerts", te: "హెచ్చరికలు", hi: "सूचनाएं", kn: "ಎಚ್ಚರಿಕೆಗಳು" },
-  Doctor: { en: "Doctor", te: "డాక్టర్", hi: "डॉक्टर", kn: "ವೈದ್ಯ" },
-  Logout: { en: "Logout", te: "లాగౌట్", hi: "लॉग आउट", kn: "ಲಾಗೌಟ್" },
+  Dashboard: { en: "Dashboard", te: "డాష్‌బోర్డ్", hi: "डैशबोर्ड", kn: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್" },
+  "My Produce": { en: "My Produce", te: "నా ఉత్పత్తులు", hi: "मेरी उपज", kn: "ನನ್ನ ಬೆಳೆಗಳು" },
+  "Earnings & Payments": { en: "Earnings & Payments", te: "ఆదాయం & చెల్లింపులు", hi: "कमाई और भुगतान", kn: "ಆದಾಯ & ಪಾವತಿಗಳು" },
+  "Insights & Advisory": { en: "Insights & Advisory", te: "సలహా & మార్గదర్శకాలు", hi: "सलाह और इनसाइट्स", kn: "ಸಲಹೆ & ಮಾರ್ಗದರ್ಶನ" },
+  "Community & Support": { en: "Community & Support", te: "కమ్యూనిటీ & మద్దతు", hi: "समुदाय और सहायता", kn: "ಸಮುದಾಯ & ಬೆಂಬಲ" },
+  Profile: { en: "Profile", te: "ప్రొఫైల్", hi: "प्रोफ़ाइल", kn: "ಪ್ರೊಫೈಲ್" },
+  Logout: { en: "Log Out", te: "లాగౌట్", hi: "लॉग आउट", kn: "ಲಾಗೌಟ್" },
 };
 
-const links = [
-  { to: "/farmer/dashboard", label: "Home", icon: LayoutDashboard },
-  { to: "/farmer/krishi-ai", label: "Krishi Doctor", icon: Stethoscope, badge: "Doctor", highlight: true },
-  { to: "/farmer/sell", label: "Sell Produce", icon: Camera },
-  { to: "/farmer/produce", label: "My products", icon: Boxes },
-  { to: "/farmer/orders", label: "Orders", icon: Boxes },
-  { to: "/farmer/earnings", label: "Earnings", icon: Wallet },
-  { to: "/farmer/logistics", label: "Pickup", icon: Truck },
-  { to: "/farmer/notifications", label: "Alerts", icon: Bell },
+const navItems = [
+  { to: "/farmer/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/farmer/produce", label: "My Produce", icon: Sprout },
+  { to: "/farmer/earnings", label: "Earnings & Payments", icon: Wallet },
+  { to: "/farmer/advisory", label: "Insights & Advisory", icon: Lightbulb },
+  { to: "/farmer/community", label: "Community & Support", icon: Users },
+  { to: "/farmer/profile", label: "Profile", icon: User },
 ];
 
 export function FarmerShell() {
   const { user, logout } = useApp();
-  const { lang } = useI18n();
+  const { lang, setLang } = useI18n();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const langMenuRef = useRef<HTMLDivElement>(null);
+
   const [profile, setProfile] = useState<{
     name: string;
     photoUrl?: string | null;
@@ -62,6 +64,17 @@ export function FarmerShell() {
       .catch(() => setProfile(null));
   }, []);
 
+  // Close language dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
+        setLangDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -69,7 +82,7 @@ export function FarmerShell() {
       setUploadingPhoto(true);
       const fd = new FormData();
       fd.append("photo", file);
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("f2f-token") || localStorage.getItem("token");
       const res = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/farmers/me/photo`, {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -92,127 +105,223 @@ export function FarmerShell() {
     ? `${import.meta.env.VITE_API_URL || ""}${profile.photoUrl}`
     : null;
 
+  const displayName = profile?.name || user?.name || "Bhargav";
+  const currentLangLabel = SUPPORTED_LANGUAGES.find((l) => l.code === lang)?.label || "English";
+
   return (
-    <div className="min-h-screen bg-white text-[#1c2b22] md:flex">
+    <div className="min-h-screen bg-[#f8faf8] md:flex">
+      {/* 1. Left Sidebar Matching media_1789452175964.png */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-60 transform border-r border-zinc-100 bg-white transition md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col justify-between bg-[#0c1e17] transition-transform md:static md:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="border-b border-zinc-100 px-4 py-4">
-          <Link to="/">
-            <SamruddhiSetuLogo size="sm" />
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-3 border-b border-zinc-100 px-4 py-4">
-          <label
-            title="Click to add or change profile photo"
-            className="group relative flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full overflow-hidden border-2 border-emerald-200 shadow-xs hover:border-[#1b4332] transition bg-zinc-50"
-          >
-            <input
-              type="file"
-              ref={photoInputRef}
-              accept="image/*"
-              className="hidden"
-              disabled={uploadingPhoto}
-              onChange={handlePhotoUpload}
-            />
-            {uploadingPhoto ? (
-              <div className="flex h-full w-full items-center justify-center bg-zinc-100">
-                <RefreshCw className="h-5 w-5 animate-spin text-[#1b4332]" />
+        <div className="flex flex-col">
+          {/* Brand Header */}
+          <div className="flex items-center justify-between px-6 pt-6 pb-4">
+            <Link to="/farmer/dashboard" className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 p-1.5 shadow-xs">
+                <SamruddhiSetuLogo size="sm" />
               </div>
-            ) : photo ? (
-              <img src={photo} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <span className="flex h-full w-full items-center justify-center bg-[#e8f0e3] text-[#1b4332]">
-                <Sprout className="h-5 w-5" />
-              </span>
-            )}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition">
-              <Camera className="h-4 w-4 text-white" />
-            </div>
-          </label>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-bold text-zinc-900">{profile?.name || user?.name}</p>
-            <p className="truncate text-xs text-zinc-500">
-              {profile?.farmer?.farmName || "Your farm"}
-            </p>
+              <div className="min-w-0">
+                <span className="block text-base font-extrabold tracking-tight text-white leading-tight">
+                  Samruddhi Setu
+                </span>
+                <span className="block text-[10px] font-bold tracking-wider text-emerald-400 uppercase">
+                  DIRECT FARM NETWORK
+                </span>
+              </div>
+            </Link>
+
+            {/* Mobile Close Button */}
             <button
               type="button"
-              onClick={() => photoInputRef.current?.click()}
-              disabled={uploadingPhoto}
-              className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 hover:underline cursor-pointer disabled:opacity-50"
+              onClick={() => setOpen(false)}
+              className="rounded-lg p-1 text-zinc-400 hover:bg-white/10 hover:text-white md:hidden"
             >
-              <Camera className="h-3 w-3" />
-              {uploadingPhoto ? "Uploading..." : photo ? "Change photo" : "Add photo"}
+              <X className="h-5 w-5" />
             </button>
           </div>
+
+          {/* Role Pill Badge */}
+          <div className="px-6 py-2">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-[#132c22] px-3.5 py-1.5 text-[11px] font-bold tracking-wider text-emerald-300">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>FARMER ACCOUNT</span>
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="mt-4 space-y-1.5 px-4">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const localizedLabel = navTranslations[item.label]?.[lang] || item.label;
+
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                      isActive
+                        ? "bg-[#d1e7dd] text-[#0c1e17] font-extrabold shadow-sm"
+                        : "text-[#a5b4ac] hover:bg-white/5 hover:text-white"
+                    }`
+                  }
+                >
+                  <Icon className="h-5 w-5 shrink-0" />
+                  <span className="truncate">{localizedLabel}</span>
+                </NavLink>
+              );
+            })}
+          </nav>
         </div>
-        <nav className="space-y-0.5 p-3 text-sm">
-          {links.map((l) => {
-            const Icon = l.icon;
-            const localizedLabel = navTranslations[l.label]?.[lang] || l.label;
-            const localizedBadge = l.badge ? (navTranslations[l.badge]?.[lang] || l.badge) : null;
-            return (
-              <NavLink
-                key={l.to}
-                to={l.to}
-                onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center justify-between rounded-xl px-3 py-2.5 transition ${
-                    isActive
-                      ? "bg-[#1b4332] text-white shadow-sm"
-                      : l.highlight
-                      ? "bg-[#eaf5ee] text-[#1b4332] font-semibold border border-emerald-300/60 hover:bg-[#dcf0e2]"
-                      : "text-zinc-700 hover:bg-emerald-50/50"
-                  }`
-                }
-              >
-                <div className="flex items-center gap-2">
-                  <Icon className={`h-4 w-4 ${l.highlight ? "text-[#1b4332]" : ""}`} />
-                  <span>{localizedLabel}</span>
-                </div>
-                {localizedBadge && (
-                  <span className="rounded-md bg-[#1b4332] px-2 py-0.5 text-[10px] font-bold text-emerald-100 shadow-xs">
-                    {localizedBadge}
-                  </span>
-                )}
-              </NavLink>
-            );
-          })}
+
+        {/* Bottom Section: Log Out */}
+        <div className="p-4 border-t border-white/5">
           <button
             type="button"
             onClick={() => {
               logout();
               navigate("/");
             }}
-            className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-zinc-500 hover:bg-emerald-50/40 cursor-pointer"
+            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-[#a5b4ac] hover:bg-white/10 hover:text-white transition cursor-pointer"
           >
-            <LogOut className="h-4 w-4" />
-            {navTranslations.Logout?.[lang] || "Logout"}
+            <LogOut className="h-5 w-5 text-[#a5b4ac]" />
+            <span>{navTranslations.Logout?.[lang] || "Log Out"}</span>
           </button>
-        </nav>
-      </aside>
-      <div className="flex-1 bg-[#f4f7f4]">
-        <header className="flex items-center justify-between border-b border-zinc-100 bg-white px-4 py-3 md:hidden">
-          <button type="button" onClick={() => setOpen(true)} aria-label="Open menu">
-            <Menu />
-          </button>
-          <Link to="/">
-            <SamruddhiSetuLogo size="sm" />
-          </Link>
-          <span className="w-8" />
-        </header>
-        {open && (
-          <button className="fixed inset-0 z-30 bg-black/30 md:hidden" onClick={() => setOpen(false)} />
-        )}
-        <div className="px-4 py-6 md:px-10">
-          <Outlet />
         </div>
+      </aside>
+
+      {/* 2. Main Content Wrapper */}
+      <div className="flex-1 flex flex-col min-w-0 bg-[#f8faf8]">
+        {/* Top Header Bar Matching Screenshot */}
+        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-zinc-200/80 bg-white/95 px-5 backdrop-blur-md sm:px-8">
+          <div className="flex items-center gap-4 min-w-0 flex-1">
+            {/* Sidebar Mobile Toggle */}
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="rounded-xl border border-zinc-200 p-2 text-zinc-600 hover:bg-zinc-50 md:hidden"
+              aria-label="Open navigation menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+
+            {/* Global Search Bar */}
+            <div className="relative max-w-md w-full hidden sm:block">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search forums, guides..."
+                className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/70 py-2.5 pl-10 pr-4 text-sm text-zinc-900 placeholder:text-zinc-400 outline-none transition focus:border-emerald-600 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+              />
+            </div>
+          </div>
+
+          {/* Right Header Controls: Language, Notification, User Chip */}
+          <div className="flex items-center gap-3 shrink-0">
+            {/* Language Selector Dropdown */}
+            <div className="relative" ref={langMenuRef}>
+              <button
+                type="button"
+                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition shadow-2xs"
+              >
+                <Globe className="h-3.5 w-3.5 text-zinc-500" />
+                <span>{currentLangLabel}</span>
+                <ChevronDown className="h-3 w-3 text-zinc-400" />
+              </button>
+
+              {langDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-40 rounded-2xl border border-zinc-200 bg-white py-1.5 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-100">
+                  {SUPPORTED_LANGUAGES.map((l) => (
+                    <button
+                      key={l.code}
+                      type="button"
+                      onClick={() => {
+                        setLang(l.code);
+                        setLangDropdownOpen(false);
+                      }}
+                      className={`flex w-full items-center justify-between px-3.5 py-2 text-xs font-semibold transition ${
+                        lang === l.code
+                          ? "bg-emerald-50 text-emerald-800 font-bold"
+                          : "text-zinc-700 hover:bg-zinc-50"
+                      }`}
+                    >
+                      <span>{l.label}</span>
+                      <span className="text-[11px] text-zinc-400">{l.native}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Notification Bell */}
+            <Link
+              to="/farmer/notifications"
+              className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 transition shadow-2xs"
+              aria-label="Notifications"
+            >
+              <Bell className="h-4 w-4" />
+              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-emerald-500" />
+            </Link>
+
+            {/* Farmer User Chip */}
+            <div className="flex items-center gap-2.5 rounded-2xl border border-zinc-200 bg-white pl-2 pr-3.5 py-1.5 shadow-2xs">
+              <label
+                title="Click to change photo"
+                className="relative flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full overflow-hidden bg-sky-100 text-sky-700 font-bold text-xs"
+              >
+                <input
+                  type="file"
+                  ref={photoInputRef}
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploadingPhoto}
+                  onChange={handlePhotoUpload}
+                />
+                {uploadingPhoto ? (
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin text-emerald-700" />
+                ) : photo ? (
+                  <img src={photo} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <span>{displayName.slice(0, 1).toUpperCase()}</span>
+                )}
+              </label>
+
+              <div className="flex flex-col text-left">
+                <span className="text-xs font-bold text-zinc-900 leading-tight">
+                  {displayName}
+                </span>
+                <span className="text-[10px] font-black tracking-wider text-amber-600 uppercase">
+                  FARMER
+                </span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Mobile Overlay */}
+        {open && (
+          <button
+            type="button"
+            className="fixed inset-0 z-30 bg-black/40 backdrop-blur-xs md:hidden"
+            onClick={() => setOpen(false)}
+            aria-label="Close menu"
+          />
+        )}
+
+        {/* Page Content Outlet */}
+        <main className="flex-1 px-4 py-6 sm:px-8 sm:py-8">
+          <Outlet />
+        </main>
       </div>
 
-      {/* Floating Kisan Voice Assistant available across all farmer portal tabs */}
+      {/* Floating Voice Assistant */}
       <FarmerVoiceAssistant embedded={false} />
     </div>
   );

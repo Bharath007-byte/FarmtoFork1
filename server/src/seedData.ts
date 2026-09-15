@@ -93,6 +93,72 @@ const teacherFarmers = [
 
 const SOCIETIES = [
   {
+    name: "Tirupati Agri & Horticulture Farmers Cooperative Society",
+    code: "TIRUPATI-AGRI",
+    description: "Regional aggregation, tomato & fruit cold-storage pool serving Tirupati & Chittoor farmers.",
+    address: "Chandragiri - Renigunta Agricultural Hub, Tirupati",
+    village: "Tirupati",
+    district: "Tirupati",
+    state: "Andhra Pradesh",
+    pinCode: "517501",
+    verified: true,
+  },
+  {
+    name: "Devanahalli Silk & Fruit Growers Cooperative Union",
+    code: "DEVANAHALLI-UNION",
+    description: "Devanahalli pomelo, grape and high-density vegetable cold-chain hub serving Bengaluru Rural.",
+    address: "NH-44 Corridor, Devanahalli Rural Hub",
+    village: "Devanahalli",
+    district: "Bengaluru Rural",
+    state: "Karnataka",
+    pinCode: "562110",
+    verified: true,
+  },
+  {
+    name: "Karnal Indigenous Dairy & Grains Cooperative Union",
+    code: "KARNAL-UNION",
+    description: "Farmer-owned cooperative union pooling indigenous dairy, basmati grains and millets.",
+    address: "Karnal - Kurukshetra - Panipat Belt, Karnal",
+    village: "Karnal",
+    district: "Karnal",
+    state: "Haryana",
+    pinCode: "132001",
+    verified: true,
+  },
+  {
+    name: "Konkan Agro & Horticulture Producer Cooperative Society",
+    code: "KONKAN-AGRO",
+    description: "GI-authenticated Alphonso mango, cashew & coastal produce grading collective.",
+    address: "Ratnagiri - Devgad - Sindhudurg Orchard Belt",
+    village: "Ratnagiri",
+    district: "Ratnagiri",
+    state: "Maharashtra",
+    pinCode: "415612",
+    verified: true,
+  },
+  {
+    name: "Sahyadri Farmers Agro Cooperative Society Ltd.",
+    code: "SAHYADRI-AGRO",
+    description: "Leading multi-crop farmer producer cooperative union for grapes, onions, and vegetables.",
+    address: "Nashik - Dindori - Niphad Belt, Nashik",
+    village: "Nashik",
+    district: "Nashik",
+    state: "Maharashtra",
+    pinCode: "422001",
+    verified: true,
+  },
+  {
+    name: "Gulf of Mannar Coastal Fishermen Cooperative Federation",
+    code: "GULF-MANNAR",
+    description: "Coastal aquaculture, seaweed, and marine producer federation with shared cold rooms.",
+    address: "Thoothukudi Marine Corridor & Jetty 1-4",
+    village: "Thoothukudi",
+    district: "Thoothukudi",
+    state: "Tamil Nadu",
+    pinCode: "628001",
+    verified: true,
+  },
+  {
     name: "Kadapa Central Collection Centre",
     code: "KADAPA-CENTRAL",
     description: "Farm2Fork cooperative collection centre serving central Kadapa.",
@@ -101,6 +167,7 @@ const SOCIETIES = [
     district: "Kadapa",
     state: "Andhra Pradesh",
     pinCode: "516001",
+    verified: true,
   },
   {
     name: "Kadapa Rural Collection Centre",
@@ -111,12 +178,13 @@ const SOCIETIES = [
     district: "Kadapa",
     state: "Andhra Pradesh",
     pinCode: "516004",
+    verified: true,
   },
 ];
 
 export async function autoSeedIfEmpty() {
   try {
-    // Ensure all valid admin accounts exist at every boot
+    // 1. Ensure all valid admin accounts exist at every boot
     const defaultAdminPass = await bcrypt.hash("AdminDemo@123", 10);
     const adminEmails = [
       "admin@farm2fork.demo",
@@ -136,9 +204,223 @@ export async function autoSeedIfEmpty() {
       });
     }
 
+    // 2. Ensure all regional cooperative societies exist at every boot
+    const societyMap = new Map<string, string>();
+    for (const soc of SOCIETIES) {
+      const s = await prisma.cooperativeSociety.upsert({
+        where: { code: soc.code },
+        update: {
+          name: soc.name,
+          address: soc.address,
+          village: soc.village,
+          district: soc.district,
+          state: soc.state,
+          pinCode: soc.pinCode,
+          description: soc.description,
+          verified: true,
+          active: true,
+        },
+        create: soc,
+      });
+      societyMap.set(soc.code, s.id);
+    }
+
+    // 3. Ensure categories exist
+    for (const [name, slug] of categories) {
+      await prisma.productCategory.upsert({
+        where: { slug },
+        update: { name },
+        create: { name, slug },
+      });
+    }
+    const catRecords = await prisma.productCategory.findMany();
+    const catMap = new Map(catRecords.map((c) => [c.name.toLowerCase(), c.id]));
+    const defaultCatId = catRecords[0]?.id || "";
+
+    // 4. Ensure demo consumer user exists for simulated order dispatches
+    const defaultConsumerPass = await bcrypt.hash("ShopDemo@123", 10);
+    const demoConsumer = await prisma.user.upsert({
+      where: { email: "consumer@farm2fork.demo" },
+      update: {},
+      create: {
+        email: "consumer@farm2fork.demo",
+        name: "Asha Kitchen",
+        role: "CONSUMER",
+        phone: "9999900002",
+        passwordHash: defaultConsumerPass,
+      },
+    });
+
+    // 5. Ensure the 6 Teacher Demo Farmers exist with full inventory, sales, and dispatches
+    const defaultFarmerPass = await bcrypt.hash("FarmDemo@123", 10);
+    const demoFarmerCrops: Record<string, Array<{ name: string; variety: string; category: string; priceRupees: number; img: string; available: number; sold: number }>> = {
+      Bharath: [
+        { name: "Fresh Country Tomatoes", variety: "Hybrid Red", category: "vegetables", priceRupees: 28, img: "/products/tomato.webp", available: 240, sold: 110 },
+        { name: "Green Shimla Capsicum", variety: "Grade A Crisp", category: "vegetables", priceRupees: 45, img: "/products/capsicum.webp", available: 160, sold: 75 },
+        { name: "Nagpur Sweet Oranges", variety: "Fresh Harvest", category: "fruits", priceRupees: 65, img: "/products/orange.webp", available: 300, sold: 90 },
+      ],
+      Aditya: [
+        { name: "Organic Crisp Carrots", variety: "Ooty Red", category: "vegetables", priceRupees: 40, img: "/products/carrot.webp", available: 180, sold: 95 },
+        { name: "Palak (Spinach)", variety: "Broad Leaf Tender", category: "vegetables", priceRupees: 20, img: "/products/spinach.webp", available: 120, sold: 60 },
+        { name: "French Beans", variety: "Tender Bush", category: "vegetables", priceRupees: 50, img: "/products/beans.webp", available: 150, sold: 70 },
+      ],
+      Bhargav: [
+        { name: "Sona Masoori Rice (Aged)", variety: "Single Polish 1-Year", category: "grains", priceRupees: 62, img: "/products/basmati-rice.webp", available: 500, sold: 280 },
+        { name: "Desi Toor Dal (Pigeon Pea)", variety: "Unpolished Organic", category: "pulses", priceRupees: 145, img: "/products/toor-dal.webp", available: 320, sold: 130 },
+        { name: "Sharbati Whole Wheat", variety: "Golden Grain", category: "grains", priceRupees: 42, img: "/products/wheat.webp", available: 400, sold: 190 },
+      ],
+      Charan: [
+        { name: "Guntur Red Dry Chillies", variety: "Sanam Hot S4", category: "spices", priceRupees: 210, img: "/products/whole-red-chillies.webp", available: 200, sold: 140 },
+        { name: "Organic Salem Turmeric", variety: "High Curcumin Grade", category: "spices", priceRupees: 180, img: "/products/turmeric.webp", available: 250, sold: 105 },
+        { name: "Foxtail Millet (Kangni)", variety: "Dehusked Natural", category: "millets", priceRupees: 78, img: "/products/millet.webp", available: 300, sold: 85 },
+      ],
+      Dileep: [
+        { name: "Snowball Cauliflower", variety: "Compact White", category: "vegetables", priceRupees: 35, img: "/products/cauliflower.webp", available: 190, sold: 80 },
+        { name: "Organic Bitter Gourd", variety: "Dark Green Spiny", category: "vegetables", priceRupees: 38, img: "/products/bitter-gourd.webp", available: 140, sold: 55 },
+        { name: "Fresh Kasuri Methi", variety: "Tender Green Leaves", category: "leafy vegetables", priceRupees: 22, img: "/products/methi.webp", available: 110, sold: 65 },
+      ],
+      Yaswant: [
+        { name: "Banganapalli Mangoes", variety: "Naturally Ripened", category: "fruits", priceRupees: 95, img: "/products/mango.webp", available: 350, sold: 180 },
+        { name: "Robusta Farm Bananas", variety: "Yellow Table Grade", category: "fruits", priceRupees: 32, img: "/products/banana.webp", available: 260, sold: 120 },
+      ],
+    };
+
+    for (const farmer of teacherFarmers) {
+      const u = await prisma.user.upsert({
+        where: { email: farmer.email },
+        update: { name: farmer.name, phone: farmer.phone },
+        create: {
+          email: farmer.email,
+          name: farmer.name,
+          phone: farmer.phone,
+          passwordHash: defaultFarmerPass,
+          role: "FARMER",
+          farmer: {
+            create: {
+              farmName: farmer.farmName,
+              district: farmer.district,
+              state: farmer.state,
+              pinCode: farmer.pinCode,
+              location: farmer.location,
+              categories: farmer.categories,
+              verified: true,
+            },
+          },
+        },
+      });
+
+      const profile = await prisma.farmerProfile.findUnique({
+        where: { userId: u.id },
+      });
+
+      if (profile) {
+        // Associate society membership
+        const socCode = farmer.societyCode || "KADAPA-CENTRAL";
+        const socId = societyMap.get(socCode) || societyMap.get("TIRUPATI-AGRI") || Array.from(societyMap.values())[0];
+        if (socId) {
+          await prisma.societyFarmer.upsert({
+            where: {
+              societyId_farmerId: {
+                societyId: socId,
+                farmerId: profile.id,
+              },
+            },
+            update: { active: true, status: "APPROVED" },
+            create: {
+              societyId: socId,
+              farmerId: profile.id,
+              active: true,
+              status: "APPROVED",
+            },
+          });
+        }
+
+        // Seed or update products and inventory for this farmer
+        const cropList = demoFarmerCrops[farmer.name] || demoFarmerCrops["Bharath"];
+        for (let idx = 0; idx < cropList.length; idx++) {
+          const crop = cropList[idx];
+          const prodSlug = `${farmer.name.toLowerCase()}-${crop.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+          const catId = catMap.get(crop.category.toLowerCase()) || defaultCatId;
+
+          const prod = await prisma.product.upsert({
+            where: { id: `FARM-${profile.id.slice(-6)}-${idx + 1}` },
+            update: {
+              name: crop.name,
+              variety: crop.variety,
+              pricePaise: crop.priceRupees * 100,
+              active: true,
+            },
+            create: {
+              id: `FARM-${profile.id.slice(-6)}-${idx + 1}`,
+              farmerId: profile.id,
+              categoryId: catId,
+              name: crop.name,
+              variety: crop.variety,
+              unit: "kg",
+              pricePaise: crop.priceRupees * 100,
+              imageUrl: crop.img,
+              active: true,
+            },
+          });
+
+          await prisma.inventory.upsert({
+            where: { productId: prod.id },
+            update: {
+              available: crop.available,
+              reserved: 12,
+              sold: crop.sold,
+            },
+            create: {
+              productId: prod.id,
+              farmerId: profile.id,
+              available: crop.available,
+              reserved: 12,
+              sold: crop.sold,
+            },
+          });
+
+          // Ensure at least one order and completed dispatch exists for real earnings calculation
+          const sampleOrderId = `ORD-${farmer.name.toUpperCase().slice(0, 3)}-${idx + 1}`;
+          const sampleOrder = await prisma.order.upsert({
+            where: { id: sampleOrderId },
+            update: {},
+            create: {
+              id: sampleOrderId,
+              consumerId: demoConsumer.id,
+              status: "DELIVERED",
+              paymentMethod: "ONLINE",
+              totalPaise: Math.round(crop.sold * crop.priceRupees * 100),
+              platformFeePaise: Math.round(crop.sold * crop.priceRupees * 3),
+              logisticsPaise: 15000,
+            },
+          });
+
+          await prisma.orderItem.upsert({
+            where: {
+              id: `ITEM-${sampleOrderId}`,
+            },
+            update: {
+              qty: crop.sold,
+              linePaise: Math.round(crop.sold * crop.priceRupees * 100),
+            },
+            create: {
+              id: `ITEM-${sampleOrderId}`,
+              orderId: sampleOrder.id,
+              productId: prod.id,
+              farmerId: profile.id,
+              qty: crop.sold,
+              unitPaise: crop.priceRupees * 100,
+              linePaise: Math.round(crop.sold * crop.priceRupees * 100),
+              fulfillmentChannel: "SOCIETY",
+            },
+          });
+        }
+      }
+    }
+
     const prodCount = await prisma.product.count();
     if (prodCount >= 150) {
-      console.log(`[AutoSeed] Database already has ${prodCount} products. Seeding up to date.`);
+      console.log(`[AutoSeed] Database has ${prodCount} products. Core demo data up to date.`);
       return;
     }
 
@@ -154,8 +436,6 @@ export async function autoSeedIfEmpty() {
     }
 
     // 2. Demo passwords precomputed with 10 salt rounds for high startup speed
-    const defaultFarmerPass = await bcrypt.hash("FarmDemo@123", 10);
-    const defaultConsumerPass = await bcrypt.hash("ShopDemo@123", 10);
     const defaultFleetPass = await bcrypt.hash("FleetDemo@123", 10);
 
     // 3. Core demo users
@@ -243,7 +523,6 @@ export async function autoSeedIfEmpty() {
     });
 
     // 4. Cooperative societies
-    const societyMap = new Map<string, string>();
     for (const soc of SOCIETIES) {
       const s = await prisma.cooperativeSociety.upsert({
         where: { code: soc.code },

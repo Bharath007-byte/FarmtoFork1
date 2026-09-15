@@ -13,10 +13,11 @@ import { ProductPage } from "./pages/ProductPage";
 import { Checkout } from "./pages/Checkout";
 import { Farmers } from "./pages/Farmers";
 import { AddressSelection } from "./pages/AddressSelection";
-import { FarmerDashboard, FarmerFeature } from "./pages/FarmerDashboard";
+import { FarmerDashboard } from "./pages/FarmerDashboard";
 import { FarmerProduce } from "./pages/FarmerProduce";
 import { SellProduce } from "./pages/SellProduce";
 import { AiAdvisory } from "./pages/AiAdvisory";
+import { FarmerCommunity } from "./pages/farmer/FarmerCommunity";
 import { KrishiAiStudio } from "./pages/farmer/KrishiAiStudio";
 import { LogisticsDashboard } from "./pages/LogisticsDashboard";
 import { LogisticsDeliveries } from "./pages/LogisticsDeliveries";
@@ -43,7 +44,6 @@ import { FarmerShell } from "./features/farmer/FarmerShell";
 import {
   CollabPage,
   EarningsPage,
-  FarmerOrdersPage,
   FarmerProductInfo,
   FarmerProfilePage,
   InventoryPage,
@@ -156,7 +156,7 @@ export default function App() {
                 <Route path="produce" element={<FarmerProduce />} />
                 <Route path="products/:id" element={<FarmerProductInfo />} />
                 <Route path="inventory" element={<InventoryPage />} />
-                <Route path="orders" element={<FarmerOrdersPage />} />
+                <Route path="orders" element={<Navigate to="/farmer/advisory" replace />} />
                 <Route path="earnings" element={<EarningsPage />} />
                 <Route path="market" element={<MarketPage />} />
                 <Route path="predictions" element={<PredictionsPage />} />
@@ -165,37 +165,8 @@ export default function App() {
                 <Route path="collaborations" element={<CollabPage />} />
                 <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="profile" element={<FarmerProfilePage />} />
-                <Route
-                  path="settings"
-                  element={
-                    <FarmerFeature
-                      kicker="Settings"
-                      title="Farm settings"
-                      body="Language, payout account, and alert thresholds. Price alerts are stored in PostgreSQL."
-                    />
-                  }
-                />
-                <Route
-                  path="schemes"
-                  element={
-                    <FarmerFeature
-                      kicker="Support"
-                      title="Government schemes"
-                      body="A personalised feed of subsidies, crop insurance, and FPO programmes matched to your district and produce."
-                    />
-                  }
-                />
                 <Route path="advisory" element={<AiAdvisory />} />
-                <Route
-                  path="community"
-                  element={
-                    <FarmerFeature
-                      kicker="Community"
-                      title="Forums & training"
-                      body="Ask other farmers, watch training videos, and keep a help-center chatbot for logistics questions."
-                    />
-                  }
-                />
+                <Route path="community" element={<FarmerCommunity />} />
               </Route>
               <Route
                 path="/farmer/farmai"

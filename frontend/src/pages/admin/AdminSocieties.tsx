@@ -156,10 +156,43 @@ function SocietyCard({
   );
 }
 
+type SocietyRequest = {
+  id: string;
+  societyId: string;
+  farmerId: string;
+  joinedAt: string;
+  status: string;
+  society: {
+    id: string;
+    name: string;
+    code: string;
+    district: string;
+    state: string;
+  };
+  farmer: {
+    id: string;
+    farmName: string;
+    district: string;
+    state: string;
+    location: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      phone?: string | null;
+      photoUrl?: string | null;
+    };
+    products?: Array<{ id: string; name: string; unit: string }>;
+  };
+};
+
 export function AdminSocieties() {
   const [societies, setSocieties] = useState<Society[]>([]);
+  const [requests, setRequests] = useState<SocietyRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState("");
   const [error, setError] = useState("");
 
   const loadSocieties = useCallback(async (manual = false) => {
@@ -172,12 +205,15 @@ export function AdminSocieties() {
 
       setError("");
 
-      const result = await api<Society[]>("/api/societies");
+      const [socRes, reqRes] = await Promise.all([
+        api<Society[]>("/api/societies"),
+        api<{ requests: SocietyRequest[] }>("/api/societies/admin/requests").catch(() => ({ requests: [] })),
+      ]);
 
-      setSocieties(result);
+      setSocieties(socRes);
+      setRequests(reqRes.requests || []);
     } catch (err) {
       console.error(err);
-
       setError(
         err instanceof Error
           ? err.message
@@ -192,6 +228,40 @@ export function AdminSocieties() {
   useEffect(() => {
     void loadSocieties();
   }, [loadSocieties]);
+
+  const handleAcceptRequest = async (req: SocietyRequest) => {
+    setActionLoadingId(req.id);
+    setStatusMessage("");
+    try {
+      await api(`/api/societies/admin/requests/${req.id}/accept`, {
+        method: "POST",
+      });
+      setStatusMessage(`Accepted ${req.farmer.user.name} into ${req.society.name}!`);
+      setRequests((prev) => prev.filter((r) => r.id !== req.id));
+      // Refresh societies count
+      void loadSocieties(true);
+    } catch (err: any) {
+      alert(err instanceof Error ? err.message : "Failed to accept request");
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleRejectRequest = async (req: SocietyRequest) => {
+    setActionLoadingId(req.id);
+    setStatusMessage("");
+    try {
+      await api(`/api/societies/admin/requests/${req.id}/reject`, {
+        method: "POST",
+      });
+      setStatusMessage(`Declined join request from ${req.farmer.user.name}.`);
+      setRequests((prev) => prev.filter((r) => r.id !== req.id));
+    } catch (err: any) {
+      alert(err instanceof Error ? err.message : "Failed to decline request");
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -263,6 +333,87 @@ export function AdminSocieties() {
           />
           Refresh
         </button>
+      </section>
+
+      {statusMessage && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+          <CheckCircle2 size={16} className="text-emerald-600" />
+          <span>{statusMessage}</span>
+        </div>
+      )}
+
+      {/* Pending Community Join Requests Section */}
+      <section className="rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-purple-50/50 to-white p-6 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-xs">
+              <Users size={18} />
+            </div>
+            <div>
+              <h2 className="text-base font-extrabold text-slate-950 flex items-center gap-2">
+                <span>Farmer Community Join Requests</span>
+                {requests.length > 0 && (
+                  <span className="rounded-full bg-indigo-600 px-2.5 py-0.5 text-xs font-bold text-white">
+                    {requests.length} pending
+                  </span>
+                )}
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Review and approve local farmers requesting to join regional cooperative societies.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {requests.length === 0 ? (
+          <div className="mt-4 rounded-xl border border-dashed border-indigo-200/80 bg-white/60 p-4 text-center text-xs text-slate-500">
+            ✓ All farmer community join requests have been reviewed. No pending requests.
+          </div>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {requests.map((r) => (
+              <div
+                key={r.id}
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-2xs"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-black text-slate-900">{r.farmer.user.name}</span>
+                    <span className="text-xs font-semibold text-slate-500">({r.farmer.farmName})</span>
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-600">
+                      {r.farmer.district}, {r.farmer.state}
+                    </span>
+                  </div>
+                  <div className="text-xs text-slate-600 flex items-center gap-2">
+                    <span>Requested to join:</span>
+                    <span className="font-bold text-indigo-700">{r.society.name}</span>
+                    {r.farmer.user.phone && <span>· Phone: {r.farmer.user.phone}</span>}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    disabled={actionLoadingId === r.id}
+                    onClick={() => handleAcceptRequest(r)}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition disabled:opacity-50 cursor-pointer"
+                  >
+                    <CheckCircle2 size={14} />
+                    <span>Accept Farmer</span>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={actionLoadingId === r.id}
+                    onClick={() => handleRejectRequest(r)}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 cursor-pointer"
+                  >
+                    <span>Decline</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Summary */}

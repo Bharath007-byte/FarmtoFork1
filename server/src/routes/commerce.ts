@@ -633,6 +633,28 @@ commerceRouter.post(
         }
       }
 
+      const totalQuantity = order.items.reduce((sum, item) => sum + item.qty, 0);
+      if (totalQuantity >= 50) {
+        emitEvent("BULK_FREIGHT_ALERT", {
+          orderId: order.id,
+          quantity: totalQuantity,
+          totalPaise: order.totalPaise,
+        });
+
+        const drivers = await prisma.user.findMany({
+          where: { role: "LOGISTICS" },
+          select: { id: true },
+        });
+        for (const d of drivers) {
+          await notify(
+            d.id,
+            "BULK_CARGO_ALERT",
+            "🚨 HIGH-CAPACITY FREIGHT ALERT",
+            `Bulk order #${orderCode} (~${Math.round(totalQuantity)} kg) confirmed! Container transport scheduled.`
+          );
+        }
+      }
+
       if (method === "COD") {
         const bookings = await prisma.logisticsBooking.findMany({
           where: { orderId: order.id },

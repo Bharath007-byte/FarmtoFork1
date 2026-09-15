@@ -605,8 +605,9 @@ model SocietyFarmer {
   society CooperativeSociety @relation(fields: [societyId], references: [id], onDelete: Cascade)
   farmer  FarmerProfile      @relation(fields: [farmerId], references: [id], onDelete: Cascade)
 
-  joinedAt DateTime @default(now())
-  active   Boolean  @default(true)
+  status    String   @default("APPROVED")
+  joinedAt  DateTime @default(now())
+  active    Boolean  @default(true)
 
   @@unique([societyId, farmerId])
   @@index([farmerId])

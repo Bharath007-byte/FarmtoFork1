@@ -519,9 +519,13 @@ opsRouter.get("/logistics/jobs", auth, requireRole("LOGISTICS", "ADMIN"), async 
   });
 
   const jobs = rawJobs.map((j) => {
-    const isHeavy = j.quantity > 30 || j.vehicle.toLowerCase().includes("truck");
+    const vLower = (j.vehicle || "").toLowerCase();
+    const isHeavy =
+      j.quantity >= 50 ||
+      j.vehicle === "LARGE_TRUCK" ||
+      (j.quantity >= 30 && vLower.includes("truck") && !vLower.includes("mini") && !vLower.includes("bike"));
     const requiredVehicleType = isHeavy ? "LARGE_TRUCK" : "BIKE";
-    const workerCanClaim = !worker || worker.deliveryType === "LARGE_TRUCK" || !isHeavy;
+    const workerCanClaim = !worker || (worker.deliveryType === "LARGE_TRUCK" ? isHeavy : !isHeavy);
 
     // Expected payout in paise (use order.logisticsPaise if set, otherwise calculate base + weight rate)
     const payoutPaise = j.order?.logisticsPaise && j.order.logisticsPaise > 0

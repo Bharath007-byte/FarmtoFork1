@@ -84,11 +84,17 @@ export function LogisticsJobs() {
     return jobs
       .filter((j) => j.assignedUserId === null && !["DELIVERED", "CANCELLED"].includes(j.status))
       .filter((j) => {
+        const vLower = (j.vehicle || "").toLowerCase();
+        const isBulk =
+          j.quantity >= 50 ||
+          j.vehicle === "LARGE_TRUCK" ||
+          (j.quantity >= 30 && vLower.includes("truck") && !vLower.includes("mini") && !vLower.includes("bike"));
+
         if (filterType === "HEAVY") {
-          return j.quantity > 30 || j.vehicle.toLowerCase().includes("truck");
+          return isBulk;
         }
         if (filterType === "EXPRESS") {
-          return j.quantity <= 30 || j.vehicle.toLowerCase().includes("bike");
+          return !isBulk;
         }
         return true;
       })

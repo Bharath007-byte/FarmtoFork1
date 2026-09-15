@@ -118,14 +118,20 @@ export function LogisticsDashboard() {
     }
   }, []);
 
+  const [bulkAlert, setBulkAlert] = useState<{
+    orderId: string;
+    quantity: number;
+  } | null>(null);
+
   useEffect(() => {
     void loadData();
   }, [loadData]);
 
   useRealtime(
-    ["LOGISTICS_STATUS_CHANGED", "LOGISTICS_LOCATION_UPDATED", "ORDER_STATUS_CHANGED", "JOB_CREATED"],
+    ["LOGISTICS_STATUS_CHANGED", "LOGISTICS_LOCATION_UPDATED", "ORDER_STATUS_CHANGED", "JOB_CREATED", "BULK_FREIGHT_ALERT"],
     () => {
       void loadData();
+      setBulkAlert({ orderId: "BULK-ALERT", quantity: 65 });
     }
   );
 
@@ -140,14 +146,29 @@ export function LogisticsDashboard() {
 
   const availableJobs = useMemo(
     () =>
-      jobs.filter(
-        (job) =>
-          job.assignedUserId === null &&
-          !["DELIVERED", "CANCELLED"].includes(job.status) &&
-          (profile?.deliveryType === "BIKE"
-            ? !job.vehicle.toLowerCase().includes("truck")
-            : true)
-      ),
+      jobs.filter((job) => {
+        if (job.assignedUserId !== null || ["DELIVERED", "CANCELLED"].includes(job.status)) {
+          return false;
+        }
+
+        const vLower = (job.vehicle || "").toLowerCase();
+        const isBulkContainer =
+          job.quantity >= 50 ||
+          job.vehicle === "LARGE_TRUCK" ||
+          (job.quantity >= 30 && vLower.includes("truck") && !vLower.includes("mini") && !vLower.includes("bike"));
+
+        // If driver is heavy truck/container, strictly show bulk cargo >= 30/50 kg
+        if (profile?.deliveryType === "LARGE_TRUCK") {
+          return isBulkContainer;
+        }
+
+        // If driver is bike, strictly show express drops < 30 kg
+        if (profile?.deliveryType === "BIKE") {
+          return !isBulkContainer;
+        }
+
+        return true;
+      }),
     [jobs, profile?.deliveryType]
   );
 
@@ -193,6 +214,31 @@ export function LogisticsDashboard() {
           <div className="p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 text-xs flex items-center gap-2">
             <AlertCircle size={15} />
             <span>{error}</span>
+          </div>
+        )}
+
+        {bulkAlert && (
+          <div className="p-4 rounded-2xl bg-amber-500 text-white shadow-lg flex items-center justify-between gap-4 animate-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-black/20 flex items-center justify-center shrink-0">
+                <Truck size={20} className="animate-bounce text-white" />
+              </div>
+              <div>
+                <span className="text-xs font-black uppercase tracking-wider bg-black/30 px-2 py-0.5 rounded">
+                  High-Capacity Freight Alert
+                </span>
+                <p className="text-sm font-extrabold mt-0.5">
+                  Bulk order placed: ~{Math.round(bulkAlert.quantity)} kg agricultural container load ready for assignment!
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setBulkAlert(null)}
+              className="px-3 py-1.5 rounded-lg bg-black/20 hover:bg-black/30 text-xs font-bold text-white transition shrink-0"
+            >
+              Dismiss
+            </button>
           </div>
         )}
 
