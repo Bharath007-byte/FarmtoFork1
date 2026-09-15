@@ -488,7 +488,7 @@ export async function ensureOrderLogisticsBookings(
           slotId: slot.id,
           pickup: society.society.address,
           quantity: orderItem.qty,
-          vehicle: input.vehicle || (orderItem.qty >= 50 ? "LARGE_TRUCK" : "BIKE"),
+          vehicle: input.vehicle || (orderItem.qty >= 30 ? "LARGE_TRUCK" : "BIKE"),
           status: LogisticsStatus.CONFIRMED,
         },
       });
@@ -782,7 +782,7 @@ export async function ensureFarmerLogisticsBooking(
       slotId: slot.id,
       pickup: farmer.location,
       quantity,
-      vehicle: input.vehicle || (quantity >= 50 ? "LARGE_TRUCK" : "BIKE"),
+      vehicle: input.vehicle || (quantity >= 30 ? "LARGE_TRUCK" : "BIKE"),
       status: LogisticsStatus.FARMER_READY,
       farmerReadyAt: new Date(),
     },

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, ApiError } from "./services/api";
+import { SamruddhiSetuLogo } from "./components/SamruddhiSetuLogo";
 import {
   Search,
   MapPin,
@@ -28,6 +29,7 @@ import {
   Nut,
   Hexagon,
   RefreshCw,
+  Drumstick,
 } from "lucide-react";
 
 const API_BASE = import.meta.env.VITE_API_URL || "";
@@ -36,14 +38,20 @@ function resolveImage(url: string | null | undefined): string {
   if (!url) return `${import.meta.env.BASE_URL}products/tomato.webp`;
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
   const clean = url.startsWith("/") ? url.slice(1) : url;
-  const apiBase = import.meta.env.VITE_API_URL || "";
-  if (apiBase) {
-    return `${apiBase.replace(/\/+$/, "")}/${clean}`;
+
+  // Only dynamic user uploads should route through apiBase
+  if (clean.startsWith("uploads/")) {
+    const apiBase = import.meta.env.VITE_API_URL || "";
+    if (apiBase) {
+      return `${apiBase.replace(/\/+$/, "")}/${clean}`;
+    }
   }
+
+  // Static product catalog assets always reside in frontend public
   return `${import.meta.env.BASE_URL}${clean}`;
 }
 
-const FALLBACK_IMAGE = resolveImage("/products/tomato.webp");
+const FALLBACK_IMAGE = `${import.meta.env.BASE_URL}products/tomato.webp`;
 
 type ApiProduct = {
   id: string;
@@ -137,6 +145,14 @@ const CATEGORY_META: Record<
     icon: <Carrot className="h-5 w-5" />,
     short: "Farm Fresh",
   },
+  "leafy-vegetables": {
+    icon: <Sprout className="h-5 w-5" />,
+    short: "Green & Healthy",
+  },
+  millets: {
+    icon: <Wheat className="h-5 w-5" />,
+    short: "Ancient Grains",
+  },
   "dairy-cheese": {
     icon: <Milk className="h-5 w-5" />,
     short: "Pure & Natural",
@@ -173,6 +189,10 @@ const CATEGORY_META: Record<
     icon: <Hexagon className="h-5 w-5" />,
     short: "Pure Goodness",
   },
+  "poultry-meat-fish": {
+    icon: <Drumstick className="h-5 w-5" />,
+    short: "Fresh Farm Meat & Eggs",
+  },
 };
 
 const DEFAULT_CATEGORIES: Category[] = [
@@ -189,10 +209,28 @@ const DEFAULT_CATEGORIES: Category[] = [
     icon: <Carrot className="h-5 w-5" />,
   },
   {
+    id: "leafy-vegetables",
+    name: "Leafy Vegetables",
+    slug: "leafy-vegetables",
+    icon: <Sprout className="h-5 w-5" />,
+  },
+  {
+    id: "millets",
+    name: "Millets",
+    slug: "millets",
+    icon: <Wheat className="h-5 w-5" />,
+  },
+  {
     id: "dairy-cheese",
     name: "Dairy & Cheese",
     slug: "dairy-cheese",
     icon: <Milk className="h-5 w-5" />,
+  },
+  {
+    id: "poultry-meat-fish",
+    name: "Poultry, Meat & Fish",
+    slug: "poultry-meat-fish",
+    icon: <Drumstick className="h-5 w-5" />,
   },
   {
     id: "grains-pulses",
@@ -235,11 +273,20 @@ function normalizeCategorySlug(slug?: string, name?: string) {
     .toLowerCase()
     .trim();
 
-  if (source.includes("dairy")) return "dairy-cheese";
-  if (source.includes("grain") || source.includes("pulse")) {
-    return "grains-pulses";
+  if (
+    source.includes("poultry") ||
+    source.includes("meat") ||
+    source.includes("fish") ||
+    source.includes("chicken") ||
+    source.includes("egg") ||
+    source.includes("mutton")
+  ) {
+    return "poultry-meat-fish";
   }
-  if (source.includes("rice") || source.includes("dal")) {
+  if (source.includes("leafy")) return "leafy-vegetables";
+  if (source.includes("millet")) return "millets";
+  if (source.includes("dairy") || source.includes("cheese")) return "dairy-cheese";
+  if (source.includes("grain") || source.includes("pulse") || source.includes("rice") || source.includes("dal")) {
     return "grains-pulses";
   }
   if (source.includes("oil") || source.includes("ghee")) {
@@ -251,6 +298,9 @@ function normalizeCategorySlug(slug?: string, name?: string) {
   if (source.includes("honey") || source.includes("natural")) {
     return "honey-natural";
   }
+  if (source.includes("spice")) return "spices";
+  if (source.includes("fruit")) return "fruits";
+  if (source.includes("veg")) return "vegetables";
 
   return source;
 }
@@ -317,22 +367,188 @@ function getProductDisplayUnit(product: {
   return isLiquidQuantityProduct(product) ? "L" : product.unit || "kg";
 }
 
-function mapProduct(item: ApiProduct): Product {
-  const categoryName =
-    item.category?.name ||
-    item.category?.slug ||
-    "Farm Fresh";
+function resolveAccurateCategory(
+  productName: string,
+  rawSlug?: string,
+  rawName?: string
+): { slug: string; name: string } {
+  const n = String(productName || "").toLowerCase().trim();
 
-  const categorySlug = normalizeCategorySlug(
+  // Meat, Poultry, Fish & Eggs
+  if (
+    n.includes("egg") ||
+    n.includes("chicken") ||
+    n.includes("mutton") ||
+    n.includes("meat") ||
+    n.includes("fish") ||
+    n.includes("prawn") ||
+    n.includes("rohu") ||
+    n.includes("catla")
+  ) {
+    return { slug: "poultry-meat-fish", name: "Poultry, Meat & Fish" };
+  }
+
+  // Dairy & Cheese (Milk, Curd, Ghee, Paneer, Cheese, Butter)
+  if (
+    n.includes("milk") ||
+    n.includes("ghee") ||
+    n.includes("curd") ||
+    n.includes("paneer") ||
+    n.includes("cheese") ||
+    n.includes("butter") ||
+    n.includes("lassi") ||
+    n.includes("buttermilk") ||
+    n.includes("yogurt")
+  ) {
+    return { slug: "dairy-cheese", name: "Dairy & Cheese" };
+  }
+
+  // Honey & Natural Sweeteners
+  if (n.includes("honey") || n.includes("jaggery") || n.includes("coconut sugar")) {
+    return { slug: "honey-natural", name: "Honey & Natural" };
+  }
+
+  // Oils (Cold Pressed, Almond Oil, Sesame Oil, etc.)
+  if (n.includes("oil")) {
+    return { slug: "oils-ghee", name: "Oils & Ghee" };
+  }
+
+  // Leafy Vegetables
+  if (
+    n.includes("palak") ||
+    n.includes("spinach") ||
+    n.includes("methi") ||
+    n.includes("kasuri") ||
+    n.includes("amaranth") ||
+    n.includes("coriander leaves") ||
+    n.includes("mint") ||
+    n.includes("curry leaves") ||
+    n.includes("sorrel") ||
+    n.includes("gongura")
+  ) {
+    return { slug: "leafy-vegetables", name: "Leafy Vegetables" };
+  }
+
+  // Millets
+  if (
+    n.includes("millet") ||
+    n.includes("bajra") ||
+    n.includes("ragi") ||
+    n.includes("jowar") ||
+    n.includes("kangni") ||
+    n.includes("foxtail")
+  ) {
+    return { slug: "millets", name: "Millets" };
+  }
+
+  // Spices
+  if (
+    n.includes("turmeric") ||
+    n.includes("chilli") ||
+    n.includes("pepper") ||
+    n.includes("clove") ||
+    n.includes("cardamom") ||
+    n.includes("cinnamon") ||
+    n.includes("cumin") ||
+    n.includes("coriander powder") ||
+    n.includes("coriander seed") ||
+    n.includes("asafoetida") ||
+    n.includes("ajwain") ||
+    n.includes("bay leaf") ||
+    n.includes("mustard seeds") ||
+    n.includes("fenugreek seeds") ||
+    n.includes("fennel") ||
+    n.includes("star anise")
+  ) {
+    return { slug: "spices", name: "Spices" };
+  }
+
+  // Dry Fruits & Nuts
+  if (
+    n.includes("almond") ||
+    n.includes("cashew") ||
+    n.includes("walnut") ||
+    n.includes("raisin") ||
+    n.includes("pistachio") ||
+    n.includes("chia") ||
+    n.includes("flax") ||
+    n.includes("dates") ||
+    n.includes("fig")
+  ) {
+    return { slug: "dry-fruits", name: "Dry Fruits" };
+  }
+
+  // Grains & Pulses
+  if (
+    n.includes("rice") ||
+    n.includes("wheat") ||
+    n.includes("dal") ||
+    n.includes("chana") ||
+    n.includes("chickpea") ||
+    n.includes("rajma") ||
+    n.includes("moong") ||
+    n.includes("urad") ||
+    n.includes("toor") ||
+    n.includes("peas") ||
+    n.includes("soya")
+  ) {
+    return { slug: "grains-pulses", name: "Grains & Pulses" };
+  }
+
+  // Fruits
+  if (
+    n.includes("mango") ||
+    n.includes("apple") ||
+    n.includes("banana") ||
+    n.includes("orange") ||
+    n.includes("grape") ||
+    n.includes("guava") ||
+    n.includes("papaya") ||
+    n.includes("pomegranate") ||
+    n.includes("watermelon") ||
+    n.includes("muskmelon") ||
+    n.includes("kiwi") ||
+    n.includes("berry") ||
+    n.includes("sapota") ||
+    n.includes("custard apple") ||
+    n.includes("dragon fruit") ||
+    n.includes("jackfruit") ||
+    n.includes("pineapple") ||
+    n.includes("mosambi")
+  ) {
+    return { slug: "fruits", name: "Fruits" };
+  }
+
+  // Default fallback from server category
+  const slug = normalizeCategorySlug(rawSlug, rawName);
+  let name = rawName || "Farm Fresh";
+  if (slug === "vegetables") name = "Vegetables";
+  if (slug === "fruits") name = "Fruits";
+  if (slug === "dairy-cheese") name = "Dairy & Cheese";
+  if (slug === "grains-pulses") name = "Grains & Pulses";
+  if (slug === "spices") name = "Spices";
+  if (slug === "oils-ghee") name = "Oils & Ghee";
+  if (slug === "dry-fruits") name = "Dry Fruits";
+  if (slug === "honey-natural") name = "Honey & Natural";
+  if (slug === "leafy-vegetables") name = "Leafy Vegetables";
+  if (slug === "millets") name = "Millets";
+  if (slug === "poultry-meat-fish") name = "Poultry, Meat & Fish";
+
+  return { slug, name };
+}
+
+function mapProduct(item: ApiProduct): Product {
+  const accurate = resolveAccurateCategory(
+    item.name,
     item.category?.slug,
-    item.category?.name,
+    item.category?.name
   );
 
   return {
     id: item.id,
     name: item.name,
-    category: categoryName,
-    categorySlug,
+    category: accurate.name,
+    categorySlug: accurate.slug,
     variety: item.variety || "",
     unit: item.unit,
     price: Number(item.pricePaise || 0) / 100,
@@ -480,9 +696,20 @@ export function Marketplace() {
 
       const data = await response.json();
 
-      const nextProducts = Array.isArray(data?.products)
+      const rawProducts = Array.isArray(data?.products)
         ? data.products.map(mapProduct)
         : [];
+
+      // Cleanly deduplicate items like Banganapalli Mango
+      const seenProductKeys = new Set<string>();
+      const nextProducts = rawProducts.filter((p: Product) => {
+        const cleanName = p.name.toLowerCase().replace(/s\b/g, "").trim();
+        if (cleanName.includes("banganapalli mango")) {
+          if (seenProductKeys.has("banganapalli-mango")) return false;
+          seenProductKeys.add("banganapalli-mango");
+        }
+        return true;
+      });
 
       setProducts(nextProducts);
     } catch (err) {
@@ -551,7 +778,10 @@ export function Marketplace() {
           );
 
       if (nextCategories.length > 0) {
-        setCategories(nextCategories);
+        const mergedMap = new Map<string, Category>();
+        DEFAULT_CATEGORIES.forEach((c) => mergedMap.set(c.slug, c));
+        nextCategories.forEach((c) => mergedMap.set(c.slug, { ...mergedMap.get(c.slug), ...c }));
+        setCategories(Array.from(mergedMap.values()));
       }
     } catch (err) {
       console.warn(
@@ -848,33 +1078,11 @@ export function Marketplace() {
       <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1500px] items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <button
-  type="button"
-  onClick={() => navigate("/")}
+            type="button"
+            onClick={() => navigate("/")}
             className="group shrink-0 text-left"
           >
-            <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eaf7ee] text-[#1d7a42]">
-                <Leaf className="h-6 w-6" />
-              </div>
-
-              <div>
-                <div className="text-[22px] font-black tracking-tight sm:text-[25px]">
-                  <span className="text-[#075b42]">
-                    Farm
-                  </span>
-                  <span className="text-[#ef6a35]">
-                    2
-                  </span>
-                  <span className="text-[#075b42]">
-                    Fork
-                  </span>
-                </div>
-
-                <div className="hidden text-[9px] font-semibold text-slate-400 sm:block">
-                  Fresh from Farmers, Direct to You
-                </div>
-              </div>
-            </div>
+            <SamruddhiSetuLogo />
           </button>
 
           <nav className="hidden items-center gap-7 lg:flex">
@@ -1474,23 +1682,7 @@ export function Marketplace() {
         <div className="mx-auto max-w-[1500px] px-4 py-10 sm:px-6 lg:px-8">
           <div className="grid gap-8 md:grid-cols-4">
             <div>
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eaf7ee] text-[#16823f]">
-                  <Leaf className="h-6 w-6" />
-                </div>
-
-                <div className="text-2xl font-black">
-                  <span className="text-[#075b42]">
-                    Farm
-                  </span>
-                  <span className="text-[#ef6a35]">
-                    2
-                  </span>
-                  <span className="text-[#075b42]">
-                    Fork
-                  </span>
-                </div>
-              </div>
+              <SamruddhiSetuLogo />
 
               <p className="mt-3 max-w-sm text-xs leading-5 text-slate-500">
                 A direct farmer-to-consumer

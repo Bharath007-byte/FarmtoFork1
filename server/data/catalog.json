@@ -18,7 +18,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh alphonso mango from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh alphonso mango from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Alphonso Mango"
   },
   {
@@ -40,7 +40,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh kesar mango from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh kesar mango from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Kesar Mango"
   },
   {
@@ -62,7 +62,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh banganapalli mango from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh banganapalli mango from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Banganapalli Mango"
   },
   {
@@ -84,7 +84,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh dasheri mango from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh dasheri mango from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Dasheri Mango"
   },
   {
@@ -106,7 +106,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh totapuri mango from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh totapuri mango from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Totapuri Mango"
   },
   {
@@ -128,7 +128,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh red apple from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh red apple from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Red Apple"
   },
   {
@@ -150,7 +150,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh green apple from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh green apple from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Green Apple"
   },
   {
@@ -172,7 +172,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh banana from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh banana from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Banana"
   },
   {
@@ -194,7 +194,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh robusta banana from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh robusta banana from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Robusta Banana"
   },
   {
@@ -216,7 +216,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh orange from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh orange from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Orange"
   },
   {
@@ -238,7 +238,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh mosambi from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh mosambi from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Mosambi"
   },
   {
@@ -260,7 +260,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh papaya from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh papaya from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Papaya"
   },
   {
@@ -282,7 +282,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh guava from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh guava from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Guava"
   },
   {
@@ -304,7 +304,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh pomegranate from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh pomegranate from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Pomegranate"
   },
   {
@@ -326,7 +326,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh watermelon from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh watermelon from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Watermelon"
   },
   {
@@ -347,7 +347,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh muskmelon from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh muskmelon from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Muskmelon"
   },
   {
@@ -368,7 +368,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh pineapple from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh pineapple from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Pineapple"
   },
   {
@@ -390,7 +390,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh green grapes from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh green grapes from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Green Grapes"
   },
   {
@@ -412,7 +412,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh black grapes from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh black grapes from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Black Grapes"
   },
   {
@@ -433,7 +433,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh custard apple from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh custard apple from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Custard Apple"
   },
   {
@@ -454,7 +454,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh dragon fruit from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh dragon fruit from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Dragon Fruit"
   },
   {
@@ -476,7 +476,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh kiwi from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh kiwi from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Kiwi"
   },
   {
@@ -498,7 +498,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh strawberry from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh strawberry from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Strawberry"
   },
   {
@@ -520,7 +520,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh jackfruit from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh jackfruit from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Jackfruit"
   },
   {
@@ -542,7 +542,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh sapota from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh sapota from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Sapota"
   },
   {
@@ -564,7 +564,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh tomato from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh tomato from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Tomato"
   },
   {
@@ -586,7 +586,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh cherry tomato from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cherry tomato from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cherry Tomato"
   },
   {
@@ -609,7 +609,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh onion from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh onion from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Onion"
   },
   {
@@ -632,7 +632,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh potato from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh potato from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Potato"
   },
   {
@@ -654,7 +654,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh sweet potato from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh sweet potato from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Sweet Potato"
   },
   {
@@ -676,7 +676,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh carrot from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh carrot from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Carrot"
   },
   {
@@ -697,7 +697,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh beetroot from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh beetroot from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Beetroot"
   },
   {
@@ -718,7 +718,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh radish from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh radish from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Radish"
   },
   {
@@ -740,7 +740,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh cucumber from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cucumber from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cucumber"
   },
   {
@@ -762,7 +762,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh bottle gourd from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh bottle gourd from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Bottle Gourd"
   },
   {
@@ -783,7 +783,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh bitter gourd from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh bitter gourd from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Bitter Gourd"
   },
   {
@@ -804,7 +804,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh ridge gourd from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh ridge gourd from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Ridge Gourd"
   },
   {
@@ -825,7 +825,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh snake gourd from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh snake gourd from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Snake Gourd"
   },
   {
@@ -847,7 +847,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh brinjal from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh brinjal from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Brinjal"
   },
   {
@@ -869,7 +869,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh green capsicum from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh green capsicum from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Green Capsicum"
   },
   {
@@ -891,7 +891,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh red capsicum from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh red capsicum from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Red Capsicum"
   },
   {
@@ -913,7 +913,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh yellow capsicum from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh yellow capsicum from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Yellow Capsicum"
   },
   {
@@ -935,7 +935,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh cauliflower from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cauliflower from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cauliflower"
   },
   {
@@ -957,7 +957,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh cabbage from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cabbage from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cabbage"
   },
   {
@@ -979,7 +979,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh broccoli from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh broccoli from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Broccoli"
   },
   {
@@ -1001,7 +1001,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh green beans from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh green beans from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Green Beans"
   },
   {
@@ -1023,7 +1023,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh green peas from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh green peas from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Green Peas"
   },
   {
@@ -1045,7 +1045,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh okra from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh okra from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Okra"
   },
   {
@@ -1067,15 +1067,15 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh drumstick from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh drumstick from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Drumstick"
   },
   {
     "id": "F2F-0050",
     "name": "Spinach",
-    "category": "Vegetables",
+    "category": "Leafy Vegetables",
     "categorySlug": "vegetables",
-    "subCategory": "Vegetables",
+    "subCategory": "Leafy Greens",
     "farmer": "Vedic Farms",
     "location": "Rajasthan",
     "weight": "kg",
@@ -1089,15 +1089,15 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh spinach from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh spinach from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Spinach"
   },
   {
     "id": "F2F-0051",
     "name": "Methi Leaves",
-    "category": "Vegetables",
+    "category": "Leafy Vegetables",
     "categorySlug": "vegetables",
-    "subCategory": "Vegetables",
+    "subCategory": "Leafy Greens",
     "farmer": "Himalayan Orchards",
     "location": "Uttarakhand",
     "weight": "kg",
@@ -1110,15 +1110,15 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh methi leaves from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh methi leaves from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Methi Leaves"
   },
   {
     "id": "F2F-0052",
     "name": "Amaranth Leaves",
-    "category": "Vegetables",
+    "category": "Leafy Vegetables",
     "categorySlug": "vegetables",
-    "subCategory": "Vegetables",
+    "subCategory": "Leafy Greens",
     "farmer": "Deccan Harvest",
     "location": "Telangana",
     "weight": "kg",
@@ -1131,15 +1131,15 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh amaranth leaves from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh amaranth leaves from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Amaranth Leaves"
   },
   {
     "id": "F2F-0053",
     "name": "Coriander Leaves",
-    "category": "Vegetables",
+    "category": "Leafy Vegetables",
     "categorySlug": "vegetables",
-    "subCategory": "Vegetables",
+    "subCategory": "Leafy Greens",
     "farmer": "Malabar Spice Co-op",
     "location": "Kerala",
     "weight": "kg",
@@ -1153,15 +1153,15 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh coriander leaves from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh coriander leaves from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Coriander Leaves"
   },
   {
     "id": "F2F-0054",
     "name": "Mint Leaves",
-    "category": "Vegetables",
+    "category": "Leafy Vegetables",
     "categorySlug": "vegetables",
-    "subCategory": "Vegetables",
+    "subCategory": "Leafy Greens",
     "farmer": "Punjab Dairy Collective",
     "location": "Punjab",
     "weight": "kg",
@@ -1175,7 +1175,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh mint leaves from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh mint leaves from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Mint Leaves"
   },
   {
@@ -1197,7 +1197,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh button mushroom from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh button mushroom from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Button Mushroom"
   },
   {
@@ -1219,7 +1219,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh a2 cow milk from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh a2 cow milk from a Samruddhi Setu marketplace farmer.",
     "imageKey": "A2 Cow Milk"
   },
   {
@@ -1241,7 +1241,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh fresh cow milk from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh fresh cow milk from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Fresh Cow Milk"
   },
   {
@@ -1263,7 +1263,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh buffalo milk from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh buffalo milk from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Buffalo Milk"
   },
   {
@@ -1285,7 +1285,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh fresh curd from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh fresh curd from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Fresh Curd"
   },
   {
@@ -1307,7 +1307,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh greek yogurt from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh greek yogurt from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Greek Yogurt"
   },
   {
@@ -1329,7 +1329,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh fresh paneer from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh fresh paneer from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Fresh Paneer"
   },
   {
@@ -1351,7 +1351,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh malai paneer from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh malai paneer from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Malai Paneer"
   },
   {
@@ -1373,7 +1373,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh cheddar cheese from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cheddar cheese from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cheddar Cheese"
   },
   {
@@ -1395,7 +1395,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh gouda cheese from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh gouda cheese from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Gouda Cheese"
   },
   {
@@ -1417,7 +1417,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh mozzarella cheese from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh mozzarella cheese from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Mozzarella Cheese"
   },
   {
@@ -1439,7 +1439,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh cottage cheese from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cottage cheese from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cottage Cheese"
   },
   {
@@ -1460,7 +1460,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh goat cheese from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh goat cheese from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Goat Cheese"
   },
   {
@@ -1482,7 +1482,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh buttermilk from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh buttermilk from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Buttermilk"
   },
   {
@@ -1504,7 +1504,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh fresh lassi from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh fresh lassi from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Fresh Lassi"
   },
   {
@@ -1526,7 +1526,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh salted butter from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh salted butter from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Salted Butter"
   },
   {
@@ -1548,7 +1548,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh white butter from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh white butter from a Samruddhi Setu marketplace farmer.",
     "imageKey": "White Butter"
   },
   {
@@ -1570,7 +1570,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh traditional ghee from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh traditional ghee from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Traditional Ghee"
   },
   {
@@ -1592,7 +1592,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh khoya from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh khoya from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Khoya"
   },
   {
@@ -1614,7 +1614,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh milk cream from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh milk cream from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Milk Cream"
   },
   {
@@ -1637,7 +1637,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh basmati rice from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh basmati rice from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Basmati Rice"
   },
   {
@@ -1660,7 +1660,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh sona masuri rice from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh sona masuri rice from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Sona Masuri Rice"
   },
   {
@@ -1682,7 +1682,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh brown rice from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh brown rice from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Brown Rice"
   },
   {
@@ -1704,7 +1704,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh red rice from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh red rice from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Red Rice"
   },
   {
@@ -1726,7 +1726,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh hand pound rice from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh hand pound rice from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Hand Pound Rice"
   },
   {
@@ -1749,7 +1749,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh wheat from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh wheat from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Wheat"
   },
   {
@@ -1771,15 +1771,15 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh whole wheat flour from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh whole wheat flour from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Whole Wheat Flour"
   },
   {
     "id": "F2F-0082",
     "name": "Ragi",
-    "category": "Grains & Pulses",
+    "category": "Millets",
     "categorySlug": "grains-and-pulses",
-    "subCategory": "Grains & Pulses",
+    "subCategory": "Millets",
     "farmer": "Krishna Organic Farm",
     "location": "Maharashtra",
     "weight": "kg",
@@ -1793,15 +1793,15 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh ragi from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh ragi from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Ragi"
   },
   {
     "id": "F2F-0083",
     "name": "Jowar",
-    "category": "Grains & Pulses",
+    "category": "Millets",
     "categorySlug": "grains-and-pulses",
-    "subCategory": "Grains & Pulses",
+    "subCategory": "Millets",
     "farmer": "Sri Lakshmi Farms",
     "location": "Andhra Pradesh",
     "weight": "kg",
@@ -1815,15 +1815,15 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh jowar from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh jowar from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Jowar"
   },
   {
     "id": "F2F-0084",
     "name": "Bajra",
-    "category": "Grains & Pulses",
+    "category": "Millets",
     "categorySlug": "grains-and-pulses",
-    "subCategory": "Grains & Pulses",
+    "subCategory": "Millets",
     "farmer": "Nature's Basket Farm",
     "location": "Karnataka",
     "weight": "kg",
@@ -1837,7 +1837,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh bajra from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh bajra from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Bajra"
   },
   {
@@ -1859,7 +1859,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh toor dal from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh toor dal from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Toor Dal"
   },
   {
@@ -1881,7 +1881,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh moong dal from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh moong dal from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Moong Dal"
   },
   {
@@ -1903,7 +1903,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh masoor dal from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh masoor dal from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Masoor Dal"
   },
   {
@@ -1925,7 +1925,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh chana dal from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh chana dal from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Chana Dal"
   },
   {
@@ -1947,7 +1947,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh urad dal from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh urad dal from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Urad Dal"
   },
   {
@@ -1969,7 +1969,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh kabuli chana from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh kabuli chana from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Kabuli Chana"
   },
   {
@@ -1991,7 +1991,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh black chickpeas from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh black chickpeas from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Black Chickpeas"
   },
   {
@@ -2013,7 +2013,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh green gram from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh green gram from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Green Gram"
   },
   {
@@ -2035,7 +2035,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh rajma from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh rajma from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Rajma"
   },
   {
@@ -2057,7 +2057,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh horse gram from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh horse gram from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Horse Gram"
   },
   {
@@ -2080,7 +2080,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh turmeric powder from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh turmeric powder from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Turmeric Powder"
   },
   {
@@ -2103,7 +2103,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh cumin seeds from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cumin seeds from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cumin Seeds"
   },
   {
@@ -2126,7 +2126,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh black pepper from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh black pepper from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Black Pepper"
   },
   {
@@ -2149,7 +2149,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh green cardamom from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh green cardamom from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Green Cardamom"
   },
   {
@@ -2172,7 +2172,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh cloves from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cloves from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cloves"
   },
   {
@@ -2195,7 +2195,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh cinnamon from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cinnamon from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cinnamon"
   },
   {
@@ -2218,7 +2218,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh coriander seeds from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh coriander seeds from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Coriander Seeds"
   },
   {
@@ -2241,7 +2241,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh coriander powder from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh coriander powder from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Coriander Powder"
   },
   {
@@ -2264,7 +2264,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh red chilli powder from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh red chilli powder from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Red Chilli Powder"
   },
   {
@@ -2287,7 +2287,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh whole red chillies from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh whole red chillies from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Whole Red Chillies"
   },
   {
@@ -2309,7 +2309,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh garam masala from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh garam masala from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Garam Masala"
   },
   {
@@ -2332,7 +2332,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh mustard seeds from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh mustard seeds from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Mustard Seeds"
   },
   {
@@ -2355,7 +2355,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh fenugreek seeds from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh fenugreek seeds from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Fenugreek Seeds"
   },
   {
@@ -2378,7 +2378,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh fennel seeds from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh fennel seeds from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Fennel Seeds"
   },
   {
@@ -2401,7 +2401,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh ajwain from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh ajwain from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Ajwain"
   },
   {
@@ -2423,7 +2423,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh star anise from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh star anise from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Star Anise"
   },
   {
@@ -2446,7 +2446,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh bay leaf from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh bay leaf from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Bay Leaf"
   },
   {
@@ -2468,7 +2468,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh dry ginger powder from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh dry ginger powder from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Dry Ginger Powder"
   },
   {
@@ -2490,7 +2490,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh asafoetida from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh asafoetida from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Asafoetida"
   },
   {
@@ -2512,7 +2512,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh saffron from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh saffron from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Saffron"
   },
   {
@@ -2535,7 +2535,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh cold pressed groundnut oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cold pressed groundnut oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cold Pressed Groundnut Oil"
   },
   {
@@ -2557,7 +2557,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh cold pressed sesame oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cold pressed sesame oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cold Pressed Sesame Oil"
   },
   {
@@ -2579,7 +2579,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh cold pressed coconut oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cold pressed coconut oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cold Pressed Coconut Oil"
   },
   {
@@ -2602,7 +2602,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh mustard oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh mustard oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Mustard Oil"
   },
   {
@@ -2625,7 +2625,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh sunflower oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh sunflower oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Sunflower Oil"
   },
   {
@@ -2648,7 +2648,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh rice bran oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh rice bran oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Rice Bran Oil"
   },
   {
@@ -2670,7 +2670,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh wood pressed oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh wood pressed oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Wood Pressed Oil"
   },
   {
@@ -2692,7 +2692,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh virgin coconut oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh virgin coconut oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Virgin Coconut Oil"
   },
   {
@@ -2714,7 +2714,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh flaxseed oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh flaxseed oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Flaxseed Oil"
   },
   {
@@ -2736,7 +2736,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh almond oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh almond oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Almond Oil"
   },
   {
@@ -2758,7 +2758,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh cow ghee from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cow ghee from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cow Ghee"
   },
   {
@@ -2780,7 +2780,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh buffalo ghee from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh buffalo ghee from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Buffalo Ghee"
   },
   {
@@ -2802,7 +2802,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh a2 cow ghee from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh a2 cow ghee from a Samruddhi Setu marketplace farmer.",
     "imageKey": "A2 Cow Ghee"
   },
   {
@@ -2824,7 +2824,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh organic sesame oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh organic sesame oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Organic Sesame Oil"
   },
   {
@@ -2846,7 +2846,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh extra virgin olive oil from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh extra virgin olive oil from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Extra Virgin Olive Oil"
   },
   {
@@ -2869,7 +2869,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh almonds from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh almonds from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Almonds"
   },
   {
@@ -2892,7 +2892,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh cashews from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh cashews from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Cashews"
   },
   {
@@ -2915,7 +2915,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh pistachios from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh pistachios from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Pistachios"
   },
   {
@@ -2938,7 +2938,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh walnuts from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh walnuts from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Walnuts"
   },
   {
@@ -2961,7 +2961,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh raisins from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh raisins from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Raisins"
   },
   {
@@ -2983,7 +2983,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh dates from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh dates from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Dates"
   },
   {
@@ -3005,7 +3005,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh dried figs from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh dried figs from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Dried Figs"
   },
   {
@@ -3027,7 +3027,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh dried apricots from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh dried apricots from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Dried Apricots"
   },
   {
@@ -3049,7 +3049,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh dried cranberries from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh dried cranberries from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Dried Cranberries"
   },
   {
@@ -3071,7 +3071,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh pumpkin seeds from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh pumpkin seeds from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Pumpkin Seeds"
   },
   {
@@ -3093,7 +3093,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh sunflower seeds from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh sunflower seeds from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Sunflower Seeds"
   },
   {
@@ -3115,7 +3115,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh chia seeds from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh chia seeds from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Chia Seeds"
   },
   {
@@ -3137,7 +3137,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh flax seeds from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh flax seeds from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Flax Seeds"
   },
   {
@@ -3159,7 +3159,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh makhana from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh makhana from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Makhana"
   },
   {
@@ -3181,7 +3181,7 @@
     "badge": null,
     "organic": false,
     "inStock": true,
-    "description": "Farm-fresh mixed dry fruits from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh mixed dry fruits from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Mixed Dry Fruits"
   },
   {
@@ -3203,7 +3203,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh raw forest honey from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh raw forest honey from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Raw Forest Honey"
   },
   {
@@ -3225,7 +3225,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh wildflower honey from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh wildflower honey from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Wildflower Honey"
   },
   {
@@ -3247,7 +3247,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh mustard flower honey from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh mustard flower honey from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Mustard Flower Honey"
   },
   {
@@ -3269,7 +3269,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh eucalyptus honey from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh eucalyptus honey from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Eucalyptus Honey"
   },
   {
@@ -3291,7 +3291,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh jamun honey from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh jamun honey from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Jamun Honey"
   },
   {
@@ -3313,7 +3313,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh neem honey from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh neem honey from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Neem Honey"
   },
   {
@@ -3335,7 +3335,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh acacia honey from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh acacia honey from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Acacia Honey"
   },
   {
@@ -3357,7 +3357,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh tulsi honey from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh tulsi honey from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Tulsi Honey"
   },
   {
@@ -3379,7 +3379,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh amla honey from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh amla honey from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Amla Honey"
   },
   {
@@ -3401,7 +3401,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh ginger honey from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh ginger honey from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Ginger Honey"
   },
   {
@@ -3424,7 +3424,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh jaggery from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh jaggery from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Jaggery"
   },
   {
@@ -3446,7 +3446,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh organic jaggery powder from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh organic jaggery powder from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Organic Jaggery Powder"
   },
   {
@@ -3468,7 +3468,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh coconut sugar from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh coconut sugar from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Coconut Sugar"
   },
   {
@@ -3490,7 +3490,7 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh palm jaggery from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh palm jaggery from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Palm Jaggery"
   },
   {
@@ -3512,7 +3512,85 @@
     "badge": "Organic",
     "organic": true,
     "inStock": true,
-    "description": "Farm-fresh organic date syrup from a Farm2Fork marketplace farmer.",
+    "description": "Farm-fresh organic date syrup from a Samruddhi Setu marketplace farmer.",
     "imageKey": "Organic Date Syrup"
+  },
+  {
+    "name": "Farm Fresh Country Eggs (Desi Eggs)",
+    "category": "Poultry, Meat & Fish",
+    "subCategory": "Eggs",
+    "price": 120,
+    "weight": "12 pcs",
+    "stock": 250,
+    "rating": 4.9,
+    "organic": true,
+    "imageUrl": "/products/country-eggs.webp",
+    "description": "Naturally laid farm fresh desi country eggs with rich golden yolks, direct from pasture-raised hens.",
+    "imageKey": "Country Eggs"
+  },
+  {
+    "name": "Fresh Farm White Eggs",
+    "category": "Poultry, Meat & Fish",
+    "subCategory": "Eggs",
+    "price": 180,
+    "weight": "30 pcs",
+    "stock": 300,
+    "rating": 4.8,
+    "organic": false,
+    "imageUrl": "/products/country-eggs.webp",
+    "description": "Clean, protein-rich farm white eggs, washed and graded daily from verified poultry farms.",
+    "imageKey": "White Eggs"
+  },
+  {
+    "name": "Fresh Country Chicken (Curry Cut)",
+    "category": "Poultry, Meat & Fish",
+    "subCategory": "Poultry",
+    "price": 240,
+    "weight": "1 kg",
+    "stock": 120,
+    "rating": 4.9,
+    "organic": true,
+    "imageUrl": "/products/farm-chicken.webp",
+    "description": "Tender, authentic country chicken (Desi / Natu Kodi) curry cut with bone, sourced from local farms.",
+    "imageKey": "Country Chicken"
+  },
+  {
+    "name": "Fresh Farm Broiler Chicken (Curry Cut)",
+    "category": "Poultry, Meat & Fish",
+    "subCategory": "Poultry",
+    "price": 190,
+    "weight": "1 kg",
+    "stock": 150,
+    "rating": 4.7,
+    "organic": false,
+    "imageUrl": "/products/farm-chicken.webp",
+    "description": "Hygienically cleaned and fresh tender broiler chicken curry cut pieces for homestyle curry.",
+    "imageKey": "Farm Chicken"
+  },
+  {
+    "name": "Fresh Grass-Fed Mutton (Curry Cut)",
+    "category": "Poultry, Meat & Fish",
+    "subCategory": "Meat",
+    "price": 750,
+    "weight": "1 kg",
+    "stock": 80,
+    "rating": 4.9,
+    "organic": true,
+    "imageUrl": "/products/fresh-mutton.webp",
+    "description": "Premium tender grass-fed goat meat (curry cut), sourced directly from certified pastoral shepherds.",
+    "imageKey": "Fresh Mutton"
+  },
+  {
+    "name": "Fresh River Rohu Fish (Curry Cut / Steaks)",
+    "category": "Poultry, Meat & Fish",
+    "subCategory": "Fish & Seafood",
+    "price": 260,
+    "weight": "1 kg",
+    "stock": 95,
+    "rating": 4.8,
+    "organic": true,
+    "imageUrl": "/products/fresh-fish.webp",
+    "description": "Freshwater river Rohu fish steaks, freshly dressed, cleaned, and chilled without chemical preservatives.",
+    "imageKey": "River Fish"
   }
 ]

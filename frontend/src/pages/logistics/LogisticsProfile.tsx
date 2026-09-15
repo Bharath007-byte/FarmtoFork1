@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Mail,
   Phone,
@@ -7,6 +7,9 @@ import {
   Star,
   Award,
   Clock,
+  Camera,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
 import { LogisticsLayout } from "../../layouts/LogisticsLayout";
 import { api, mediaUrl } from "../../services/api";
@@ -25,11 +28,18 @@ type LogisticsProfileData = {
 export function LogisticsProfile() {
   const [profile, setProfile] = useState<LogisticsProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [uploadMsg, setUploadMsg] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function loadProfile() {
       try {
         const res = await api<{ profile: LogisticsProfileData }>("/api/logistics/profile");
+        const cachedPhoto = localStorage.getItem(`drv-photo-${res.profile.id}`);
+        if (cachedPhoto && !res.profile.photoUrl) {
+          res.profile.photoUrl = cachedPhoto;
+        }
         setProfile(res.profile);
       } catch (err) {
         console.error("Failed to load profile:", err);
@@ -39,6 +49,55 @@ export function LogisticsProfile() {
     }
     void loadProfile();
   }, []);
+
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Fast local preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      if (profile?.id) {
+        localStorage.setItem(`drv-photo-${profile.id}`, dataUrl);
+      }
+      setProfile((prev) => prev ? { ...prev, photoUrl: dataUrl } : null);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to server
+    try {
+      setUploading(true);
+      setUploadMsg("");
+      const formData = new FormData();
+      formData.append("photo", file);
+
+      const token = localStorage.getItem("f2f-token") || "";
+      const apiBase = import.meta.env.VITE_API_URL || "";
+      const resp = await fetch(`${apiBase}/api/logistics/me/photo`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (resp.ok) {
+        const json = await resp.json();
+        if (json.photoUrl) {
+          setProfile((prev) => prev ? { ...prev, photoUrl: json.photoUrl } : null);
+        }
+        setUploadMsg("Photo updated successfully!");
+      } else {
+        setUploadMsg("Photo saved locally!");
+      }
+    } catch {
+      setUploadMsg("Photo saved locally!");
+    } finally {
+      setUploading(false);
+      setTimeout(() => setUploadMsg(""), 4000);
+    }
+  };
 
   const firstName = profile?.name ? profile.name.trim().split(/\s+/)[0] : "Ramesh";
 
@@ -68,12 +127,30 @@ export function LogisticsProfile() {
         <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-6 border-b border-slate-100">
             <div className="flex items-center gap-4">
-              <div className="relative w-16 h-16 rounded-2xl bg-slate-900 text-white font-black text-xl flex items-center justify-center shadow-md overflow-hidden">
-                {profile?.photoUrl ? (
-                  <img src={mediaUrl(profile.photoUrl)} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  firstName.charAt(0)
-                )}
+              <div className="relative group shrink-0">
+                <div className="w-16 h-16 rounded-2xl bg-slate-900 text-white font-black text-xl flex items-center justify-center shadow-md overflow-hidden ring-2 ring-emerald-500/20">
+                  {profile?.photoUrl ? (
+                    <img src={mediaUrl(profile.photoUrl)} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    firstName.charAt(0)
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoSelect}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  title="Upload Driver Photo"
+                  disabled={uploading}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 shadow-md border-2 border-white transition flex items-center justify-center"
+                >
+                  {uploading ? <Loader2 size={11} className="animate-spin" /> : <Camera size={11} />}
+                </button>
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -85,6 +162,12 @@ export function LogisticsProfile() {
                 <p className="text-xs text-slate-500 mt-0.5">
                   ID: SS-DRV-{profile?.id ? profile.id.slice(0, 8) : "772183"} • Devanahalli Hub
                 </p>
+                {uploadMsg && (
+                  <p className="text-[11px] font-semibold text-emerald-600 flex items-center gap-1 mt-1">
+                    <CheckCircle2 size={12} />
+                    <span>{uploadMsg}</span>
+                  </p>
+                )}
               </div>
             </div>
 

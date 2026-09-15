@@ -7,11 +7,17 @@ import { fileURLToPath } from "node:url";
 const categories = [
   ["Vegetables", "vegetables"],
   ["Fruits", "fruits"],
+  ["Leafy Vegetables", "leafy-vegetables"],
+  ["Millets", "millets"],
+  ["Dairy & Cheese", "dairy-cheese"],
+  ["Poultry, Meat & Fish", "poultry-meat-fish"],
+  ["Grains & Pulses", "grains-pulses"],
   ["Grains", "grains"],
   ["Pulses", "pulses"],
-  ["Millets", "millets"],
   ["Spices", "spices"],
-  ["Leafy Vegetables", "leafy-vegetables"],
+  ["Oils & Ghee", "oils-ghee"],
+  ["Dry Fruits", "dry-fruits"],
+  ["Honey & Natural", "honey-natural"],
   ["Organic Produce", "organic"],
   ["Other", "other"],
 ];
@@ -471,17 +477,30 @@ export async function autoSeedIfEmpty() {
       },
     });
 
-    await prisma.user.upsert({
-      where: { email: "logistics@farm2fork.demo" },
-      update: {},
+    const officialFleetPass = await bcrypt.hash("Logistics@123", 10);
+    const mainLogisticsUser = await prisma.user.upsert({
+      where: { email: "logistics@samruddhisetu.in" },
+      update: { passwordHash: officialFleetPass, role: "LOGISTICS" },
       create: {
-        email: "logistics@farm2fork.demo",
-        name: "Ravi Fleet",
+        email: "logistics@samruddhisetu.in",
+        name: "Ravi Fleet Logistics",
         role: "LOGISTICS",
         phone: "9999900003",
-        passwordHash: defaultFleetPass,
+        passwordHash: officialFleetPass,
       },
     });
+
+    // Clean up duplicate legacy logistics account if present
+    const duplicateLogistics = await prisma.user.findUnique({
+      where: { email: "logistics@farm2fork.demo" },
+    });
+    if (duplicateLogistics && duplicateLogistics.id !== mainLogisticsUser.id) {
+      await prisma.logisticsBooking.updateMany({
+        where: { assignedUserId: duplicateLogistics.id },
+        data: { assignedUserId: mainLogisticsUser.id },
+      }).catch(() => {});
+      await prisma.user.delete({ where: { id: duplicateLogistics.id } }).catch(() => {});
+    }
 
     // 4. Cooperative societies
     for (const soc of SOCIETIES) {
@@ -634,7 +653,11 @@ export async function autoSeedIfEmpty() {
     if (catalogJson && Array.isArray(catalogJson) && catalogJson.length > 0) {
       console.log(`[AutoSeed] Importing ${catalogJson.length} products from catalog.json...`);
       const catRecords = await prisma.productCategory.findMany();
-      const catMap = new Map(catRecords.map((c) => [c.name.toLowerCase(), c.id]));
+      const catMap = new Map<string, string>();
+      catRecords.forEach((c) => {
+        catMap.set(c.name.toLowerCase(), c.id);
+        catMap.set(c.slug.toLowerCase(), c.id);
+      });
       const otherCatId = catRecords[0]?.id;
 
       const demoFarmers = await prisma.farmerProfile.findMany({
@@ -662,7 +685,8 @@ export async function autoSeedIfEmpty() {
         const item = catalogJson[i];
         const pId = `MKT-${String(i + 1).padStart(4, "0")}`;
         const cName = String(item.category || "").toLowerCase();
-        const categoryId = catMap.get(cName) || otherCatId;
+        const subName = String(item.subCategory || "").toLowerCase();
+        const categoryId = catMap.get(cName) || catMap.get(subName) || otherCatId;
         const targetFarmer = distributionFarmers[i % distributionFarmers.length] || primaryFarmerProfile;
         const farmerId = targetFarmer?.id;
 
@@ -671,6 +695,8 @@ export async function autoSeedIfEmpty() {
           const p = await prisma.product.upsert({
             where: { id: pId },
             update: {
+              categoryId,
+              imageUrl: item.imageUrl || "/products/tomato.webp",
               pricePaise,
               active: true,
             },

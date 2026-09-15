@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppProvider } from "./context/AppState";
 import { I18nProvider } from "./i18n";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { FloatingChatbot } from "./components/FloatingChatbot";
 import { Landing } from "./pages/Landing";
 import { Join } from "./pages/Join";
 import { Register } from "./pages/Register";
@@ -369,6 +370,7 @@ export default function App() {
               />
             </Routes>
           </Suspense>
+          <FloatingChatbot />
         </BrowserRouter>
       </AppProvider>
     </I18nProvider>

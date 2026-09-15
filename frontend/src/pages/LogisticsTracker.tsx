@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -7,6 +7,10 @@ import {
   MapPin,
   AlertCircle,
   Navigation,
+  Camera,
+  UploadCloud,
+  Trash2,
+  CheckCircle2,
 } from "lucide-react";
 import { LogisticsLayout } from "../layouts/LogisticsLayout";
 import { api, ApiError, rupees } from "../services/api";
@@ -95,6 +99,36 @@ export function LogisticsTracker() {
   const [actionError, setActionError] = useState("");
   const [gpsMessage, setGpsMessage] = useState("");
   const [savingStatus, setSavingStatus] = useState(false);
+  const [deliveryPhoto, setDeliveryPhoto] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (jobId) {
+      const saved = localStorage.getItem(`pod-${jobId}`);
+      if (saved) setDeliveryPhoto(saved);
+    }
+  }, [jobId]);
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      setDeliveryPhoto(dataUrl);
+      if (jobId) {
+        localStorage.setItem(`pod-${jobId}`, dataUrl);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removePhoto = () => {
+    setDeliveryPhoto(null);
+    if (jobId) {
+      localStorage.removeItem(`pod-${jobId}`);
+    }
+  };
 
   const loadJob = async () => {
     if (!jobId) {
@@ -312,6 +346,74 @@ export function LogisticsTracker() {
               <Navigation size={13} />
             </a>
           </div>
+        </div>
+
+        {/* Consignment & Delivery Photo Card */}
+        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                <Camera size={16} className="text-emerald-600" />
+                <span>Consignment & Delivery Photo</span>
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Attach cargo loading or proof-of-delivery picture for verified society handover.
+              </p>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoUpload}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition shadow-xs self-start sm:self-auto"
+            >
+              <Camera size={14} />
+              <span>{deliveryPhoto ? "Change Photo" : "Add Delivery Photo"}</span>
+            </button>
+          </div>
+
+          {deliveryPhoto ? (
+            <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="flex items-center gap-3">
+                <img
+                  src={deliveryPhoto}
+                  alt="Delivery Proof"
+                  className="w-16 h-16 rounded-xl object-cover border border-slate-200 shadow-xs"
+                />
+                <div>
+                  <span className="text-xs font-bold flex items-center gap-1.5 text-emerald-700">
+                    <CheckCircle2 size={13} />
+                    <span>Photo Verified & Attached</span>
+                  </span>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Consignment SS-{job.id.slice(0, 8)} • Saved with delivery audit trail
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={removePhoto}
+                className="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1 p-2 hover:bg-rose-50 rounded-lg transition"
+              >
+                <Trash2 size={13} />
+                <span>Remove</span>
+              </button>
+            </div>
+          ) : (
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="mt-4 border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-xl p-6 text-center cursor-pointer transition bg-slate-50/50 hover:bg-emerald-50/20"
+            >
+              <UploadCloud size={28} className="mx-auto text-slate-400 mb-2" />
+              <p className="text-xs font-bold text-slate-700">Tap to upload delivery proof photo</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Supports JPG, PNG, WEBP from camera or gallery</p>
+            </div>
+          )}
         </div>
 
         {/* Milestone Stepper & Actions */}

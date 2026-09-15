@@ -68,6 +68,14 @@ app.use(
 
 app.use(express.json({ limit: "2mb" }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+const frontendProductsPath = path.resolve(process.cwd(), "../frontend/public/products");
+if (fs.existsSync(frontendProductsPath)) {
+  app.use("/products", express.static(frontendProductsPath));
+}
+const localProductsPath = path.resolve(process.cwd(), "public/products");
+if (fs.existsSync(localProductsPath)) {
+  app.use("/products", express.static(localProductsPath));
+}
 app.use(
   rateLimit({
     windowMs: 60_000,
