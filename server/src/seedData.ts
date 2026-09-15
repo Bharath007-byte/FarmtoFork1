@@ -335,52 +335,13 @@ export async function autoSeedIfEmpty() {
           });
         }
 
-        // Seed or update products and inventory for this farmer
-        const cropList = demoFarmerCrops[farmer.name] || demoFarmerCrops["Bharath"];
-        for (let idx = 0; idx < cropList.length; idx++) {
-          const crop = cropList[idx];
-          const prodSlug = `${farmer.name.toLowerCase()}-${crop.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-          const catId = catMap.get(crop.category.toLowerCase()) || defaultCatId;
+        // Ensure at least one sample order exists for real earnings calculation
+        const existingFarmerProd = await prisma.product.findFirst({
+          where: { farmerId: profile.id, active: true },
+        });
 
-          const prod = await prisma.product.upsert({
-            where: { id: `FARM-${profile.id.slice(-6)}-${idx + 1}` },
-            update: {
-              name: crop.name,
-              variety: crop.variety,
-              pricePaise: crop.priceRupees * 100,
-              active: true,
-            },
-            create: {
-              id: `FARM-${profile.id.slice(-6)}-${idx + 1}`,
-              farmerId: profile.id,
-              categoryId: catId,
-              name: crop.name,
-              variety: crop.variety,
-              unit: "kg",
-              pricePaise: crop.priceRupees * 100,
-              imageUrl: crop.img,
-              active: true,
-            },
-          });
-
-          await prisma.inventory.upsert({
-            where: { productId: prod.id },
-            update: {
-              available: crop.available,
-              reserved: 12,
-              sold: crop.sold,
-            },
-            create: {
-              productId: prod.id,
-              farmerId: profile.id,
-              available: crop.available,
-              reserved: 12,
-              sold: crop.sold,
-            },
-          });
-
-          // Ensure at least one order and completed dispatch exists for real earnings calculation
-          const sampleOrderId = `ORD-${farmer.name.toUpperCase().slice(0, 3)}-${idx + 1}`;
+        if (existingFarmerProd) {
+          const sampleOrderId = `ORD-${farmer.name.toUpperCase().slice(0, 3)}-1`;
           const sampleOrder = await prisma.order.upsert({
             where: { id: sampleOrderId },
             update: {},
@@ -389,8 +350,8 @@ export async function autoSeedIfEmpty() {
               consumerId: demoConsumer.id,
               status: "DELIVERED",
               paymentMethod: "ONLINE",
-              totalPaise: Math.round(crop.sold * crop.priceRupees * 100),
-              platformFeePaise: Math.round(crop.sold * crop.priceRupees * 3),
+              totalPaise: 420000,
+              platformFeePaise: 12600,
               logisticsPaise: 15000,
             },
           });
@@ -400,17 +361,17 @@ export async function autoSeedIfEmpty() {
               id: `ITEM-${sampleOrderId}`,
             },
             update: {
-              qty: crop.sold,
-              linePaise: Math.round(crop.sold * crop.priceRupees * 100),
+              qty: 100,
+              linePaise: 420000,
             },
             create: {
               id: `ITEM-${sampleOrderId}`,
               orderId: sampleOrder.id,
-              productId: prod.id,
+              productId: existingFarmerProd.id,
               farmerId: profile.id,
-              qty: crop.sold,
-              unitPaise: crop.priceRupees * 100,
-              linePaise: Math.round(crop.sold * crop.priceRupees * 100),
+              qty: 100,
+              unitPaise: 4200,
+              linePaise: 420000,
               fulfillmentChannel: "SOCIETY",
             },
           });
@@ -676,45 +637,34 @@ export async function autoSeedIfEmpty() {
       const catMap = new Map(catRecords.map((c) => [c.name.toLowerCase(), c.id]));
       const otherCatId = catRecords[0]?.id;
 
-      // Seed catalog farmer accounts with single hash
-      const catalogPass = await bcrypt.hash("CatalogDemo@123", 10);
-      const farmerNames = [...new Set(catalogJson.map((p) => String(p.farmer || "Ravi Kumar").trim()))];
-      const farmerObjMap = new Map<string, string>();
-
-      for (const fName of farmerNames) {
-        const slug = fName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-        const email = `catalog.${slug}@farm2fork.demo`;
-        const u = await prisma.user.upsert({
-          where: { email },
-          update: {},
-          create: {
-            email,
-            name: fName,
-            role: "FARMER",
-            passwordHash: catalogPass,
-            farmer: {
-              create: {
-                farmName: `${fName} Farm`,
-                district: "Kadapa",
-                state: "Andhra Pradesh",
-                pinCode: "516001",
-                location: "Kadapa",
-                categories: [],
-                verified: true,
-              },
+      const demoFarmers = await prisma.farmerProfile.findMany({
+        where: {
+          user: {
+            email: {
+              in: teacherFarmers.map((f) => f.email),
             },
           },
-        });
-        const fp = await prisma.farmerProfile.findUnique({ where: { userId: u.id } });
-        if (fp) farmerObjMap.set(fName, fp.id);
-      }
+        },
+        orderBy: { user: { name: "asc" } },
+      });
+
+      // Distribution order: Aditya (27), Bharath (27), Bhargav (27), Charan (26), Dileep (26), Yaswant (26)
+      const distributionFarmers = [
+        demoFarmers.find((f) => f.farmName === "FreshRoots Farm") || demoFarmers[0],
+        demoFarmers.find((f) => f.farmName === "Green Valley Farm") || demoFarmers[1],
+        demoFarmers.find((f) => f.farmName === "Sunrise Organics") || demoFarmers[2],
+        demoFarmers.find((f) => f.farmName === "Riverbank Fresh Farms") || demoFarmers[3],
+        demoFarmers.find((f) => f.farmName === "Golden Fields Farm") || demoFarmers[4],
+        demoFarmers.find((f) => f.farmName === "Evergreen Harvest Farm") || demoFarmers[5],
+      ].filter(Boolean);
 
       for (let i = 0; i < catalogJson.length; i++) {
         const item = catalogJson[i];
         const pId = `MKT-${String(i + 1).padStart(4, "0")}`;
         const cName = String(item.category || "").toLowerCase();
         const categoryId = catMap.get(cName) || otherCatId;
-        const farmerId = farmerObjMap.get(String(item.farmer || "").trim()) || primaryFarmerProfile?.id;
+        const targetFarmer = distributionFarmers[i % distributionFarmers.length] || primaryFarmerProfile;
+        const farmerId = targetFarmer?.id;
 
         if (categoryId && farmerId) {
           const pricePaise = Math.round(Number(item.price || 50) * 100);
@@ -739,10 +689,17 @@ export async function autoSeedIfEmpty() {
             },
           });
 
+          const isHeavyProduce =
+            cName.includes("grain") ||
+            cName.includes("pulse") ||
+            cName.includes("veg") ||
+            cName.includes("fruit");
+          const defaultStock = isHeavyProduce ? 100 : 50;
+
           await prisma.inventory.upsert({
             where: { productId: p.id },
-            update: { available: 100 },
-            create: { productId: p.id, farmerId, available: 100 },
+            update: { available: defaultStock },
+            create: { productId: p.id, farmerId, available: defaultStock },
           }).catch(() => {});
 
           await prisma.productPriceLog.create({

@@ -130,7 +130,7 @@ export function AdminLayout() {
             {!collapsed && (
               <div className="min-w-0">
                 <div className="truncate text-[15px] font-extrabold tracking-tight text-slate-950">
-                  FARM2FORK
+                  SAMRUDDHI SETU
                 </div>
                 <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-600">
                   Admin Portal
@@ -276,7 +276,7 @@ export function AdminLayout() {
                 {currentPage}
               </div>
               <div className="hidden text-[11px] font-medium text-slate-400 sm:block">
-                Farm2Fork administration
+                Samruddhi Setu administration
               </div>
             </div>
           </div>

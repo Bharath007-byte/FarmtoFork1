@@ -415,7 +415,7 @@ export function AddressSelection() {
         {/* Title */}
         <div className="max-w-3xl">
           <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[#2C7A4B]">
-            Farm2Fork delivery
+            Samruddhi Setu delivery
           </p>
 
           <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight text-[#183428] sm:text-5xl">
@@ -505,7 +505,7 @@ export function AddressSelection() {
                 </h3>
 
                 <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#77817B]">
-                  Save your address once and use it for future Farm2Fork
+                  Save your address once and use it for future Samruddhi Setu
                   orders.
                 </p>
 
@@ -705,7 +705,7 @@ export function AddressSelection() {
                   className="mt-0.5 shrink-0 text-[#2C7A4B]"
                 />
                 <p className="text-xs leading-5 text-[#66736B]">
-                  Your address is saved securely to your Farm2Fork account.
+                  Your address is saved securely to your Samruddhi Setu account.
                   You can edit or remove saved addresses anytime.
                 </p>
               </div>

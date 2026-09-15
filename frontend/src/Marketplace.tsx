@@ -339,7 +339,7 @@ function mapProduct(item: ApiProduct): Product {
     imageUrl: resolveImage(item.imageUrl),
     description:
       item.description ||
-      "Freshly sourced through the Farm2Fork farmer marketplace.",
+      "Freshly sourced through the Samruddhi Setu farmer marketplace.",
     farmerName:
       item.farmer?.user?.name ||
       "Farm Partner",
@@ -1222,7 +1222,7 @@ export function Marketplace() {
 
               <p className="mt-2 text-xs text-slate-500">
                 Real marketplace inventory from
-                Farm2Fork.
+                Samruddhi Setu.
               </p>
             </div>
 
@@ -1511,7 +1511,7 @@ export function Marketplace() {
             />
 
             <FooterColumn
-              title="Farm2Fork"
+              title="Samruddhi Setu"
               items={[
                 "Farmers",
                 "About",
@@ -1532,7 +1532,7 @@ export function Marketplace() {
           </div>
 
           <div className="mt-8 border-t border-slate-100 pt-5 text-[11px] text-slate-400">
-            © 2026 Farm2Fork. All Rights Reserved.
+            © 2026 Samruddhi Setu. All Rights Reserved.
           </div>
         </div>
       </footer>
@@ -2082,7 +2082,7 @@ function ProductModal({
 
                 <div>
                   <p className="text-sm font-black text-[#075b42]">
-                    Farm2Fork Trust
+                    Samruddhi Setu Trust
                   </p>
 
                   <p className="mt-1 text-xs leading-5 text-slate-600">

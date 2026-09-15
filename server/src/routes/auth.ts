@@ -82,6 +82,12 @@ authRouter.post("/login", turnstileGuard, async (req, res) => {
     email === "admin@samruddhsetu.in" ||
     email === "admin@farm2fork.demo";
 
+  const isLogisticsEmail =
+    email === "logistics@samruddhisetu.in" ||
+    email === "logistics@farm2fork.demo" ||
+    email === "fleet@samruddhisetu.in" ||
+    email === "driver@samruddhisetu.in";
+
   let user = await prisma.user.findUnique({ where: { email }, include: { farmer: true } });
 
   // If user searched for an admin alias or if admin user was deleted/missing, resolve or create it
@@ -108,6 +114,31 @@ authRouter.post("/login", turnstileGuard, async (req, res) => {
     }
   }
 
+  // If user searched for a logistics alias, resolve or create it
+  if (!user && isLogisticsEmail) {
+    user = await prisma.user.findFirst({
+      where: {
+        role: "LOGISTICS",
+        email: { in: ["logistics@samruddhisetu.in", "logistics@farm2fork.demo"] },
+      },
+      include: { farmer: true },
+    });
+
+    if (!user) {
+      const passwordHash = await bcrypt.hash("Logistics@123", 10);
+      user = await prisma.user.create({
+        data: {
+          email: "logistics@samruddhisetu.in",
+          name: "Ravi Fleet Logistics",
+          role: "LOGISTICS",
+          phone: "9999900003",
+          passwordHash,
+        },
+        include: { farmer: true },
+      });
+    }
+  }
+
   if (!user) return res.status(401).json({ error: "No account found", code: 401 });
 
   const normalizedInput = password.trim().toLowerCase();
@@ -121,12 +152,20 @@ authRouter.post("/login", turnstileGuard, async (req, res) => {
   const isAdminDemoPassword =
     user.role === "ADMIN" &&
     (password === "AdminDemo@123" || password === "admin" || password === "Admin@123");
+  const isLogisticsDemoPassword =
+    user.role === "LOGISTICS" &&
+    (password === "Logistics@123" ||
+      password === "FleetDemo@123" ||
+      password === "logistics" ||
+      password === "fleet" ||
+      password === "Fleet@123");
 
   const ok =
     (await bcrypt.compare(password, user.passwordHash)) ||
     isNamePassword ||
     isDemoPassword ||
-    isAdminDemoPassword;
+    isAdminDemoPassword ||
+    isLogisticsDemoPassword;
   if (!ok) return res.status(401).json({ error: "Incorrect password", code: 401 });
   const token = signToken({
     id: user.id,

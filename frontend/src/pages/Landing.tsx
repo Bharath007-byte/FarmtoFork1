@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { SiteNav } from "../components/SiteNav";
 import { Footer } from "../components/Footer";
 import { useI18n } from "../i18n";
+import { SamruddhiSetuLogo } from "../components/SamruddhiSetuLogo";
 import farmerImg from "../assets/farmer-produce.png";
 import truckImg from "../assets/delivery-truck.png";
 import farmTechImg from "../assets/farm-tech.png";
@@ -49,6 +50,12 @@ export function Landing() {
         <div className="pointer-events-none absolute inset-0 bg-black/15" />
 
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
+          <div className="mx-auto mb-4 flex justify-center">
+            <div className="rounded-2xl bg-white/10 p-2 backdrop-blur-md ring-1 ring-white/30">
+              <SamruddhiSetuLogo light size="lg" />
+            </div>
+          </div>
+
           <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-white ring-1 ring-white/40 backdrop-blur-md">
             {t("pillBadge") || "FARMER · DIRECT · FAIR"}
           </span>

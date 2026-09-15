@@ -208,7 +208,7 @@ export function AdminDashboard() {
           </h1>
 
           <p className="mt-1 text-sm text-slate-500">
-            A live view of your Farm2Fork platform operations.
+            A live view of your Samruddhi Setu platform operations.
           </p>
         </div>
 
