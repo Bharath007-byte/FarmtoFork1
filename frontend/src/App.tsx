@@ -19,6 +19,7 @@ import { FarmerProduce } from "./pages/FarmerProduce";
 import { SellProduce } from "./pages/SellProduce";
 import { AiAdvisory } from "./pages/AiAdvisory";
 import { FarmerCommunity } from "./pages/farmer/FarmerCommunity";
+import { MyFarmsPage } from "./pages/farmer/MyFarmsPage";
 import { KrishiAiStudio } from "./pages/farmer/KrishiAiStudio";
 import { LogisticsDashboard } from "./pages/LogisticsDashboard";
 import { LogisticsDeliveries } from "./pages/LogisticsDeliveries";
@@ -168,6 +169,7 @@ export default function App() {
                 <Route path="profile" element={<FarmerProfilePage />} />
                 <Route path="advisory" element={<AiAdvisory />} />
                 <Route path="community" element={<FarmerCommunity />} />
+                <Route path="my-farms" element={<MyFarmsPage />} />
               </Route>
               <Route
                 path="/farmer/farmai"

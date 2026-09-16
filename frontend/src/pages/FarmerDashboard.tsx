@@ -17,6 +17,7 @@ import {
   UserCircle,
   MapPin,
   Mic,
+  LandPlot,
 } from "lucide-react";
 import { useApp } from "../context/AppState";
 import { api, ApiError, rupees, mediaUrl } from "../services/api";
@@ -240,6 +241,16 @@ export function FarmerDashboard() {
             <span>Profile & Land</span>
           </Link>
 
+          {/* Dedicated My Farms Single Page Ledger Button */}
+          <Link
+            to="/farmer/my-farms"
+            className="flex items-center gap-2 rounded-2xl border border-emerald-600/40 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900 shadow-xs transition hover:bg-emerald-100 hover:border-emerald-500"
+            title="Open My Farms Single Page Crop Ledger"
+          >
+            <LandPlot className="h-4 w-4 text-emerald-700" />
+            <span>My Farms</span>
+          </Link>
+
           <Link
             to="/farmer/krishi-ai"
             className="flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-3 text-sm font-semibold text-zinc-800 shadow-xs transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
@@ -445,6 +456,12 @@ export function FarmerDashboard() {
             icon={<UserCircle className="h-5 w-5 text-[#1b4332]" />}
             title="Profile & Land Records"
             desc="Land size, soil type, irrigation, APMC reg & bank payout details"
+          />
+          <ToolCard
+            to="/farmer/my-farms"
+            icon={<LandPlot className="h-5 w-5 text-[#1b4332]" />}
+            title="My Farms (Single Page Ledger)"
+            desc="One crop, one page — complete activities, reminders, harvest & photo journey"
           />
         </div>
       </div>

@@ -15,6 +15,7 @@ import {
   Users,
   Wallet,
   X,
+  LandPlot,
 } from "lucide-react";
 import { api } from "../../services/api";
 import { useApp } from "../../context/AppState";
@@ -28,6 +29,7 @@ const navTranslations: Record<string, Record<AppLang, string>> = {
   "Earnings & Payments": { en: "Earnings & Payments", te: "ఆదాయం & చెల్లింపులు", hi: "कमाई और भुगतान", kn: "ಆದಾಯ & ಪಾವತಿಗಳು" },
   "Insights & Advisory": { en: "Insights & Advisory", te: "సలహా & మార్గదర్శకాలు", hi: "सलाह और इनसाइट्स", kn: "ಸಲಹೆ & ಮಾರ್ಗದರ್ಶನ" },
   "Community & Support": { en: "Community & Support", te: "కమ్యూనిటీ & మద్దతు", hi: "समुदाय और सहायता", kn: "ಸಮುದಾಯ & ಬೆಂಬಲ" },
+  "My Farms": { en: "My Farms", te: "నా పొలాలు", hi: "मेरे खेत", kn: "ನನ್ನ ಹೊಲಗಳು" },
   Profile: { en: "Profile", te: "ప్రొఫైల్", hi: "प्रोफ़ाइल", kn: "ಪ್ರೊಫೈಲ್" },
   Logout: { en: "Log Out", te: "లాగౌట్", hi: "लॉग आउट", kn: "ಲಾಗೌಟ್" },
 };
@@ -38,6 +40,7 @@ const navItems = [
   { to: "/farmer/earnings", label: "Earnings & Payments", icon: Wallet },
   { to: "/farmer/advisory", label: "Insights & Advisory", icon: Lightbulb },
   { to: "/farmer/community", label: "Community & Support", icon: Users },
+  { to: "/farmer/my-farms", label: "My Farms", icon: LandPlot },
   { to: "/farmer/profile", label: "Profile", icon: User },
 ];
 
