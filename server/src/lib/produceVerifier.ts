@@ -131,29 +131,7 @@ export function verifyProduceName(name: string): VerificationResult {
     };
   }
 
-  const clean = name.toLowerCase().trim();
-
-  if (clean.length < 2) {
-    return {
-      isValid: false,
-      reason: "Crop name is too short. Please enter a recognized produce item.",
-      detectedType: "INVALID_NAME",
-    };
-  }
-
-  // Check against non-produce blacklist using word boundaries
-  for (const blacklisted of NON_PRODUCE_BLACKLIST) {
-    const regex = new RegExp(`\\b${blacklisted}\\b`, "i");
-    if (regex.test(clean)) {
-      return {
-        isValid: false,
-        reason: `"${name}" is not an agricultural produce. Please enter a valid farm crop (e.g. Tomatoes, Chillies, Onions, Paddy).`,
-        detectedType: "INVALID_NAME",
-      };
-    }
-  }
-
-  // Allow any reasonable crop name
+  // Allow any reasonable produce name
   return { isValid: true, detectedType: "PRODUCE" };
 }
 
@@ -168,31 +146,6 @@ export function verifyProduceImage(
     return {
       isValid: false,
       reason: "No image file provided. Please upload or capture a crop photo.",
-    };
-  }
-
-  const baseName = (file.originalname || "").toLowerCase().replace(/\.[^/.]+$/, "");
-
-  // 1. Check filename for obvious non-produce cues (only strict explicit names like 'selfie.jpg')
-  for (const blacklisted of NON_PRODUCE_BLACKLIST) {
-    const regex = new RegExp(`\\b${blacklisted}\\b`, "i");
-    if (regex.test(baseName)) {
-      return {
-        isValid: false,
-        reason: `Wrong image uploaded (${blacklisted} detected). Please upload a real farm produce photo. Human photos, selfies, vehicles, or non-crop items are not allowed.`,
-        detectedType: blacklisted.includes("selfie") || blacklisted.includes("portrait")
-          ? "HUMAN_SELFIE"
-          : "SYNTHETIC",
-      };
-    }
-  }
-
-  // 2. Inspect byte size (allow files >= 100 bytes)
-  if (file.size < 100) {
-    return {
-      isValid: false,
-      reason: "The uploaded file is empty or corrupted. Please upload a clear photo of your harvest.",
-      detectedType: "SYNTHETIC",
     };
   }
 

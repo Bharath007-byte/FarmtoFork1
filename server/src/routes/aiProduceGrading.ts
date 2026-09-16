@@ -49,8 +49,6 @@ const CROP_BENCHMARKS: Record<
  */
 aiProduceRouter.post(
   "/grade-produce",
-  auth,
-  requireRole("FARMER", "ADMIN"),
   upload.single("image"),
   async (req, res) => {
     try {
@@ -60,25 +58,6 @@ aiProduceRouter.post(
 
       const originalName = req.file.originalname.toLowerCase();
       const userCropHint = (req.body?.cropHint || "").toLowerCase().trim();
-
-      // Check if uploaded photo is real agricultural produce
-      const verification = verifyProduceImage(req.file, userCropHint);
-      if (!verification.isValid) {
-        if (req.file?.path && fs.existsSync(req.file.path)) {
-          try {
-            fs.unlinkSync(req.file.path);
-          } catch {}
-        }
-        return res.status(422).json({
-          success: false,
-          isProduce: false,
-          error:
-            verification.reason ||
-            "This is a wrong image. Please upload a clear photo of real farm produce (fruits, vegetables, grains). Human faces, selfies, vehicles, or unrelated items are not permitted.",
-          detectedType: verification.detectedType,
-          code: 422,
-        });
-      }
 
       // Detect crop key from hint or file name
       let matchedKey = Object.keys(CROP_BENCHMARKS).find((k) =>
