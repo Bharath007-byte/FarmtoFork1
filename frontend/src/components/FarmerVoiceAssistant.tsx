@@ -51,8 +51,20 @@ const KNOWLEDGE_RESPONSES: Record<AppLang, { pattern: RegExp; response: string }
       response: "Nashik Red Onion is trading at ₹28 to ₹34/kg. Jyoti Potato modal rate is ₹22 to ₹26/kg across Bengaluru and Chittoor rural markets.",
     },
     {
+      pattern: /farm management|ledger|activity|crop details|cost/i,
+      response: "You can track your entire farm in the 'FarmManagement' tab! Enter your crop varieties, planting date, acreage, and record daily activities (fertilizer, irrigation, labor, pesticide) with expense tracking.",
+    },
+    {
+      pattern: /disease|leaf|blight|pest|curl|rot|krishi|fungus/i,
+      response: "For crop disease identification, open our 'Krishi AI Doctor' from your dashboard. Upload any leaf photo to detect early blight, yellow leaf curl, or powdery mildew with instant organic remedies (Neem oil, Trichoderma).",
+    },
+    {
       pattern: /grade|quality|score/i,
       response: "To get Grade A: Ensure 85%+ uniform color, zero surface punctures, clean dry skin, and size sorting. Grade A crops qualify for guaranteed 20% price premium on Samruddhi Setu.",
+    },
+    {
+      pattern: /scheme|subsidy|pm-?kisan|fasal bima/i,
+      response: "Key active schemes: 1) PM-KISAN (₹6,000/yr direct bank transfer), 2) PMFBY Crop Insurance (1.5-2% premium), 3) Solar Pump Kusum subsidy (up to 60%), and 4) Drip Irrigation Subsidy via Department of Horticulture.",
     },
     {
       pattern: /society|cooperative|devanahalli|yelahanka|tirupati/i,
@@ -73,8 +85,20 @@ const KNOWLEDGE_RESPONSES: Record<AppLang, { pattern: RegExp; response: string }
       response: "नासिक लाल प्याज का भाव ₹28 से ₹34/किग्रा और ज्योति आलू का थोक भाव ₹22 से ₹26/किग्रा चल रहा है।",
     },
     {
+      pattern: /फार्म|प्रबंधन|खाता|लेजर|लागत|farm management/i,
+      response: "आप 'फार्म प्रबंधन' (FarmManagement) पृष्ठ पर अपनी फसल के विवरण, रोपण तिथि, एकड़ और दैनिक खर्च (खाद, कीटनाशक, मजदूर, सिंचाई) का पूरा डिजिटल बहीखाता रख सकते हैं।",
+    },
+    {
+      pattern: /रोग|कीट|पत्ती|ब्लाइट|डॉक्टर|krishi/i,
+      response: "फसल के रोगों की पहचान के लिए 'कृषि एआई डॉक्टर' का उपयोग करें। पत्ती की फोटो अपलोड करें और तुरंत जैविक उपचार (नीम तेल, ट्राइकोडर्मा, छाछ-हींग घोल) प्राप्त करें।",
+    },
+    {
       pattern: /ग्रेड|क्वालिटी|गुणवत्ता|grade/i,
       response: "ग्रेड A पाने के लिए: फसल का रंग 85%+ एकसमान रखें, दाग-धब्बे रहित फल चुनें और कटाई के बाद सुखाकर पैक करें। ग्रेड A पर 20% अधिक मूल्य मिलता है।",
+    },
+    {
+      pattern: /योजना|सब्सिडी|पीएम-किसान|pm-kisan/i,
+      response: "प्रमुख योजनाएं: 1) पीएम-किसान योजना (₹6,000 प्रति वर्ष), 2) प्रधानमंत्री फसल बीमा योजना, 3) ड्रिप सिंचाई सब्सिडी (हॉर्टिकल्चर विभाग) और 4) कुसुम सोलर पंप योजना।",
     },
     {
       pattern: /समिति|सोसाइटी|देवनहल्ली|येलहंका|तिरुपति|society/i,
@@ -95,8 +119,20 @@ const KNOWLEDGE_RESPONSES: Record<AppLang, { pattern: RegExp; response: string }
       response: "ఎర్ర ఉల్లిపాయ ధర ₹28 - ₹34/కిలో, బంగాళాదుంప సగటు ధర ₹22 - ₹26/కిలోగా నమోదు చేయబడింది.",
     },
     {
+      pattern: /ఫార్మ్|మేనేజ్‌మెంట్|లెడ్జర్|ఖర్చు|పంట వివరాలు|farm/i,
+      response: "మీరు 'ఫార్మ్ మేనేజ్‌మెంట్' (FarmManagement) పేజీలో పంట వివరాలు, నాటిన తేదీ, విస్తీర్ణం మరియు రోజువారీ ఖర్చులు (ఎరువులు, పురుగుమందులు, కూలీలు, నీటిపారుదల) సులభంగా నమోదు చేసుకోవచ్చు.",
+    },
+    {
+      pattern: /తెగులు|వ్యాధి|ఆకు|పురుగు|డాక్టర్|క్రిషి|krishi/i,
+      response: "పంటల తెగుళ్లను గుర్తించడానికి 'కృషి AI డాక్టర్' ను వాడండి. ఆకు ఫోటో తీసి అప్‌లోడ్ చేస్తే తక్షణ సేంద్రీయ నివారణలు (వేపనూనె, ట్రైకోడెర్మా, జీవామృతం) లభిస్తాయి.",
+    },
+    {
       pattern: /గ్రేడ్|నాణ్యత|grade|quality/i,
       response: "గ్రేడ్ A పొందడానికి: పంట ఏకరీతి రంగు కలిగి ఉండాలి, మచ్చలు లేకుండా ఉండాలి. గ్రేడ్ A పంటలకు సమృద్ధి సేతు ద్వారా 20% అదనపు ఆదాయం అందుతుంది.",
+    },
+    {
+      pattern: /పథకం|రైతు భరోసా|పీఎం కిసాన్|pm-kisan/i,
+      response: "రైతుల ముఖ్య పథకాలు: 1) పీఎం కిసాన్ (సంవత్సరానికి ₹6,000), 2) వైఎస్సార్ రైతు భరోసా, 3) డ్రిప్ ఇరిగేషన్ సబ్సిడీ మరియు 4) పంట బీమా పథకం.",
     },
     {
       pattern: /సొసైటీ|తిరుపతి|దేవనహళ్ళి|యలహంక|society/i,
@@ -117,8 +153,20 @@ const KNOWLEDGE_RESPONSES: Record<AppLang, { pattern: RegExp; response: string }
       response: "ನಾಸಿಕ್ ಕೆಂಪು ಈರುಳ್ಳಿ ದರ ₹28 - ₹34/ಕೆಜಿ ಮತ್ತು ಆಲೂಗಡ್ಡೆ ಸರಾಸರಿ ದರ ₹22 - ₹26/ಕೆಜಿ ಇದೆ.",
     },
     {
+      pattern: /ಫಾರ್ಮ್|ಖರ್ಚು|ಲೆಡ್ಜರ್|ನಿರ್ವಹಣೆ|farm/i,
+      response: "ನೀವು 'ಫಾರ್ಮ್ ಮ್ಯಾನೇಜ್‌ಮೆಂಟ್' (FarmManagement) ಪುಟದಲ್ಲಿ ಬೆಳೆ ವಿವರಗಳು, ದಿನಾಂಕ, ವಿಸ್ತೀರ್ಣ ಮತ್ತು ದೈನಂದಿನ ಕೃಷಿ ವೆಚ್ಚಗಳನ್ನು (ಗೊಬ್ಬರ, ಕೀಟನಾಶಕ, ಕೂಲಿ) ದಾಖಲಿಸಬಹುದು.",
+    },
+    {
+      pattern: /ರೋಗ|ಕೀಟ|ಎಲೆ|ಡಾಕ್ಟರ್|krishi/i,
+      response: "ಬೆಳೆಯ ರೋಗ ಪತ್ತೆಗೆ 'ಕೃಷಿ ಎಐ ಡಾಕ್ಟರ್' ಬಳಸಿ. ಬಾಧಿತ ಎಲೆಯ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ ನೈಸರ್ಗಿಕ ಜೈವಿಕ ಔಷಧೋಪಚಾರ (ಬೇವಿನ ಎಣ್ಣೆ, ಟ್ರೈಕೋಡರ್ಮಾ) ಪಡೆಯಿರಿ.",
+    },
+    {
       pattern: /ಗ್ರೇಡ್|ಗುಣಮಟ್ಟ|grade|quality/i,
       response: "ಗ್ರೇಡ್ A ಪಡೆಯಲು: 85% ಕ್ಕಿಂತ ಹೆಚ್ಚು ಏಕರೂಪ ಬಣ್ಣ, ಗಾಯವಿಲ್ಲದ ಮೇಲ್ಮೈ ಇರಬೇಕು. ಗ್ರೇಡ್ A ಬೆಳೆಗೆ 20% ಅಧಿಕ ಪ್ರೀಮಿಯಂ ಲಾಭ ದೊರೆಯುತ್ತದೆ.",
+    },
+    {
+      pattern: /ಯೋಜನೆ|ಸಬ್ಸಿಡಿ|pm-kisan/i,
+      response: "ಪ್ರಮುಖ ಯೋಜನೆಗಳು: 1) ಪಿಎಂ ಕಿಸಾನ್ ಸಮ್ಮಾನ್ ನಿಧಿ (ವರ್ಷಕ್ಕೆ ₹6,000), 2) ಪ್ರಧಾನ ಮಂತ್ರಿ ಫಸಲ್ ಬಿಮಾ ಯೋಜನೆ, 3) ಹನಿ ನೀರಾವರಿ ಸಬ್ಸಿಡಿ.",
     },
     {
       pattern: /ಸೊಸೈಟಿ|ದೇವನಹಳ್ಳಿ|ಯಲಹಂಕ|ತಿರುಪತಿ|society/i,
@@ -150,6 +198,7 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [inputText, setInputText] = useState("");
+  const [voiceNotice, setVoiceNotice] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -245,6 +294,7 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
 
     setMessages((prev) => [...prev, userMsg]);
     setInputText("");
+    setVoiceNotice("");
 
     const langRules = KNOWLEDGE_RESPONSES[lang] || KNOWLEDGE_RESPONSES.en;
     const match = langRules.find((r) => r.pattern.test(query));
@@ -277,7 +327,9 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
   const toggleListening = () => {
     if (isListening) {
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        try {
+          recognitionRef.current.stop();
+        } catch {}
       }
       setIsListening(false);
       return;
@@ -285,39 +337,54 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
 
     const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRec) {
-      alert("Speech recognition is not supported in this browser. Please type your query in the box below.");
+      setVoiceNotice("Microphone voice recognition is not supported in this browser. Please type your query or tap any quick prompt below!");
       return;
     }
 
+    setVoiceNotice("");
     stopSpeaking();
 
-    const recognition = new SpeechRec();
-    recognition.lang = SPEECH_LANG_CODES[lang] || "en-IN";
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    try {
+      const recognition = new SpeechRec();
+      recognition.lang = SPEECH_LANG_CODES[lang] || "en-IN";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
 
-    recognition.onstart = () => {
-      setIsListening(true);
-    };
+      recognition.onstart = () => {
+        setIsListening(true);
+        setVoiceNotice("");
+      };
 
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0]?.[0]?.transcript;
-      if (transcript) {
-        handleQuery(transcript);
-      }
-    };
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0]?.[0]?.transcript;
+        if (transcript) {
+          handleQuery(transcript);
+        }
+      };
 
-    recognition.onerror = (e: any) => {
-      console.warn("Speech recognition error:", e);
+      recognition.onerror = (e: any) => {
+        console.warn("Speech recognition error:", e);
+        setIsListening(false);
+        if (e?.error === "not-allowed" || e?.error === "service-not-allowed") {
+          setVoiceNotice("Microphone permission was blocked. Please enable microphone permissions or type your question below.");
+        } else if (e?.error === "no-speech") {
+          setVoiceNotice("No voice detected. Tap microphone and speak clearly, or type your query below.");
+        } else {
+          setVoiceNotice("Voice input stopped. You can type your query in the box below.");
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.warn("Speech recognition start error:", err);
       setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
+      setVoiceNotice("Microphone is currently unavailable. Please type your question in the box below.");
+    }
   };
 
   const quickPills = QUICK_PROMPTS[lang] || QUICK_PROMPTS.en;
@@ -370,6 +437,19 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
               Medium View
             </button>
           </div>
+
+          {voiceNotice && (
+            <div className="w-full text-[11px] text-amber-800 bg-amber-50 rounded-xl p-2 border border-amber-200 flex items-center justify-between">
+              <span>{voiceNotice}</span>
+              <button
+                type="button"
+                onClick={() => setVoiceNotice("")}
+                className="text-amber-900 font-bold ml-2 hover:underline"
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </div>
       );
     }
@@ -502,6 +582,20 @@ export function FarmerVoiceAssistant({ embedded = false, initialMode = "medium" 
             ))}
           </div>
         </div>
+
+        {/* Voice Error/Permission Notice */}
+        {voiceNotice && (
+          <div className="flex items-center justify-between gap-2 border-t border-amber-200 bg-amber-50 px-5 py-2.5 text-xs text-amber-800">
+            <span>{voiceNotice}</span>
+            <button
+              type="button"
+              onClick={() => setVoiceNotice("")}
+              className="text-amber-900 font-bold ml-2 hover:underline shrink-0"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* Input & Speak Bar */}
         <div className="border-t border-zinc-100 bg-white p-4">

@@ -113,6 +113,29 @@ function generateResponse(query: string): { text: string; link?: { text: string;
     };
   }
 
+  if (q.includes("payment") || q.includes("razorpay") || q.includes("cod") || q.includes("cash on delivery") || q.includes("pay")) {
+    return {
+      text: "We support multiple secure payment modes:\n• **Online Payment**: Cards, UPI, Net Banking via Razorpay with sandbox test fallback.\n• **Cash on Delivery (COD)**: Pay when farm-fresh produce arrives at your doorstep.\nTransactions are direct and transparent with zero middleman deductions.",
+      chips: ["Track Order", "Browse Poultry & Meat", "Mandi Rates"],
+    };
+  }
+
+  if (q.includes("farm management") || q.includes("crop ledger") || q.includes("ledger")) {
+    return {
+      text: "The **Farm Management Single-Page Ledger** allows farmers to track crop details (acres, planting dates, irrigation) and farm activities (planting, fertilizer, pesticide, labour, harvesting) all in one place.",
+      link: { text: "Open FarmManagement", url: "/farmer/farm-management" },
+      chips: ["Mandi Rates", "Krishi AI Doctor", "Join as Farmer"],
+    };
+  }
+
+  if (q.includes("quality") || q.includes("grade") || q.includes("grading") || q.includes("scanner")) {
+    return {
+      text: "Our **AI Produce Quality Scanner** analyzes your camera photos in real time, inspecting skin texture, uniformity, and blemishes to assign Grade A, B, or C benchmarks aligned with APMC Mandi prices.",
+      link: { text: "Open Produce Scanner", url: "/farmer/sell" },
+      chips: ["Krishi AI Doctor", "Mandi Rates", "Govt Schemes"],
+    };
+  }
+
   return {
     text: "Thank you for reaching out! Samruddhi Setu connects verified farmers directly with consumers and cooperative societies with 100% price transparency and zero commission leakage.",
     chips: ["Track Order", "Mandi Rates", "Poultry & Meat", "Govt Schemes"],
@@ -121,12 +144,7 @@ function generateResponse(query: string): { text: string; link?: { text: string;
 
 export function FloatingChatbot() {
   const location = useLocation();
-
-  // On farmer portal, farmers use their dedicated AI Kisan Voice Assistant.
-  // Hide generic consumer chatbot to prevent bottom-right congestion.
-  if (location.pathname.startsWith("/farmer")) {
-    return null;
-  }
+  const isFarmerRoute = location.pathname.startsWith("/farmer");
 
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -191,7 +209,9 @@ export function FloatingChatbot() {
             setIsMinimized(false);
           }}
           aria-label="Open Samruddhi Setu Assistant"
-          className="fixed bottom-5 right-5 z-50 group flex items-center gap-2.5 bg-gradient-to-r from-[#1b4332] to-[#2d6a4f] text-white px-4 py-3 rounded-full shadow-2xl hover:shadow-emerald-900/30 hover:scale-105 active:scale-95 transition-all duration-200 border border-emerald-400/30"
+          className={`fixed ${
+            isFarmerRoute ? "bottom-22 right-6" : "bottom-5 right-5"
+          } z-50 group flex items-center gap-2.5 bg-gradient-to-r from-[#1b4332] to-[#2d6a4f] text-white px-4 py-3 rounded-full shadow-2xl hover:shadow-emerald-900/30 hover:scale-105 active:scale-95 transition-all duration-200 border border-emerald-400/30`}
         >
           <div className="relative flex items-center justify-center">
             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping" />

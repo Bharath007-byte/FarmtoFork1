@@ -97,44 +97,20 @@ export const ALLOWED_PRODUCE_KEYWORDS = new Set([
 ]);
 
 // Words that specifically flag human portraits, selfies, non-crop items, animals, vehicles, etc.
+// Note: Generic camera file terms (photo, picture, image, user, img) and proper names are excluded
+// to prevent false positives on mobile camera uploads.
 export const NON_PRODUCE_BLACKLIST = [
-  // Human & Person terms
-  "selfie", "person", "human", "face", "portrait", "man", "woman", "boy", "girl",
-  "people", "avatar", "profile", "user", "me", "photo of me", "my photo", "friend",
-  "actor", "actress", "model", "baby", "kid", "child", "crowd", "family", "doctor",
-  "engineer", "teacher", "driver", "guy", "lady", "dude",
-
-  // Common Non-Produce Names (e.g. people names)
-  "john", "david", "michael", "alex", "rahul", "rohit", "amit", "suresh", "ramesh",
-  "kumar", "sharma", "singh", "patel", "reddy", "naidu", "priya", "anita", "sneha",
+  // Obvious Human Selfie & Portrait terms (matched as whole words)
+  "selfie", "portrait", "headshot", "passport_photo",
 
   // Vehicles & Machinery
-  "car", "bike", "motorcycle", "scooter", "auto", "truck", "tractor", "bus", "jeep",
-  "vehicle", "cycle", "aeroplane", "train",
+  "motorcycle", "scooter", "truck", "tractor", "bus", "jeep", "aeroplane",
 
   // Electronics & Office
-  "laptop", "computer", "phone", "mobile", "iphone", "android", "tablet", "ipad",
-  "keyboard", "mouse", "monitor", "screen", "television", "tv", "camera", "charger",
-  "headphone", "earphone", "cable", "gadget",
-
-  // Clothing & Personal Items
-  "shirt", "pant", "jeans", "tshirt", "dress", "saree", "shoes", "shoe", "chappal",
-  "sandal", "watch", "glasses", "sunglasses", "hat", "cap", "bag", "purse", "wallet",
-  "cloth", "clothes",
-
-  // Home & Furniture
-  "chair", "table", "bed", "sofa", "furniture", "door", "window", "house", "room",
-  "building", "wall", "floor", "ceiling", "fan", "light",
-
-  // Animals (Pets / Wild - not agricultural harvest)
-  "dog", "cat", "puppy", "kitten", "pet", "lion", "tiger", "bear", "elephant",
-  "monkey", "snake", "bird", "parrot", "pigeon",
+  "laptop", "keyboard", "monitor", "television",
 
   // Miscellaneous Non-Produce
-  "money", "cash", "rupee", "dollar", "coin", "gold", "silver", "diamond",
-  "toy", "doll", "game", "gun", "knife", "weapon", "paper", "pen", "pencil",
-  "book", "notebook", "document", "invoice", "receipt", "bill", "certificate",
-  "screenshot", "meme", "wallpaper", "quote", "logo", "banner", "poster",
+  "screenshot", "meme", "wallpaper",
 ];
 
 export interface VerificationResult {
@@ -165,9 +141,8 @@ export function verifyProduceName(name: string): VerificationResult {
     };
   }
 
-  // Check against non-produce blacklist
+  // Check against non-produce blacklist using word boundaries
   for (const blacklisted of NON_PRODUCE_BLACKLIST) {
-    // exact word match or whole word regex
     const regex = new RegExp(`\\b${blacklisted}\\b`, "i");
     if (regex.test(clean)) {
       return {
@@ -178,25 +153,7 @@ export function verifyProduceName(name: string): VerificationResult {
     }
   }
 
-  // Check if contains any recognized produce keyword
-  const words = clean.split(/[\s,_\-–—/()]+/);
-  const matchesKeyword = words.some((w) => ALLOWED_PRODUCE_KEYWORDS.has(w)) ||
-    Array.from(ALLOWED_PRODUCE_KEYWORDS).some((k) => clean.includes(k));
-
-  if (!matchesKeyword) {
-    // If it has at least some legitimate agricultural word (like farm, organic, hybrid, harvest, seed, fruit, vegetable)
-    const generalAgri = ["crop", "grain", "fruit", "veg", "vegetable", "pulse", "organic", "hybrid", "fresh", "farm"];
-    const hasGeneralAgri = generalAgri.some((g) => clean.includes(g));
-
-    if (!hasGeneralAgri) {
-      return {
-        isValid: false,
-        reason: `"${name}" does not match any recognized farm crop or agricultural produce. Please specify a crop (e.g. Fresh Tomatoes, Sona Masoori Rice).`,
-        detectedType: "INVALID_NAME",
-      };
-    }
-  }
-
+  // Allow any reasonable crop name
   return { isValid: true, detectedType: "PRODUCE" };
 }
 
@@ -205,7 +162,7 @@ export function verifyProduceName(name: string): VerificationResult {
  */
 export function verifyProduceImage(
   file: Express.Multer.File | undefined,
-  cropHint?: string
+  _cropHint?: string
 ): VerificationResult {
   if (!file) {
     return {
@@ -214,34 +171,27 @@ export function verifyProduceImage(
     };
   }
 
-  const originalName = (file.originalname || "").toLowerCase();
+  const baseName = (file.originalname || "").toLowerCase().replace(/\.[^/.]+$/, "");
 
-  // 1. Check filename for obvious non-produce cues (selfie, person, face, car, etc.)
+  // 1. Check filename for obvious non-produce cues (only strict explicit names like 'selfie.jpg')
   for (const blacklisted of NON_PRODUCE_BLACKLIST) {
-    if (originalName.includes(blacklisted)) {
+    const regex = new RegExp(`\\b${blacklisted}\\b`, "i");
+    if (regex.test(baseName)) {
       return {
         isValid: false,
         reason: `Wrong image uploaded (${blacklisted} detected). Please upload a real farm produce photo. Human photos, selfies, vehicles, or non-crop items are not allowed.`,
-        detectedType: blacklisted.includes("selfie") || blacklisted.includes("person") || blacklisted.includes("face")
+        detectedType: blacklisted.includes("selfie") || blacklisted.includes("portrait")
           ? "HUMAN_SELFIE"
           : "SYNTHETIC",
       };
     }
   }
 
-  // 2. Validate crop hint if provided
-  if (cropHint && cropHint.trim()) {
-    const nameCheck = verifyProduceName(cropHint);
-    if (!nameCheck.isValid) {
-      return nameCheck;
-    }
-  }
-
-  // 3. Inspect byte size
-  if (file.size < 5 * 1024) {
+  // 2. Inspect byte size (allow files >= 100 bytes)
+  if (file.size < 100) {
     return {
       isValid: false,
-      reason: "The uploaded file is too small (< 5KB) to be a valid produce photo. Please upload a clear photo of your harvest.",
+      reason: "The uploaded file is empty or corrupted. Please upload a clear photo of your harvest.",
       detectedType: "SYNTHETIC",
     };
   }

@@ -80,32 +80,17 @@ export const ALLOWED_PRODUCE_KEYWORDS = new Set([
 ]);
 
 export const NON_PRODUCE_BLACKLIST = [
-  // Human & Person
-  "selfie", "person", "human", "face", "portrait", "man", "woman", "boy", "girl",
-  "people", "avatar", "profile", "user", "me", "my photo", "friend", "baby", "kid",
-  "doctor", "engineer", "teacher", "driver", "guy", "lady",
-  "john", "david", "michael", "alex", "rahul", "rohit", "amit", "suresh", "ramesh",
-  "kumar", "sharma", "singh", "patel", "reddy", "naidu", "priya", "anita",
+  // Human & Person explicit terms (only strict terms, no generic camera words like 'photo' or 'image')
+  "selfie", "portrait", "headshot", "passport_photo",
 
   // Vehicles
-  "car", "bike", "motorcycle", "scooter", "auto", "truck", "tractor", "bus", "jeep", "vehicle",
+  "motorcycle", "scooter", "truck", "tractor", "bus", "jeep",
 
   // Electronics
-  "laptop", "computer", "phone", "mobile", "iphone", "android", "tablet", "screen",
-  "camera", "charger", "keyboard", "mouse", "tv",
-
-  // Clothes & Accessories
-  "shirt", "pant", "jeans", "dress", "saree", "shoes", "shoe", "watch", "glasses", "bag", "cloth",
-
-  // Furniture & Buildings
-  "chair", "table", "bed", "sofa", "furniture", "house", "room", "building", "wall",
-
-  // Animals
-  "dog", "cat", "puppy", "kitten", "pet", "lion", "tiger", "snake", "bird",
+  "laptop", "keyboard", "monitor", "television",
 
   // Others
-  "money", "cash", "rupee", "dollar", "coin", "gold", "toy", "gun", "knife", "document",
-  "bill", "receipt", "screenshot", "meme", "wallpaper",
+  "screenshot", "meme", "wallpaper",
 ];
 
 export interface ClientVerificationResult {
@@ -144,7 +129,7 @@ export function validateCropName(name: string, lang: AppLang = "en"): ClientVeri
 
   const clean = name.toLowerCase().trim();
 
-  // Check blacklist
+  // Check blacklist with whole word matching
   for (const item of NON_PRODUCE_BLACKLIST) {
     const reg = new RegExp(`\\b${item}\\b`, "i");
     if (reg.test(clean)) {
@@ -158,32 +143,6 @@ export function validateCropName(name: string, lang: AppLang = "en"): ClientVeri
             : lang === "kn"
             ? `"${name}" ಕೃಷಿ ಉತ್ಪನ್ನವಲ್ಲ. ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ ಬೆಳೆಯ ಹೆಸರನ್ನು ನಮೂದಿಸಿ (ಉದಾ. ಟೊಮ್ಯಾಟೊ, ಈರುಳ್ಳಿ, ಮೆಣಸಿನಕಾಯಿ, ಭತ್ತ).`
             : `"${name}" is not a recognized agricultural crop. Please enter a valid farm produce (e.g. Tomatoes, Onions, Chillies, Paddy).`,
-        detectedType: "INVALID_NAME",
-      };
-    }
-  }
-
-  // Check keyword match
-  const words = clean.split(/[\s,_\-–—/()]+/);
-  const matchesKeyword =
-    words.some((w) => ALLOWED_PRODUCE_KEYWORDS.has(w)) ||
-    Array.from(ALLOWED_PRODUCE_KEYWORDS).some((k) => clean.includes(k));
-
-  if (!matchesKeyword) {
-    const generalAgri = ["crop", "grain", "fruit", "veg", "vegetable", "pulse", "organic", "hybrid", "fresh", "farm"];
-    const hasGeneralAgri = generalAgri.some((g) => clean.includes(g));
-
-    if (!hasGeneralAgri) {
-      return {
-        isValid: false,
-        error:
-          lang === "te"
-            ? `"${name}" గుర్తింపు పొందిన పంట కాదు. దయచేసి సరైన వ్యవసాయ పంట పేరు నమోదు చేయండి.`
-            : lang === "hi"
-            ? `"${name}" किसी मान्यता प्राप्त कृषि उपज से मेल नहीं खाता। कृपया फसल का नाम सही लिखें।`
-            : lang === "kn"
-            ? `"${name}" ಯಾವುದೇ ಮಾನ್ಯತೆ ಪಡೆದ ಕೃಷಿ ಬೆಳೆಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ. ದಯವಿಟ್ಟು ಸರಿಯಾದ ಬೆಳೆಯ ಹೆಸರನ್ನು ನಮೂದಿಸಿ.`
-            : `"${name}" does not match recognized agricultural produce. Please specify a real farm crop (e.g. Fresh Tomatoes, Sona Masoori Rice).`,
         detectedType: "INVALID_NAME",
       };
     }
@@ -215,15 +174,15 @@ function getVerificationErrorMessage(
 
     case "ANIMAL":
       if (lang === "te") {
-        return "జంతువు లేదా పెంపుడు జంతువు గుర్తించబడింది! దయచేసి వ్యవసాయ పంట లేదా ఉత్పత్తి ఫోటోను అప్‌లోడ్ చేయండి.";
+        return "జంతువు గుర్తించబడింది! దయచేసి వ్యవసాయ పంట లేదా ఉత్పత్తి ఫోటోను అప్‌లోడ్ చేయండి.";
       }
       if (lang === "hi") {
-        return "जानवर या पालतू पशु पहचाना गया! कृपया कृषि फसल या फल-सब्जी की तस्वीर अपलोड करें।";
+        return "जानवर पहचाना गया! कृपया कृषि फसल या फल-सब्जी की तस्वीर अपलोड करें।";
       }
       if (lang === "kn") {
         return "ಪ್ರಾಣಿ ಪತ್ತೆಯಾಗಿದೆ! ದಯವಿಟ್ಟು ನಿಜವಾದ ಕೃಷಿ ಬೆಳೆ ಅಥವಾ ತರಕಾರಿಯ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.";
       }
-      return "Animal or pet detected! Please upload a photo of your agricultural crop or harvest.";
+      return "Animal detected! Please upload a photo of your agricultural crop or harvest.";
 
     case "SYNTHETIC":
     case "OBJECT":
@@ -231,12 +190,12 @@ function getVerificationErrorMessage(
         return "కంప్యూటర్ స్క్రీన్ లేదా వ్యవసాయేతర వస్తువు గుర్తించబడింది. దయచేసి సహజమైన వ్యవసాయ పంట లేదా ఆకు ఫోటోను అప్‌లోడ్ చేయండి.";
       }
       if (lang === "hi") {
-        return "स्क्रीन, दस्तावेज या गैर-कृषि वस्तु पहचानी गई। कृपया वास्तविक प्राकृतिक फसल की तस्वीर अपलोड करें।";
+        return "स्क्रीन या गैर-कृषि वस्तु पहचानी गई। कृपया वास्तविक प्राकृतिक फसल की तस्वीर अपलोड करें।";
       }
       if (lang === "kn") {
         return "ಪರದೆ ಅಥವಾ ಕೃಷಿಯೇತರ ವಸ್ತು ಪತ್ತೆಯಾಗಿದೆ. ದಯವಿಟ್ಟು ನೈಸರ್ಗಿಕ ಕೃಷಿ ಬೆಳೆಯ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.";
       }
-      return "Screen, indoor object, or non-agricultural item detected. Please upload an authentic photo of your crop or harvest.";
+      return "Screen or non-agricultural item detected. Please upload an authentic photo of your crop or harvest.";
 
     case "NO_PLANT_DETECTED":
       if (lang === "te") {
@@ -257,21 +216,21 @@ function getVerificationErrorMessage(
 }
 
 /**
- * Validates image on client using Native FaceDetector, YCbCr skin clustering, and chlorophyll chrominance
+ * Validates image on client using lenient inspection to accept all genuine produce, leaves, and hand-held crops
  */
 export async function validateProduceImage(
   file: File,
   lang: AppLang = "en",
-  mode: VerificationMode = "general"
+  _mode: VerificationMode = "general"
 ): Promise<ClientVerificationResult> {
-  const filename = (file.name || "").toLowerCase();
+  const baseName = (file.name || "").toLowerCase().replace(/\.[^/.]+$/, "");
 
-  // 1. Filename heuristic
+  // 1. Strict filename blacklist check (only explicit words like 'selfie', 'passport_photo', etc.)
   for (const b of NON_PRODUCE_BLACKLIST) {
-    if (filename.includes(b)) {
-      const isHuman = b.includes("selfie") || b.includes("person") || b.includes("face") || b.includes("user") || b.includes("photo");
-      const isAnimal = b.includes("dog") || b.includes("cat") || b.includes("pet") || b.includes("lion") || b.includes("tiger") || b.includes("bird");
-      const type = isHuman ? "HUMAN_SELFIE" : isAnimal ? "ANIMAL" : "OBJECT";
+    const reg = new RegExp(`\\b${b}\\b`, "i");
+    if (reg.test(baseName)) {
+      const isHuman = b.includes("selfie") || b.includes("portrait") || b.includes("headshot");
+      const type = isHuman ? "HUMAN_SELFIE" : "OBJECT";
       return {
         isValid: false,
         error: getVerificationErrorMessage(type, lang, b),
@@ -280,8 +239,8 @@ export async function validateProduceImage(
     }
   }
 
-  // 2. Minimum file size check (< 4KB is likely a thumbnail or icon)
-  if (file.size < 4 * 1024) {
+  // 2. Minimum file size check (< 100 bytes is empty/corrupt)
+  if (file.size < 100) {
     return {
       isValid: false,
       error:
@@ -291,181 +250,44 @@ export async function validateProduceImage(
           ? "तस्वीर का आकार बहुत छोटा है। कृपया फसल की स्पष्ट तस्वीर अपलोड करें।"
           : lang === "kn"
           ? "ಚಿತ್ರದ ಗುಣಮಟ್ಟ ತುಂಬಾ ಕಡಿಮೆಯಾಗಿದೆ. ದಯವಿಟ್ಟು ಬೆಳೆಯ ಸ್ಪಷ್ಟ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ."
-          : "Photo resolution is too low. Please upload a clear photo of your produce or leaf.",
+          : "Photo file is empty or corrupted. Please upload a clear photo of your produce or leaf.",
       detectedType: "SYNTHETIC",
     };
   }
 
-  // 3. Multi-color space & Computer Vision inspection
-  try {
-    const bitmap = await createImageBitmap(file);
-    const width = 80;
-    const height = 80;
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    if (!ctx) return { isValid: true, detectedType: "PRODUCE" };
-
-    ctx.drawImage(bitmap, 0, 0, width, height);
-
-    // 3a. Hardware-Accelerated Native Face Detection (Chrome / Android / Chromium)
-    if (typeof window !== "undefined" && "FaceDetector" in window) {
-      try {
+  // 3. Native hardware FaceDetector if supported (only flag if close-up face with no produce context)
+  if (typeof window !== "undefined" && "FaceDetector" in window) {
+    try {
+      const bitmap = await createImageBitmap(file);
+      const width = 120;
+      const height = 120;
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (ctx) {
+        ctx.drawImage(bitmap, 0, 0, width, height);
         const FaceDetectorClass = (window as any).FaceDetector;
         const detector = new FaceDetectorClass({ fastMode: true, maxDetectedFaces: 3 });
         const faces = await detector.detect(canvas);
         if (Array.isArray(faces) && faces.length > 0) {
-          return {
-            isValid: false,
-            error: getVerificationErrorMessage("HUMAN_SELFIE", lang),
-            detectedType: "HUMAN_SELFIE",
-          };
-        }
-      } catch {
-        // Fall back to pixel color space analysis if FaceDetector is restricted by flags
-      }
-    }
-
-    const imgData = ctx.getImageData(0, 0, width, height).data;
-    const totalPixels = width * height;
-
-    let skinPixels = 0;
-    let centerSkinPixels = 0;
-    let greenPlantPixels = 0;
-    let colorfulProducePixels = 0;
-    let grayPixels = 0;
-    let neutralAnimalFurPixels = 0;
-
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const centerRadiusSq = (width * 0.38) * (width * 0.38);
-
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const idx = (y * width + x) * 4;
-        const r = imgData[idx];
-        const g = imgData[idx + 1];
-        const b = imgData[idx + 2];
-
-        // --- YCbCr Color Space Conversion ---
-        const Y = 0.299 * r + 0.587 * g + 0.114 * b;
-        const Cb = -0.1687 * r - 0.3313 * g + 0.5 * b + 128;
-        const Cr = 0.5 * r - 0.4187 * g - 0.0813 * b + 128;
-
-        // --- Skin Tone Classifier (Universal South Asian & Global Melanin Cluster) ---
-        const isYCbCrSkin = Cr >= 132 && Cr <= 176 && Cb >= 76 && Cb <= 128;
-        const isRgbSkin = r > 35 && r > g && g >= b * 0.78 && (r - g) >= 4;
-
-        if (isYCbCrSkin && isRgbSkin) {
-          skinPixels++;
-          const distSq = (x - centerX) * (x - centerX) + (y - centerY) * (y - centerY);
-          if (distSq <= centerRadiusSq) {
-            centerSkinPixels++;
+          // If a large face occupies > 60% of frame (close selfie), reject
+          const face = faces[0].boundingBox;
+          if (face && (face.width * face.height) / (width * height) > 0.45) {
+            return {
+              isValid: false,
+              error: getVerificationErrorMessage("HUMAN_SELFIE", lang),
+              detectedType: "HUMAN_SELFIE",
+            };
           }
         }
-
-        // --- Green Chlorophyll / Plant Foliage ---
-        // Leaf Green: Green dominates, or moderate hue with green component
-        const isGreenLeaf =
-          (g > r * 1.06 && g > b * 1.12 && g > 35) ||
-          (g > 65 && r < 140 && b < 110 && g - r > 12);
-        if (isGreenLeaf) {
-          greenPlantPixels++;
-        }
-
-        // --- Vivid Agricultural Produce Pigmentation ---
-        // Ripe Red (Tomato, Red Chilli, Apple, Strawberry)
-        const isProduceRed = r > 75 && r > g * 1.25 && r > b * 1.35;
-        // Orange / Golden Yellow (Mango, Banana, Carrot, Turmeric, Corn)
-        const isProduceYellow = r > 105 && g > 85 && b < 95 && (r + g) > b * 2.3;
-        // Purple / Eggplant (Brinjal, Beetroot, Red Cabbage, Jamun)
-        const isProducePurple = r > 55 && b > 55 && g < Math.max(r, b) * 0.8;
-        // Onion / Garlic / Potato earthy outer skin
-        const isEarthyProduce = r >= 110 && g >= 90 && b >= 50 && r >= g && g >= b && (r - b) >= 20 && (r - b) <= 90;
-
-        if (isProduceRed || isProduceYellow || isProducePurple || isEarthyProduce) {
-          colorfulProducePixels++;
-        }
-
-        // --- Monochromatic / Screen / Indoor Surface Grayscale ---
-        const maxDiff = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
-        if (maxDiff < 10) {
-          grayPixels++;
-        }
-
-        // --- Neutral Animal Fur (Tans, grays, black-white without vegetation) ---
-        if (maxDiff < 16 && Y > 30 && Y < 220) {
-          neutralAnimalFurPixels++;
-        }
       }
+    } catch {
+      // Ignore if FaceDetector is unavailable
     }
-
-    const skinRatio = skinPixels / totalPixels;
-    const centerTotal = Math.PI * (width * 0.38) * (width * 0.38);
-    const centerSkinRatio = centerSkinPixels / centerTotal;
-    const greenPlantRatio = greenPlantPixels / totalPixels;
-    const produceRatio = colorfulProducePixels / totalPixels;
-    const totalAgriRatio = greenPlantRatio + produceRatio;
-    const grayRatio = grayPixels / totalPixels;
-    const neutralFurRatio = neutralAnimalFurPixels / totalPixels;
-
-    // --- DECISION LOGIC ---
-
-    // 1. Human Face or Selfie Rejection
-    // If center of photo is dominated by skin tones (>15%) or overall skin is >17%
-    if (centerSkinRatio > 0.15 || skinRatio > 0.17) {
-      return {
-        isValid: false,
-        error: getVerificationErrorMessage("HUMAN_SELFIE", lang),
-        detectedType: "HUMAN_SELFIE",
-      };
-    }
-
-    // 2. Monochromatic Indoor Screen / Wall / Document
-    if (grayRatio > 0.65 && totalAgriRatio < 0.05) {
-      return {
-        isValid: false,
-        error: getVerificationErrorMessage("SYNTHETIC", lang),
-        detectedType: "SYNTHETIC",
-      };
-    }
-
-    // 3. Animal / Pet Fur
-    if (neutralFurRatio > 0.55 && totalAgriRatio < 0.04) {
-      return {
-        isValid: false,
-        error: getVerificationErrorMessage("ANIMAL", lang),
-        detectedType: "ANIMAL",
-      };
-    }
-
-    // 4. Mode-Specific Check: "leaf" (Krishi AI Doctor)
-    // A leaf photo must have detectable chlorophyll or plant tissue
-    if (mode === "leaf") {
-      if (greenPlantRatio < 0.06 && totalAgriRatio < 0.08) {
-        return {
-          isValid: false,
-          error: getVerificationErrorMessage("NO_PLANT_DETECTED", lang),
-          detectedType: "NO_PLANT_DETECTED",
-        };
-      }
-    }
-
-    // 5. Mode-Specific Check: "produce" (Produce Grading & Marketplace)
-    if (mode === "produce") {
-      if (totalAgriRatio < 0.06 && grayRatio > 0.40) {
-        return {
-          isValid: false,
-          error: getVerificationErrorMessage("OBJECT", lang),
-          detectedType: "OBJECT",
-        };
-      }
-    }
-  } catch (err) {
-    console.warn("Client image inspection warning:", err);
   }
 
+  // Default to valid produce so all agricultural photos, leaves, and produce are accepted
   return { isValid: true, detectedType: "PRODUCE" };
 }
 
