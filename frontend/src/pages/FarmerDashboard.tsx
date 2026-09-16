@@ -53,6 +53,7 @@ export function FarmerDashboard() {
 
   // Header display details:
   const [profilePhoto, setProfilePhoto] = useState<string>(user?.photoUrl || "");
+  const [photoError, setPhotoError] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [farmerName, setFarmerName] = useState(user?.name || "");
   const [district, setDistrict] = useState("Tirupati");
@@ -147,146 +148,148 @@ export function FarmerDashboard() {
     <div className="w-full max-w-6xl mx-auto space-y-7 pb-16">
       {/* 1. Header Banner */}
       <div className="rounded-3xl border border-zinc-200/70 bg-white p-6 sm:p-7 shadow-xs">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-4 sm:gap-5 min-w-0 flex-1">
-            {/* Farmer Profile Avatar with link to Profile */}
-            <div className="relative group shrink-0">
-              <Link
-                to="/farmer/profile"
-                title="Open Farmer Profile & Land Records"
-                className="block h-16 w-16 sm:h-20 sm:w-20 rounded-2xl overflow-hidden border-2 border-emerald-600/30 bg-emerald-50 shadow-xs hover:border-emerald-600 transition"
-              >
-                {profilePhoto ? (
-                  <img
-                    src={mediaUrl(profilePhoto)}
-                    alt={farmerName || "Farmer Profile"}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full flex-col items-center justify-center text-emerald-800">
-                    <Sprout className="h-8 w-8 text-emerald-700" />
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-800/80">Kisaan</span>
-                  </div>
-                )}
-              </Link>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                title="Upload / Change Profile Photo"
-                className="absolute -bottom-1.5 -right-1.5 flex h-7 w-7 items-center justify-center rounded-xl bg-[#1b4332] text-white shadow-md transition hover:bg-[#245e38] hover:scale-105"
-              >
-                {photoUploading ? (
-                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                ) : (
-                  <Camera className="h-3.5 w-3.5" />
-                )}
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handlePhotoUpload}
-              />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2 text-xs">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-zinc-900">
-                  <Sprout className="h-3.5 w-3.5 text-zinc-800 shrink-0" />
-                  Verified Farmer
-                </span>
-                <span className="text-zinc-300 select-none">·</span>
-                <span className="font-normal text-zinc-500">
-                  Samruddhi Setu Network
-                </span>
-                {district && (
-                  <>
-                    <span className="text-zinc-300 select-none">·</span>
-                    <span className="inline-flex items-center gap-1 font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">
-                      <MapPin className="h-3 w-3 text-emerald-600" />
-                      {district}
-                    </span>
-                  </>
-                )}
-              </div>
-
-              <h1 className="mt-1.5 font-serif text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">
-                Namaste{farmerName || user?.name ? `, ${farmerName || user?.name}` : ""}
-              </h1>
-              <p className="mt-1 text-xs sm:text-sm text-zinc-500 leading-relaxed max-w-2xl">
-                Welcome to your digital farm desk. Live harvest rates, consumer orders, and logistics updates.
-              </p>
-            </div>
+        {/* Top: Photo on left, info immediately after photo */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          {/* Farmer Profile Avatar with link to Profile */}
+          <div className="relative group shrink-0">
+            <Link
+              to="/farmer/profile"
+              title="Open Farmer Profile & Land Records"
+              className="block h-18 w-18 sm:h-20 sm:w-20 rounded-2xl overflow-hidden border-2 border-emerald-600/30 bg-emerald-50 shadow-xs hover:border-emerald-600 transition"
+            >
+              {profilePhoto && !photoError ? (
+                <img
+                  src={mediaUrl(profilePhoto)}
+                  alt={farmerName || "Farmer Profile"}
+                  onError={() => setPhotoError(true)}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-800">
+                  <Sprout className="h-8 w-8 text-emerald-700" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">
+                    {farmerName ? farmerName.slice(0, 1).toUpperCase() : "Kisaan"}
+                  </span>
+                </div>
+              )}
+            </Link>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              title="Upload / Change Profile Photo"
+              className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-xl bg-[#1b4332] text-white shadow-md transition hover:bg-[#245e38] hover:scale-105"
+            >
+              {photoUploading ? (
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : (
+                <Camera className="h-3.5 w-3.5" />
+              )}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handlePhotoUpload}
+            />
           </div>
 
-          <div className="hidden lg:flex shrink-0">
-            <Link
-              to="/farmer/sell"
-              className="flex items-center gap-2 rounded-2xl bg-[#1b4332] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#245e38]"
-            >
-              <Camera className="h-4 w-4" />
-              <span>Sell Crop</span>
-            </Link>
+          {/* Info directly after photo */}
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="inline-flex items-center gap-1.5 font-semibold text-zinc-900">
+                <Sprout className="h-3.5 w-3.5 text-zinc-800 shrink-0" />
+                Verified Farmer
+              </span>
+              <span className="text-zinc-300 select-none">·</span>
+              <span className="font-normal text-zinc-500">
+                Samruddhi Setu Network
+              </span>
+              {district && (
+                <>
+                  <span className="text-zinc-300 select-none">·</span>
+                  <span className="inline-flex items-center gap-1 font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">
+                    <MapPin className="h-3 w-3 text-emerald-600" />
+                    {district}
+                  </span>
+                </>
+              )}
+            </div>
+
+            <h1 className="mt-1 font-serif text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">
+              Namaste{farmerName || user?.name ? `, ${farmerName || user?.name}` : ""}
+            </h1>
+            <p className="mt-1 text-xs sm:text-sm text-zinc-500 leading-relaxed max-w-2xl">
+              Welcome to your digital farm desk. Live harvest rates, consumer orders, and logistics updates.
+            </p>
           </div>
         </div>
 
-        {/* Downside selection of items - cleanly spaced quick action button bar */}
-        <div className="mt-5 pt-5 border-t border-zinc-100 flex flex-wrap items-center gap-2 sm:gap-2.5">
-          {/* Dedicated AI Kisan Assistant Button */}
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent("open-kisan-ai"))}
-            className="flex items-center gap-2 rounded-xl border border-emerald-600/40 bg-emerald-50 px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-emerald-900 shadow-xs transition hover:bg-emerald-100 hover:border-emerald-500 active:scale-95"
-            title="Open AI Kisan Multilingual Voice Assistant"
-          >
-            <Mic className="h-4 w-4 text-emerald-700 animate-pulse" />
-            <span>AI Kisan Sahayak</span>
-          </button>
+        {/* Downside selection of items - 2 distinct rows so buttons fit perfectly in box */}
+        <div className="mt-6 pt-5 border-t border-zinc-100 space-y-2.5">
+          {/* Row 1: AI Kisan Sahayak, Profile & Land, FarmManagement */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            {/* 1. AI Kisan Sahayak */}
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("open-kisan-ai"))}
+              className="flex items-center justify-center gap-2 rounded-xl border border-emerald-600/40 bg-emerald-50/80 px-4 py-3 text-xs sm:text-sm font-semibold text-emerald-900 shadow-xs transition hover:bg-emerald-100 hover:border-emerald-500 active:scale-95"
+              title="Open AI Kisan Multilingual Voice Assistant"
+            >
+              <Mic className="h-4 w-4 text-emerald-700 animate-pulse shrink-0" />
+              <span className="truncate">AI Kisan Sahayak</span>
+            </button>
 
-          {/* Dedicated Profile & Land Records Button */}
-          <Link
-            to="/farmer/profile"
-            className="flex items-center gap-2 rounded-xl border border-zinc-200/90 bg-white px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-zinc-800 shadow-xs transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
-            title="Open Farmer Profile & Land Records"
-          >
-            <UserCircle className="h-4 w-4 text-emerald-700" />
-            <span>Profile & Land</span>
-          </Link>
+            {/* 2. Profile & Land */}
+            <Link
+              to="/farmer/profile"
+              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200/90 bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-zinc-800 shadow-xs transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
+              title="Open Farmer Profile & Land Records"
+            >
+              <UserCircle className="h-4 w-4 text-emerald-700 shrink-0" />
+              <span className="truncate">Profile & Land</span>
+            </Link>
 
-          {/* Dedicated FarmManagement Single Page Ledger Button */}
-          <Link
-            to="/farmer/farm-management"
-            className="flex items-center gap-2 rounded-xl border border-emerald-600/40 bg-emerald-50 px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-emerald-900 shadow-xs transition hover:bg-emerald-100 hover:border-emerald-500"
-            title="Open FarmManagement Single Page Crop Ledger"
-          >
-            <LandPlot className="h-4 w-4 text-emerald-700" />
-            <span>FarmManagement</span>
-          </Link>
+            {/* 3. FarmManagement */}
+            <Link
+              to="/farmer/farm-management"
+              className="flex items-center justify-center gap-2 rounded-xl border border-emerald-600/40 bg-emerald-50/80 px-4 py-3 text-xs sm:text-sm font-semibold text-emerald-900 shadow-xs transition hover:bg-emerald-100 hover:border-emerald-500"
+              title="Open FarmManagement Single Page Crop Ledger"
+            >
+              <LandPlot className="h-4 w-4 text-emerald-700 shrink-0" />
+              <span className="truncate">FarmManagement</span>
+            </Link>
+          </div>
 
-          <Link
-            to="/farmer/krishi-ai"
-            className="flex items-center gap-2 rounded-xl border border-zinc-200/90 bg-white px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-zinc-800 shadow-xs transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
-          >
-            <Stethoscope className="h-4 w-4 text-zinc-600" />
-            <span>Crop Doctor</span>
-          </Link>
+          {/* Row 2: Downside of Row 1 (Crop Doctor, Field Simulator, Sell Crop) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            {/* 4. Crop Doctor (downside of AI Kisan) */}
+            <Link
+              to="/farmer/krishi-ai"
+              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200/90 bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-zinc-800 shadow-xs transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
+            >
+              <Stethoscope className="h-4 w-4 text-zinc-600 shrink-0" />
+              <span className="truncate">Crop Doctor</span>
+            </Link>
 
-          <Link
-            to="/farmer/twin"
-            className="flex items-center gap-2 rounded-xl border border-zinc-200/90 bg-white px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-zinc-800 shadow-xs transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
-          >
-            <Activity className="h-4 w-4 text-zinc-600" />
-            <span>Field Simulator</span>
-          </Link>
+            {/* 5. Field Simulator (downside of Profile & Land) */}
+            <Link
+              to="/farmer/twin"
+              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200/90 bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-zinc-800 shadow-xs transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
+            >
+              <Activity className="h-4 w-4 text-zinc-600 shrink-0" />
+              <span className="truncate">Field Simulator</span>
+            </Link>
 
-          <Link
-            to="/farmer/sell"
-            className="flex items-center gap-2 rounded-xl bg-[#1b4332] px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-[#245e38] lg:hidden"
-          >
-            <Camera className="h-4 w-4" />
-            <span>Sell Crop</span>
-          </Link>
+            {/* 6. Sell Crop (downside of FarmManagement) */}
+            <Link
+              to="/farmer/sell"
+              className="flex items-center justify-center gap-2 rounded-xl bg-[#1b4332] px-4 py-3 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-[#245e38]"
+            >
+              <Camera className="h-4 w-4 shrink-0" />
+              <span className="truncate">Sell Crop</span>
+            </Link>
+          </div>
         </div>
       </div>
 
