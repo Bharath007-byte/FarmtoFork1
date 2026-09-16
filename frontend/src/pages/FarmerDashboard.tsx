@@ -241,14 +241,14 @@ export function FarmerDashboard() {
             <span>Profile & Land</span>
           </Link>
 
-          {/* Dedicated My Farms Single Page Ledger Button */}
+          {/* Dedicated FarmManagement Single Page Ledger Button */}
           <Link
-            to="/farmer/my-farms"
+            to="/farmer/farm-management"
             className="flex items-center gap-2 rounded-2xl border border-emerald-600/40 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900 shadow-xs transition hover:bg-emerald-100 hover:border-emerald-500"
-            title="Open My Farms Single Page Crop Ledger"
+            title="Open FarmManagement Single Page Crop Ledger"
           >
             <LandPlot className="h-4 w-4 text-emerald-700" />
-            <span>My Farms</span>
+            <span>FarmManagement</span>
           </Link>
 
           <Link
@@ -458,9 +458,9 @@ export function FarmerDashboard() {
             desc="Land size, soil type, irrigation, APMC reg & bank payout details"
           />
           <ToolCard
-            to="/farmer/my-farms"
+            to="/farmer/farm-management"
             icon={<LandPlot className="h-5 w-5 text-[#1b4332]" />}
-            title="My Farms (Single Page Ledger)"
+            title="FarmManagement (Single Page)"
             desc="One crop, one page — complete activities, reminders, harvest & photo journey"
           />
         </div>

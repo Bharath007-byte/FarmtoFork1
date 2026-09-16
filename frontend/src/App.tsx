@@ -169,6 +169,7 @@ export default function App() {
                 <Route path="profile" element={<FarmerProfilePage />} />
                 <Route path="advisory" element={<AiAdvisory />} />
                 <Route path="community" element={<FarmerCommunity />} />
+                <Route path="farm-management" element={<MyFarmsPage />} />
                 <Route path="my-farms" element={<MyFarmsPage />} />
               </Route>
               <Route
